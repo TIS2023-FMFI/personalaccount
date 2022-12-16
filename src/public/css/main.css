@@ -207,7 +207,7 @@ table tr:nth-child(odd) {
     background-color: #e6e6e6;
 }
 table tr td:last-child {
-    width: 100px;
+    width: 120px;
 }
 table td a {
     color: var(--primary);
