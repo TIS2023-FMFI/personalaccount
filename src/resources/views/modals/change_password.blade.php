@@ -5,7 +5,7 @@
     <h2>Zmena hesla</h2>
     <input type="password" placeholder="Nové heslo">
     <input type="password" placeholder="Zopakujte heslo">
-    <button type="button">Uložiť</button>
+    <button type="button" id="change_pass_button">Uložiť</button>
   </div>
 
 </div>
