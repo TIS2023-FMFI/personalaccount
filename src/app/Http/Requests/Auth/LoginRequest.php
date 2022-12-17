@@ -1,9 +1,14 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * A request to log in a user via email and password.
+ * 
+ * Fields: email, password.
+ */
 class LoginRequest extends FormRequest
 {
     /**

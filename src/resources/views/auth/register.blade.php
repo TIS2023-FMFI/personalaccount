@@ -24,7 +24,7 @@
 
         <script>
             $(function () {
-                $('#forgotForm').submit(function (e) {
+                $('#registerForm').submit(function (e) {
                     e.preventDefault();
                     let formData = $(this).serializeArray();
                     // $(".invalid-feedback").children("strong").text("");
@@ -34,19 +34,27 @@
                         headers: {
                             Accept: "application/json"
                         },
-                        url: "{{ route('forgot-password') }}",
+                        url: "{{ route('register') }}",
                         data: formData,
                         success: (response) => console.log(response),
                         error: (response) => {
-                            console.log(response);
+                            if(response.status === 422) {
+                                let errors = response.responseJSON.errors;
+                                Object.keys(errors).forEach(function (key) {
+                                    console.log(key + ": " + errors[key][0]);
+                                });
+                            } else {
+                                console.log(response);
+                            }
                         }
                     })
                 });
             })
         </script>
     </head>
+
     <body class="antialiased">
-        @if ($errors->any())
+        <!-- @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
                     @foreach ($errors->all() as $error)
@@ -54,13 +62,13 @@
                     @endforeach
                 </ul>
             </div>
-        @endif
+        @endif -->
 
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-            <form method="post" id="forgotForm">
+            <form method="post" id="registerForm">
                 @csrf
                 <input type="email" name="email" id="email" value="{{ old('email') }}">
-                <button type="submit">Login</button>
+                <button type="submit">Register</button>
             </form>
         </div>
     </body>

@@ -10,11 +10,26 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 
+/**
+ * An email containing a login link.
+ */
 class LoginLink extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * The login link.
+     * 
+     * @var string
+     */
     private $url;
+
+    /**
+     * The date and time until which the link is valid.
+     * 
+     * @var DateTimeInterface
+     */
+    private $validUntil;
 
     /**
      * Create a new message instance.
@@ -23,9 +38,12 @@ class LoginLink extends Mailable
      */
     public function __construct(string $token, DateTimeInterface $validUntil)
     {
-        $this->url = URL::temporarySignedRoute('login-using-token', $validUntil, [
-            'token' => $token,
-        ]);
+        $this->validUntil = $validUntil;
+        $this->url = URL::temporarySignedRoute(
+            'login-using-token',
+            $validUntil,
+            [ 'token' => $token ]
+        );
     }
 
     /**
@@ -36,7 +54,10 @@ class LoginLink extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: trans('emails.login-link-subject'),
+            subject: trans(
+                'emails.login-link.subject',
+                [ 'appName' => config('app.name') ]
+            ),
         );
     }
 
@@ -50,6 +71,7 @@ class LoginLink extends Mailable
         return new Content(
             view: 'emails.login_link',
             with: [
+                'validUntil' => $this->validUntil,
                 'url' => $this->url,
             ]
         );

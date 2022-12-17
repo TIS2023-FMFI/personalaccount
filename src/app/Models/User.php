@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * A representation of an instance in the "users" table.
+ */
 class User extends Authenticatable
 {
     use HasFactory;
@@ -34,17 +37,6 @@ class User extends Authenticatable
      * @var mixed
      */
     public $timestamps = false;
-
-
-    /**
-     * Get all login tokens generated for the user.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function loginTokens()
-    {
-        return $this->hasMany(LoginToken::class);
-    }
     
     /**
      * Get the latest login token generated for the user.

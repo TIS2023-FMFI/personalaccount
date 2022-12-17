@@ -1,10 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class SendLoginLinkRequest extends FormRequest
+/**
+ * A request to register a new user.
+ * 
+ * Fields: email.
+ */
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +20,7 @@ class SendLoginLinkRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return !User::first() || Auth::user();
     }
 
     /**
@@ -24,7 +31,7 @@ class SendLoginLinkRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'unique:App\Models\User', 'max:255'],
         ];
     }
 }

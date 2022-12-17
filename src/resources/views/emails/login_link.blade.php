@@ -1,8 +1,10 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <body class="antialiased">
-        <div>
-            {{ $url }}
-        </div>
-    </body>
-</html>
+{{
+    trans(
+        'emails.login-link.content',
+        [ 
+            'appName' => config('app.name'),
+            'validUntil' => $validUntil,
+            'url' => $url,
+        ]
+    )
+}}

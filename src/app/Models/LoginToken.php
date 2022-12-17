@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * A representation of an instance in the "login-tokens" table.
+ */
 class LoginToken extends Model
 {
     /**
@@ -67,10 +70,12 @@ class LoginToken extends Model
     }
 
     /**
-     * Generate a new login token for a provided user.
+     * Generate a new login token for a user.
      * 
      * @param User $user
-     * @return mixed
+     * the user for whom to generate the token
+     * @return LoginToken
+     * the generated token
      */
     public static function generate(User $user)
     {

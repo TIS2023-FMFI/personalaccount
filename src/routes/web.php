@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AccountManagement\ManageAccountController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,25 +21,41 @@ use Illuminate\Support\Facades\Route;
  * Authentication
  */
 
-Route::middleware(['guest'])->group(function () {
-    Route::get('/login', [LoginController::class, 'show'])->name('login');
-    Route::get('/login/{token}', [LoginController::class, 'loginUsingToken'])->name('login-using-token');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'show'])
+        ->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
-    Route::get('/forgot-password', [ForgotPasswordController::class, 'show'])->name('forgot-password');
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendLoginLink']);
+    Route::get('/login/{token}', [LoginController::class, 'loginUsingToken'])
+        ->name('login-using-token');
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'show'])
+        ->name('forgot-password');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendLoginLink'])
+        ->middleware(['ajax', 'jsonify']);
 });
 
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
 
-Route::get('/register', [RegisterController::class, 'show'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/register', [RegisterController::class, 'register'])
+    ->middleware(['ajax', 'jsonify']);
+
+/**
+ * Account Management
+ */
+
+Route::post('/change-password', [ManageAccountController::class, 'changePassword'])
+    ->middleware(['auth', 'ajax', 'jsonify']);
+
 
 /**
  * Financial Accounts
  */
 
-// TODO not implemented
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware('auth')->group(function () {
+    // TODO not implemented
+    Route::get('/', function () {
+        return view('welcome');
+    });
 });
