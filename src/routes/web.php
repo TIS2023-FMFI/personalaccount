@@ -41,6 +41,7 @@ Route::post('/logout', [LoginController::class, 'logout'])
 Route::post('/register', [RegisterController::class, 'register'])
     ->middleware(['ajax', 'jsonify']);
 
+
 /**
  * Account Management
  */
