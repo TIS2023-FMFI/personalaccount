@@ -131,4 +131,16 @@ return [
     'url' => ':attribute nie je platná URL adresa.',
     'uuid' => ':attribute musí byť platné UUID.',
 
+    'custom' => [
+        'email' => [
+            'required' => 'E-mailovú adresu je potrebné vyplniť.',
+        ],
+    ],
+
+    'attributes' => [
+        'email' => 'E-mailová adresa',
+        'password' => 'Heslo',
+        'new_password' => 'Nové heslo',
+    ],
+
 ];

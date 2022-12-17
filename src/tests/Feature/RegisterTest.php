@@ -5,11 +5,29 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
 {
+    private $email;
+
+    private $emailRequired;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->email = App::isLocale('en')
+            ? 'email'
+            : trans('validation.attributes.email');
+
+        $this->emailRequired = App::isLocale('en')
+            ? trans('validation.required', [ 'attribute' => 'email' ])
+            : trans('validation.custom.email.required');
+    }
+    
     public function test_that_only_ajax_requests_are_handled()
     {
         $response = $this->post('/register', [ 'email' => '' ]);
@@ -69,7 +87,7 @@ class RegisterTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.email.0',
-                trans('validation.required', [ 'attribute' => 'email' ])
+                $this->emailRequired
             );
     }
 
@@ -90,7 +108,7 @@ class RegisterTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.email.0',
-                trans('validation.email', [ 'attribute' => 'email' ])
+                trans('validation.email', [ 'attribute' => $this->email ])
             );
     }
 
@@ -111,7 +129,7 @@ class RegisterTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.email.0',
-                trans('validation.unique', [ 'attribute' => 'email' ])
+                trans('validation.unique', [ 'attribute' => $this->email ])
             );
     }
 

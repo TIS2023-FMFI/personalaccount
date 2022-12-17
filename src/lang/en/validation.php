@@ -171,6 +171,8 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'new_password' => 'new password'
+    ],
 
 ];

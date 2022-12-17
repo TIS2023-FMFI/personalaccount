@@ -5,11 +5,19 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class ManageAccountTest extends TestCase
 {
+    private $newPassword;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->newPassword = trans('validation.attributes.new_password');
+    }
+
     public function test_that_unauthenticated_user_cannot_change_password()
     {
         $response = $this->post('/change-password');
@@ -25,7 +33,7 @@ class ManageAccountTest extends TestCase
         $response = $this->actingAs($user)
                             ->post(
                                 '/change-password',
-                                [ 'password' => '', 'password_confirmation' => '' ]
+                                [ 'new_password' => '', 'new_password_confirmation' => '' ]
                             );
 
         $response
@@ -42,14 +50,14 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => '', 'password_confirmation' => '' ]
+                                [ 'new_password' => '', 'new_password_confirmation' => '' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password.0',
-                trans('validation.required', [ 'attribute' => 'password' ])
+                'errors.new_password.0',
+                trans('validation.required', [ 'attribute' => $this->newPassword ])
             );
     }
 
@@ -63,14 +71,14 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => 'abc', 'password_confirmation' => '' ]
+                                [ 'new_password' => 'abc', 'new_password_confirmation' => '' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password.0',
-                trans('validation.confirmed', [ 'attribute' => 'password' ])
+                'errors.new_password.0',
+                trans('validation.confirmed', [ 'attribute' => $this->newPassword ])
             );
     }
 
@@ -84,14 +92,14 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => 'abc', 'password_confirmation' => 'abc' ]
+                                [ 'new_password' => 'abc', 'new_password_confirmation' => 'abc' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password.0',
-                trans('validation.min.string', [ 'attribute' => 'password', 'min' => 8 ])
+                'errors.new_password.0',
+                trans('validation.min.string', [ 'attribute' => $this->newPassword, 'min' => 8 ])
             );
     }
 
@@ -105,14 +113,14 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => str_repeat('a', 256), 'password_confirmation' => str_repeat('a', 256) ]
+                                [ 'new_password' => str_repeat('a', 256), 'new_password_confirmation' => str_repeat('a', 256) ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password.0',
-                trans('validation.max.string', [ 'attribute' => 'password', 'max' => 255 ])
+                'errors.new_password.0',
+                trans('validation.max.string', [ 'attribute' => $this->newPassword, 'max' => 255 ])
             );
     }
 
@@ -126,15 +134,15 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => '12345678', 'password_confirmation' => '12345678' ]
+                                [ 'new_password' => '12345678', 'new_password_confirmation' => '12345678' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password',
+                'errors.new_password',
                 fn ($errors) => in_array(
-                    trans('validation.password.letters', [ 'attribute' => 'password' ]),
+                    trans('validation.password.letters', [ 'attribute' => $this->newPassword ]),
                     $errors
                 )
             );
@@ -150,15 +158,15 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => 'abcdefgh', 'password_confirmation' => 'abcdefgh' ]
+                                [ 'new_password' => 'abcdefgh', 'new_password_confirmation' => 'abcdefgh' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password',
+                'errors.new_password',
                 fn ($errors) => in_array(
-                    trans('validation.password.mixed', [ 'attribute' => 'password' ]),
+                    trans('validation.password.mixed', [ 'attribute' => $this->newPassword ]),
                     $errors
                 )
             );
@@ -174,15 +182,15 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => 'ABCdefgh', 'password_confirmation' => 'ABCdefgh' ]
+                                [ 'new_password' => 'ABCdefgh', 'new_password_confirmation' => 'ABCdefgh' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password',
+                'errors.new_password',
                 fn ($errors) => in_array(
-                    trans('validation.password.numbers', [ 'attribute' => 'password' ]),
+                    trans('validation.password.numbers', [ 'attribute' => $this->newPassword ]),
                     $errors
                 )
             );
@@ -198,15 +206,15 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => 'ABCdef78', 'password_confirmation' => 'ABCdef78' ]
+                                [ 'new_password' => 'ABCdef78', 'new_password_confirmation' => 'ABCdef78' ]
                             );
 
         $response
             ->assertStatus(422)
             ->assertJsonPath(
-                'errors.password',
+                'errors.new_password',
                 fn ($errors) => in_array(
-                    trans('validation.password.symbols', [ 'attribute' => 'password' ]),
+                    trans('validation.password.symbols', [ 'attribute' => $this->newPassword ]),
                     $errors
                 )
             );
@@ -223,7 +231,7 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'password' => $password, 'password_confirmation' => $password ]
+                                [ 'new_password' => $password, 'new_password_confirmation' => $password ]
                             );
 
         $response

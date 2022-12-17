@@ -30,7 +30,7 @@ class ChangePasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => [
+            'new_password' => [
                 'required',
                 'confirmed',
                 'max:255',

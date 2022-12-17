@@ -6,12 +6,36 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
 {
+    private $email;
+
+    private $password;
+
+    private $emailRequired;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->email = App::isLocale('en')
+            ? 'email'
+            : trans('validation.attributes.email');
+
+        $this->password = App::isLocale('en')
+            ? 'password'
+            : trans('validation.attributes.password');
+
+        $this->emailRequired = App::isLocale('en')
+            ? trans('validation.required', [ 'attribute' => 'email' ])
+            : trans('validation.custom.email.required');
+    }
+    
     public function test_that_first_user_sees_registration()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -48,7 +72,7 @@ class LoginTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.email.0',
-                trans('validation.required', [ 'attribute' => 'email' ])
+                $this->emailRequired
             );
     }
 
@@ -64,7 +88,7 @@ class LoginTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.email.0',
-                trans('validation.email', [ 'attribute' => 'email' ])
+                trans('validation.email', [ 'attribute' => $this->email ])
             );
     }
 
@@ -80,7 +104,7 @@ class LoginTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.password.0',
-                trans('validation.required', [ 'attribute' => 'password' ])
+                trans('validation.required', [ 'attribute' => $this->password ])
             );
     }
 

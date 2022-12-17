@@ -26,7 +26,7 @@ class ManageAccountController extends Controller
      */
     public function changePassword(ChangePasswordRequest $request)
     {
-        $password = $request->validated('password');
+        $password = $request->validated('new_password');
 
         $user = Auth::user();
         $user->password = Hash::make($password);
