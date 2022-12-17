@@ -20,11 +20,11 @@ return [
 
     'login-link' => [
         'generation' => [
-            'failed' => 'We were unable to generate a login token, please, try again later.',    
+            'failed' => 'We were unable to generate a login token, please, try again later.',
         ],
         'sending' => [
             'success' => 'We have successfully emailed you a login link.',
-            'failed' => 'We were unable to email you a login link, please, try again later.',    
+            'failed' => 'We were unable to email you a login link, please, try again later.',
         ]
     ],
     'register' => [

@@ -7,7 +7,7 @@ return [
     | Email Language Lines
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used during email construction.
+    | The following language lines are used to construct emails.
     |
     */
 
