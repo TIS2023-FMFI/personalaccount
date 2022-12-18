@@ -62,4 +62,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/account', function () {
         return view('account');
     });
+    
+    Route::get('/sap-reports', function () {
+        return view('finances.sap_reports');
+    });
 });

@@ -1,4 +1,4 @@
-@include('navigation')
+@include('common.navigation')
 
 <div class="flex-between">
     <div>
@@ -8,7 +8,7 @@
     <div class="switch-box">
         <p>Výpis účtu</p>
         <label class="switch">
-            <input type="checkbox">
+            <input class="toggle-button" type="checkbox">
             <span class="slider round"></span>
         </label>
         <p>SAP</p>
@@ -22,7 +22,7 @@
     </div>
     <div>
         <button type="button">Export</button>
-        <button type="button">+</i></button>
+        <button id="create_operation" type="button">+</i></button>
     </div>
 </div>
 <table>
@@ -114,4 +114,4 @@
 </div>
 
 
-@include('footer')
+@include('common.footer')

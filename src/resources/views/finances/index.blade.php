@@ -1,4 +1,4 @@
-@include('navigation')
+@include('common.navigation')
 
 <h1>Moje účty</h1>
 <div class="accounts_box">
@@ -23,4 +23,4 @@
     </div>
 </div>
 
-@include('footer')
+@include('common.footer')
