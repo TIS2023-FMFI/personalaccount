@@ -55,8 +55,11 @@ Route::post('/change-password', [ManageAccountController::class, 'changePassword
  */
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
-    // TODO not implemented
     Route::get('/', function () {
-        return view('welcome');
+        return view('index');
+    });
+    
+    Route::get('/account', function () {
+        return view('account');
     });
 });
