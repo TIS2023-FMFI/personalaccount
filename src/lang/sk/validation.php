@@ -21,6 +21,7 @@ return [
     ],
     'boolean' => ':attribute musí byť true alebo false.',
     'confirmed' => ':attribute sa nezhoduje.',
+    'current_password' => 'Heslo je nesprávne.',
     'date' => ':attribute nie je platný dátum.',
     'date_equals' => ':attribute musí byť dátum :date.',
     'date_format' => ':attribute sa nezhoduje s formátom :format.',
@@ -140,6 +141,7 @@ return [
     'attributes' => [
         'email' => 'E-mailová adresa',
         'password' => 'Heslo',
+        'old_password' => 'Staré heslo',
         'new_password' => 'Nové heslo',
     ],
 

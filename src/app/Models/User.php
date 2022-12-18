@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * A representation of an instance in the "users" table.
@@ -37,14 +38,22 @@ class User extends Authenticatable
      * @var mixed
      */
     public $timestamps = false;
-    
+
     /**
-     * Get the latest login token generated for the user.
+     * Set the user's password.
      * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * Note: This method also clears the password_change_required flag.
+     * 
+     * @param mixed $password
+     * the plain-text password that should be set as the new password
+     * @return bool
+     * true on success, false otherwise
      */
-    public function latestLoginToken()
+    public function setPassword($password)
     {
-        return $this->hasOne(LoginToken::class)->latestOfMany();
+        $this->password = Hash::make($password);
+        $this->password_change_required = false;
+
+        return $this->save();
     }
 }

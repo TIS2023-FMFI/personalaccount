@@ -29,10 +29,10 @@ class ManageAccountController extends Controller
         $password = $request->validated('new_password');
 
         $user = Auth::user();
-        $user->password = Hash::make($password);
-        $user->password_change_required = false;
         
-        if ($user->save()) {
+        if ($user->setPassword($password)) {
+            Auth::logoutOtherDevices($password);
+
             return response(trans('passwords.change.success'));
         }
 

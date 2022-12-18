@@ -47,14 +47,14 @@ Route::post('/register', [RegisterController::class, 'register'])
  */
 
 Route::post('/change-password', [ManageAccountController::class, 'changePassword'])
-    ->middleware(['auth', 'ajax', 'jsonify']);
+    ->middleware(['auth', 'auth.session', 'ajax', 'jsonify']);
 
 
 /**
  * Financial Accounts
  */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'auth.session'])->group(function () {
     // TODO not implemented
     Route::get('/', function () {
         return view('welcome');

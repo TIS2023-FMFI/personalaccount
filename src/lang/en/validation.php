@@ -172,6 +172,7 @@ return [
     */
 
     'attributes' => [
+        'old_password' => 'old password',
         'new_password' => 'new password'
     ],
 

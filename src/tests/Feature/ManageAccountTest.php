@@ -9,12 +9,15 @@ use Tests\TestCase;
 
 class ManageAccountTest extends TestCase
 {
+    private $oldPassword;
+    
     private $newPassword;
 
     public function setUp(): void
     {
         parent::setUp();
 
+        $this->oldPassword = trans('validation.attributes.old_password');
         $this->newPassword = trans('validation.attributes.new_password');
     }
 
@@ -33,14 +36,18 @@ class ManageAccountTest extends TestCase
         $response = $this->actingAs($user)
                             ->post(
                                 '/change-password',
-                                [ 'new_password' => '', 'new_password_confirmation' => '' ]
+                                [ 
+                                    'password' => '',
+                                    'new_password' => '',
+                                    'new_password_confirmation' => ''
+                                ]
                             );
 
         $response
             ->assertStatus(500);
     }
 
-    public function test_that_empty_password_is_rejected()
+    public function test_that_old_password_is_required()
     {
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
  
@@ -50,7 +57,65 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => '', 'new_password_confirmation' => '' ]
+                                [
+                                    'old_password' => '',
+                                    'new_password' => '',
+                                    'new_password_confirmation' => ''
+                                ]
+                            );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'errors.old_password.0',
+                trans('validation.required', [ 'attribute' => $this->oldPassword ])
+            );
+    }
+
+    public function test_that_old_password_must_match_current_one()
+    {
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
+ 
+        $response = $this->actingAs($user)
+                            ->withHeaders([ 
+                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
+                                'Accept' => 'application/json',
+                            ])->post(
+                                '/change-password',
+                                [
+                                    'old_password' => 'abc',
+                                    'new_password' => '',
+                                    'new_password_confirmation' => ''
+                                ]
+                            );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'errors.old_password.0',
+                trans('validation.current_password')
+            );
+    }
+
+    public function test_that_empty_new_password_is_rejected()
+    {
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
+ 
+        $response = $this->actingAs($user)
+                            ->withHeaders([ 
+                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
+                                'Accept' => 'application/json',
+                            ])->post(
+                                '/change-password',
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => '',
+                                    'new_password_confirmation' => ''
+                                ]
                             );
 
         $response
@@ -61,9 +126,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_unconfirmed_password_is_rejected()
+    public function test_that_unconfirmed_new_password_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -71,7 +138,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => 'abc', 'new_password_confirmation' => '' ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => 'abc',
+                                    'new_password_confirmation' => ''
+                                ]
                             );
 
         $response
@@ -82,9 +153,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_short_password_is_rejected()
+    public function test_that_short_new_password_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -92,7 +165,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => 'abc', 'new_password_confirmation' => 'abc' ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => 'abc',
+                                    'new_password_confirmation' => 'abc'
+                                ]
                             );
 
         $response
@@ -103,9 +180,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_too_long_password_is_rejected()
+    public function test_that_too_long_new_password_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -113,7 +192,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => str_repeat('a', 256), 'new_password_confirmation' => str_repeat('a', 256) ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => str_repeat('a', 256),
+                                    'new_password_confirmation' => str_repeat('a', 256)
+                                ]
                             );
 
         $response
@@ -124,9 +207,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_password_without_letters_is_rejected()
+    public function test_that_new_password_without_letters_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -134,7 +219,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => '12345678', 'new_password_confirmation' => '12345678' ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => '12345678',
+                                    'new_password_confirmation' => '12345678'
+                                ]
                             );
 
         $response
@@ -148,9 +237,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_password_without_mixed_case_is_rejected()
+    public function test_that_new_password_without_mixed_case_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -158,7 +249,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => 'abcdefgh', 'new_password_confirmation' => 'abcdefgh' ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => 'abcdefgh',
+                                    'new_password_confirmation' => 'abcdefgh'
+                                ]
                             );
 
         $response
@@ -172,9 +267,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_password_without_numbers_is_rejected()
+    public function test_that_new_password_without_numbers_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -182,7 +279,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => 'ABCdefgh', 'new_password_confirmation' => 'ABCdefgh' ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => 'ABCdefgh',
+                                    'new_password_confirmation' => 'ABCdefgh'
+                                ]
                             );
 
         $response
@@ -196,9 +297,11 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_password_without_symbols_is_rejected()
+    public function test_that_new_password_without_symbols_is_rejected()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -206,7 +309,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => 'ABCdef78', 'new_password_confirmation' => 'ABCdef78' ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => 'ABCdef78',
+                                    'new_password_confirmation' => 'ABCdef78'
+                                ]
                             );
 
         $response
@@ -220,10 +327,13 @@ class ManageAccountTest extends TestCase
             );
     }
 
-    public function test_that_strong_password_is_accepted()
+    public function test_that_new_strong_password_is_accepted()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
-        $password = 'ABCd@f78';
+        $user = User::firstOrNew([ 'email' => 'a@b.c' ]);
+        $oldPassword = 'password';
+        $user->setPassword($oldPassword);
+
+        $newPassword = 'ABCd@f78';
  
         $response = $this->actingAs($user)
                             ->withHeaders([ 
@@ -231,7 +341,11 @@ class ManageAccountTest extends TestCase
                                 'Accept' => 'application/json',
                             ])->post(
                                 '/change-password',
-                                [ 'new_password' => $password, 'new_password_confirmation' => $password ]
+                                [
+                                    'old_password' => $oldPassword,
+                                    'new_password' => $newPassword,
+                                    'new_password_confirmation' => $newPassword
+                                ]
                             );
 
         $response
@@ -239,7 +353,7 @@ class ManageAccountTest extends TestCase
 
         $this->assertCredentials([
             'email' => 'a@b.c',
-            'password' => $password,
+            'password' => $newPassword,
         ]);
     }
 }
