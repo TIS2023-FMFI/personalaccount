@@ -33,5 +33,7 @@
             @include('modals.first_password')
             @include('modals.operation')
             @include('modals.create_operation')
+            @include('modals.edit_operation')
             @include('modals.check_operation')
             @include('modals.delete_operation')
+            @include('modals.add_report')

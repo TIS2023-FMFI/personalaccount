@@ -1,8 +1,8 @@
-<div id="create-operation-modal" class="modal-box">
+<div id="edit-operation-modal" class="modal-box">
 
   <div class="modal">
     <span class="close-modal"><i class="bi bi-x"></i></span>
-    <h2>Pridať operáciu</h2>
+    <h2>Upraviť operáciu</h2>
     <div>
       <input class="operation_type" name="operation_type" type="radio" value="income"><label>Príjem</label>
       <input class="operation_type" name="operation_type" type="radio" value="expense"><label>Výdavok</label>

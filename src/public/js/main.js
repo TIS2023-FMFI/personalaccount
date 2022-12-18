@@ -83,7 +83,6 @@ $(document).ready(function(){
                 $("#operation_choice").val("default_opt")
                 break;
         } 
-
     });
 
     $(".bi-check2-all").click(function(){
@@ -105,4 +104,13 @@ $(document).ready(function(){
     $('.cancel').click(function(){
         $(".modal-box").css("display", "none");
     })
+
+    $("#add_sap_report").click(function(){
+        $("#add-report-modal").css("display","flex")
+    })
+
+    $(".bi-pencil").click(function(){
+        $("#edit-operation-modal").css("display", "flex");
+    })
+
 })

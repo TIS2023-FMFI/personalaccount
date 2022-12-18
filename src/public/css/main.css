@@ -434,6 +434,7 @@ input:focus{
 }
 #create-operation-modal div label{
     margin-right: 25px;
+    font-size: 18px;
 }
 #create-operation-modal .modal #operation_choice{
     border: 1px solid var(--primary);
@@ -457,4 +458,34 @@ input:focus{
 }
 #delete-operation-modal .modal p{
     font-size: 25px;
+}
+#add-report-modal .modal{
+    align-items: flex-start;
+    overflow: hidden;
+}
+#add-report-modal .modal h2{
+    align-self: center;
+}
+#edit-operation-modal .modal{
+    align-items: flex-start;
+    overflow: hidden;
+}
+#edit-operation-modal .modal div{
+    display: flex;
+    flex-direction: row;
+}
+#edit-operation-modal .modal h2{
+    align-self: center;
+}
+#edit-operation-modal div label{
+    margin-right: 25px;
+    font-size: 18px;
+}
+#edit-operation-modal .modal #operation_choice{
+    border: 1px solid var(--primary);
+    background-color: white;
+    font-size: 18px;
+    padding: 10px 10px;
+    border-radius: 15px;
+    margin: 10px 0px;
 }
