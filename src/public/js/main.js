@@ -61,4 +61,48 @@ $(document).ready(function(){
             title: 'Heslo sa nepodarilo zmeniť'
         })
     });
+
+    $(".bi-info-circle").click(function(){
+        $("#operation-modal").css("display", "flex");
+    })
+
+    $("#create_operation").click(function(){
+        $("#create-operation-modal").css("display", "flex");
+    })
+
+    $(".operation_type").change(function(){
+        switch($(this).val()){
+            case 'income':
+                $(".expense_opt").css("display","none")
+                $(".income_opt").css("display","flex")
+                $("#operation_choice").val("default_opt")
+                break;
+            case 'expense':
+                $(".income_opt").css("display","none")
+                $(".expense_opt").css("display","flex")
+                $("#operation_choice").val("default_opt")
+                break;
+        } 
+
+    });
+
+    $(".bi-check2-all").click(function(){
+        $("#check-operation-modal").css("display", "flex");
+    })
+
+    $(".bi-trash3").click(function(){
+        $("#delete-operation-modal").css("display", "flex");
+    })
+
+    $(".toggle-button").change(function(){
+        if($(this).attr('checked')){
+            window.location.href = '/account';
+        }else{
+            window.location.href = '/sapReports';
+        }
+    })
+
+    $('.cancel').click(function(){
+        $(".modal-box").css("display", "none");
+    })
 })

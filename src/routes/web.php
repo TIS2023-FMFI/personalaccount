@@ -32,3 +32,7 @@ Route::get('/forgottenPassword', function () {
 Route::get('/firstLogin', function () {
     return view('first_login');
 });
+
+Route::get('/sapReports', function () {
+    return view('sap_reports');
+});

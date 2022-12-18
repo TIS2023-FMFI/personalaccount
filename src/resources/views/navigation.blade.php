@@ -31,3 +31,7 @@
             @include('modals.create_user')
             @include('modals.change_password')
             @include('modals.first_password')
+            @include('modals.operation')
+            @include('modals.create_operation')
+            @include('modals.check_operation')
+            @include('modals.delete_operation')

@@ -383,7 +383,7 @@ input:focus{
     margin-bottom: 20px;
     width: 70%;
 }
-.modal button {
+.modal button{
     border: 1px solid var(--primary);
     background-color: white;
     font-size: 18px;
@@ -413,4 +413,48 @@ input:focus{
 }
 .login-box .modal-box .close-modal {
     display: none;
+}
+#operation-modal .modal{
+    overflow: hidden;
+    align-items: flex-start;
+}
+#operation-modal .modal h2, button{
+    align-self: center;
+}
+#create-operation-modal .modal{
+    align-items: flex-start;
+    overflow: hidden;
+}
+#create-operation-modal .modal div{
+    display: flex;
+    flex-direction: row;
+}
+#create-operation-modal .modal h2{
+    align-self: center;
+}
+#create-operation-modal div label{
+    margin-right: 25px;
+}
+#create-operation-modal .modal #operation_choice{
+    border: 1px solid var(--primary);
+    background-color: white;
+    font-size: 18px;
+    padding: 10px 10px;
+    border-radius: 15px;
+    margin: 10px 0px;
+}
+#check-operation-modal .modal{
+    overflow: hidden;
+}
+#check-operation-modal .modal p{
+    font-size: 25px;
+}
+.modal div .cancel{
+    background-color: #ffd1d1;
+}
+#delete-operation-modal .modal{
+    overflow: hidden;
+}
+#delete-operation-modal .modal p{
+    font-size: 25px;
 }
