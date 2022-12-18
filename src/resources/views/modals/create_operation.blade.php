@@ -4,9 +4,10 @@
     <span class="close-modal"><i class="bi bi-x"></i></span>
     <h2>Pridať operáciu</h2>
     <div>
-      <input class="operation_type" name="operation_type" type="radio" value="income"><label>Príjem</label>
-      <input class="operation_type" name="operation_type" type="radio" value="expense"><label>Výdavok</label>
-
+      <input class="operation_type" id="income_choice" name="operation_type" type="radio" value="income">
+      <label for="income_choice"><i>Príjem</i></label>
+      <input class="operation_type" id="expense_choice" name="operation_type" type="radio" value="expense">
+      <label for="expense_choice"><i>Výdavok</i></label>
     </div>
     <select id="operation_choice" name="typ">
       <option value="default_opt">Vyberte typ operácie</option>

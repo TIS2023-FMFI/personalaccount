@@ -354,7 +354,6 @@ input:focus{
     width: 40%;
     border-radius: 15px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    overflow: scroll;
     max-height: 90%;
     display: flex;
     flex-direction: column;
@@ -415,15 +414,10 @@ input:focus{
     display: none;
 }
 #operation-modal .modal{
-    overflow: hidden;
     align-items: flex-start;
 }
 #operation-modal .modal h2, button{
     align-self: center;
-}
-#create-operation-modal .modal{
-    align-items: flex-start;
-    overflow: hidden;
 }
 #create-operation-modal .modal div{
     display: flex;
@@ -444,48 +438,53 @@ input:focus{
     border-radius: 15px;
     margin: 10px 0px;
 }
-#check-operation-modal .modal{
-    overflow: hidden;
-}
 #check-operation-modal .modal p{
     font-size: 25px;
 }
 .modal div .cancel{
-    background-color: #ffd1d1;
-}
-#delete-operation-modal .modal{
-    overflow: hidden;
+    border-color: red;
+    color: red;
 }
 #delete-operation-modal .modal p{
     font-size: 25px;
-}
-#add-report-modal .modal{
-    align-items: flex-start;
-    overflow: hidden;
-}
-#add-report-modal .modal h2{
-    align-self: center;
-}
-#edit-operation-modal .modal{
-    align-items: flex-start;
-    overflow: hidden;
 }
 #edit-operation-modal .modal div{
     display: flex;
     flex-direction: row;
 }
-#edit-operation-modal .modal h2{
-    align-self: center;
+#edit-operation-modal .modal div{
+    display: flex;
+    flex-direction: row;
+}
+#edit_operation_choice{
+    border: 1px solid var(--primary);
+    background-color: white;
+    font-size: 18px;
+    border-radius: 15px;
+    padding: 10px 20px;
+    margin: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("/images/caret-down.svg");
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 8px) center;  
 }
 #edit-operation-modal div label{
     margin-right: 25px;
     font-size: 18px;
 }
-#edit-operation-modal .modal #operation_choice{
+#operation_choice{
     border: 1px solid var(--primary);
     background-color: white;
     font-size: 18px;
-    padding: 10px 10px;
     border-radius: 15px;
-    margin: 10px 0px;
+    padding: 10px 20px;
+    margin: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("/images/caret-down.svg");
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 8px) center;  
 }
