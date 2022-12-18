@@ -13,8 +13,23 @@ return [
     |
     */
 
+    'success' => 'Welcome, you successfully logged in.',
     'failed' => 'These credentials do not match our records.',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+
+    'login-link' => [
+        'generation' => [
+            'failed' => 'We were unable to generate a login token, please, try again later.',
+        ],
+        'sending' => [
+            'success' => 'We have successfully emailed you a login link.',
+            'failed' => 'We were unable to email you a login link, please, try again later.',
+        ]
+    ],
+    'register' => [
+        'success' => 'Successfully registered a new user.',
+        'failed' => 'We were unable to register a new user, please, try again later.',
+    ],
 
 ];

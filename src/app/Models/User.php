@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
 
+/**
+ * A representation of an instance in the "users" table.
+ */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +19,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
     ];
@@ -30,15 +30,30 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Indicates if the model should be timestamped, using created_at and updated_at columns.
+     * 
+     * @var mixed
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public $timestamps = false;
+
+    /**
+     * Set the user's password.
+     * 
+     * Note: This method also clears the password_change_required flag.
+     * 
+     * @param mixed $password
+     * the plain-text password that should be set as the new password
+     * @return bool
+     * true on success, false otherwise
+     */
+    public function setPassword($password)
+    {
+        $this->password = Hash::make($password);
+        $this->password_change_required = false;
+
+        return $this->save();
+    }
 }
