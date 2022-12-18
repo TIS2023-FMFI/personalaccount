@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AccountManagement\ManageAccountController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,26 +17,53 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('finances.index');
+/**
+ * Authentication
+ */
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'show'])
+        ->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+
+    Route::get('/login/{token}', [LoginController::class, 'loginUsingToken'])
+        ->name('login-using-token');
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'show'])
+        ->name('forgot-password');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendLoginLink'])
+        ->middleware(['ajax', 'jsonify']);
 });
 
-Route::get('/account', function () {
-    return view('finances.account');
-});
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
 
-Route::get('/login', function () {
-    return view('auth.login');
-});
+Route::post('/register', [RegisterController::class, 'register'])
+    ->middleware(['ajax', 'jsonify']);
 
-Route::get('/forgot-password', function () {
-    return view('auth.forgot_password');
-});
 
-Route::get('/first-user', function () {
-    return view('auth.first_user');
-});
+/**
+ * Account Management
+ */
 
-Route::get('/sap-reports', function () {
-    return view('finances.sap_reports');
+Route::post('/change-password', [ManageAccountController::class, 'changePassword'])
+    ->middleware(['auth', 'auth.session', 'ajax', 'jsonify']);
+
+
+/**
+ * Financial Accounts
+ */
+
+Route::middleware(['auth', 'auth.session'])->group(function () {
+    Route::get('/', function () {
+        return view('index');
+    });
+    
+    Route::get('/account', function () {
+        return view('account');
+    });
+    
+    Route::get('/sap-reports', function () {
+        return view('finances.sap_reports');
+    });
 });
