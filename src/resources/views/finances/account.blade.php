@@ -1,4 +1,4 @@
-@include('navigation')
+@include('common/navigation')
 
 <div class="flex-between">
     <div>
@@ -114,4 +114,4 @@
 </div>
 
 
-@include('footer')
+@include('common/footer')
