@@ -22,13 +22,13 @@ Route::get('/account', function () {
 });
 
 Route::get('/login', function () {
-    return view('login');
+    return view('auth.login');
 });
 
 Route::get('/forgottenPassword', function () {
-    return view('forgotten_password');
+    return view('auth.forgot_password');
 });
 
-Route::get('/firstLogin', function () {
-    return view('first_login');
+Route::get('/firstUser', function () {
+    return view('auth.first_user');
 });

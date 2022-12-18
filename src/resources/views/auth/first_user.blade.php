@@ -12,6 +12,6 @@
         <title>Prihlásenie</title>
     </head>
     <body class="login-box">
-        @include('modals.create_user')
+        @include('auth.create_user')
     </body>
 </html>

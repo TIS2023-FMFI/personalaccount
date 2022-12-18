@@ -28,6 +28,6 @@
         </nav>
         <div class="content">
 
-            @include('modals.create_user')
-            @include('modals.change_password')
-            @include('modals.first_password')
+            @include('auth.create_user')
+            @include('auth.change_password')
+            @include('auth.first_password')
