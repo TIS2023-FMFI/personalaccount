@@ -1,4 +1,4 @@
-@include('common/navigation')
+@include('common.navigation')
 
 <div class="flex-between">
     <div>
@@ -74,4 +74,4 @@
 </table>
 <div class="pagination">1 <b>2</b> .. 10</div>
 
-@include('common/footer')
+@include('common.footer')

@@ -28,12 +28,11 @@
         </nav>
         <div class="content">
 
-            @include('auth/modals.create_user')
-            @include('auth/modals.change_password')
-            @include('auth/modals.first_password')
-            @include('finances/modals.operation')
-            @include('finances/modals.create_operation')
-            @include('finances/modals.edit_operation')
-            @include('finances/modals.check_operation')
-            @include('finances/modals.delete_operation')
-            @include('finances/modals.add_report')
+            @include('auth.modals.create_user')
+            @include('auth.modals.change_password')
+            @include('finances.modals.operation')
+            @include('finances.modals.create_operation')
+            @include('finances.modals.edit_operation')
+            @include('finances.modals.check_operation')
+            @include('finances.modals.delete_operation')
+            @include('finances.modals.add_report')

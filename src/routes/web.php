@@ -14,25 +14,25 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('finances/index');
+    return view('finances.index');
 });
 
 Route::get('/account', function () {
-    return view('finances/account');
+    return view('finances.account');
 });
 
 Route::get('/login', function () {
-    return view('auth/login');
+    return view('auth.login');
 });
 
-Route::get('/forgottenPassword', function () {
-    return view('auth/forgotten_password');
+Route::get('/forgot-password', function () {
+    return view('auth.forgot_password');
 });
 
-Route::get('/firstLogin', function () {
-    return view('auth/first_login');
+Route::get('/first-user', function () {
+    return view('auth.first_user');
 });
 
-Route::get('/sapReports', function () {
-    return view('finances/sap_reports');
+Route::get('/sap-reports', function () {
+    return view('finances.sap_reports');
 });

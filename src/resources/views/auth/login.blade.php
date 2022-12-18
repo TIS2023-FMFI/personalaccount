@@ -18,7 +18,7 @@
                 <input type="text" placeholder="E-mailová adresa">
                 <input type="password" placeholder="Prihlasovacie heslo">
                 <button type="button" class="login-button">Prihlásiť sa</button>
-                <a href="/forgottenPassword">Zabudli ste heslo?</a>
+                <a href="/forgot-password">Zabudli ste heslo?</a>
             </div>
         </div>
     </body>

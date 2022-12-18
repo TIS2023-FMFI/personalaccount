@@ -97,7 +97,7 @@ $(document).ready(function(){
         if($(this).attr('checked')){
             window.location.href = '/account';
         }else{
-            window.location.href = '/sapReports';
+            window.location.href = '/sap-reports';
         }
     })
 
