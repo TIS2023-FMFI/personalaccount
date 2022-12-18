@@ -1,0 +1,278 @@
+:root {
+    --primary: rgb(29, 123, 238);
+}
+* {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+html, body {
+    margin: 0;
+    position: relative;
+    min-height: 100vh;
+}
+h1 {
+    padding-left: 50px;
+    font-weight: 100;
+}
+h2 {
+    font-weight: 100;
+}
+nav {
+    background-color: var(--primary);
+    display: flex;
+    padding-left: 20px;
+    justify-content: space-between;
+    color: white;
+}
+nav div:first-child {
+    display: flex;
+    align-items: center;
+    font-size: 28px;
+}
+nav div:first-child a {
+    margin: 0;
+    padding-left: 10px;
+    color: white;
+    text-decoration: none;
+}
+.content {
+    padding-bottom: 30px;
+}
+.dropbtn {
+    background-color: var(--primary);
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+    border-radius: 0 0 0 15px;
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content a:last-child {
+    border-radius: 0 0 0 15px;
+}
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.accounts_box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.account {
+    width: 27%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 300px;
+    justify-content: center;
+    background-color: #f1f1f1;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 15px;
+    margin-bottom: 50px;
+}
+.account h2 {
+    text-align: center;
+    margin: 20px;
+}
+.account p {
+    text-align: center;
+    margin: 16px 20px;
+}
+.account:hover {
+    cursor: pointer;
+    background-color: #e8e8e8;
+}
+.add_account_button {
+    width: 30%;
+    display: flex;
+    align-items: center;
+    height: 300px;
+    justify-content: center;
+}
+.add_account_button i {
+    font-size: 90px;
+    color: lightgray;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 28px;
+    margin: 0 10px;
+}
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #ccc;
+}
+input:checked + .slider:before {
+    -webkit-transform: translateX(31px);
+    -ms-transform: translateX(31px);
+    transform: translateX(31px);
+}
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 50px;
+}
+.flex-between h1 {
+    padding-left: 0px;
+}
+.flex-between .switch {
+    margin-top: 20px;
+}
+.switch-box {
+    display: flex;
+    align-items: flex-end;
+    height: min-content;
+}
+.switch-box p {
+    margin: 0;
+    padding-bottom: 5px;
+}
+table {
+    width: -webkit-fill-available;
+    margin: 0 50px;
+    background-color: #f1f1f1;
+    border-radius: 15px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-collapse: collapse;
+}
+table th {
+    text-align: left;
+    padding: 15px 10px;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 100;
+}
+table th:first-child {
+    border-radius: 15px 0 0 0;
+}
+table th:last-child {
+    border-radius: 0 15px 0 0;
+}
+table td {
+    padding: 10px;
+}
+table tr:nth-child(odd) {
+    background-color: #e6e6e6;
+}
+table tr td:last-child {
+    width: 100px;
+}
+table td a {
+    color: var(--primary);
+    text-decoration: none;
+    padding: 0 5px;
+}
+table td a:hover {
+    opacity: 0.7;
+}
+.filter-box {
+    display: flex;
+    margin: 50px 50px 20px 50px;
+    justify-content: space-between;
+}
+.filter-box button {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 1px solid var(--primary);
+    background-color: white;
+    color: var(--primary);
+    font-size: 16px;
+}
+.filter-box button:hover {
+    cursor: pointer;
+    opacity: 0.7;
+}
+.filter-box div:first-child {
+    display: flex;
+    align-items: flex-end;
+}
+.filter-box div:first-child input {
+    border: none;
+    border-bottom: 2px solid var(--primary);
+    font-size: 16px;
+    padding: 5px 10px;
+    margin: 0 30px 0 10px;
+}
+.pagination {
+    text-align: center;
+    color: gray;
+    margin: 20px 0 0 0;
+}
+footer {
+    background-color: lightgrey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    font-size: 13px;
+}
+.table-sum {
+    text-align: right;
+    margin: 0 50px 20px 50px;
+}
+.table-sum #income, #outcome {
+    font-size: 15px;
+    margin: 0;
+}
+.table-sum #total {
+    font-size: 17px;
+    margin: 0;
+}
+.add_account_button i:hover {
+    cursor: pointer;
+    color: #bebebe;
+}
