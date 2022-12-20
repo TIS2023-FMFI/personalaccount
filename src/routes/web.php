@@ -69,5 +69,3 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     });    
 
 });
-
-

@@ -12,10 +12,10 @@
         <title>ERROR 404</title>
     </head>
     <body>
-        <div class="error_div">
-            <span>ERROR 404:</span>
-            <span>Táto stránka neexistuje alebo bola presunutá!</span>
-    
+        <div class="login-box">
+            <div class="error_div">
+                <span>Táto stránka neexistuje alebo bola presunutá!</span>
+            </div>
         </div>
     </body>
 </html>

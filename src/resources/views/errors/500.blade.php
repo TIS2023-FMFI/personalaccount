@@ -12,10 +12,10 @@
         <title>ERROR 500</title>
     </head>
     <body>
-        <div class="error_div">
-            <span>500 Internal Server Error:</span>
-            <span>Interná chyba servera alebo nesprávna konfigurácia a vašu žiadosť sa nepodarilo dokončiť.</span>
+        <div class="login-box">
+            <div class="error_div">
+                <span>Interná chyba servera alebo nesprávna konfigurácia a vašu žiadosť sa nepodarilo dokončiť.</span>
+            </div>
         </div>
-
     </body>
 </html>
