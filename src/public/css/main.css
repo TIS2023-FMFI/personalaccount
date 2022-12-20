@@ -488,3 +488,22 @@ input:focus{
     background-repeat: no-repeat;
     background-position: calc(100% - 8px) center;  
 }
+.error_div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+.error_div span{
+    color: var(--primary);
+    font-size: xx-large;
+    text-align: center;
+    font-weight: bold;
+
+}
