@@ -14,7 +14,7 @@
     <body>
         <div class="login-box">
             <div class="error_div">
-                <span>Zadali ste nesprávny prihlasovací token!</span>
+                <span>Neplatný prihlasovací token!</span>
             </div>
         </div>
     </body>
