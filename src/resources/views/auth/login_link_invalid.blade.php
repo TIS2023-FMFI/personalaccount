@@ -12,9 +12,10 @@
         <title>Invalid Token</title>
     </head>
     <body>
-        <div class="error_div">
-            <span>498 Invalid Token:</span>
-            <span>Zadali ste nesprávny prihlasovací token!</span>
+        <div class="login-box">
+            <div class="error_div">
+                <span>Neplatný prihlasovací token!</span>
+            </div>
         </div>
     </body>
 </html>

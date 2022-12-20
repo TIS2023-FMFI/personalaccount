@@ -512,3 +512,10 @@ input:focus{
     text-align: center;
     font-weight: bold;
 }
+.align-right {
+    text-align: right;
+    padding-right: 40px;
+}
+.w-100 {
+    width: 100px;
+}
