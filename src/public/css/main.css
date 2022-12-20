@@ -499,6 +499,7 @@ input:focus{
     transform: translateY(-50%);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
+    fe_wrong_login_link
     background-color: white;
     border-radius: 15px;
     padding: 40px;
@@ -506,8 +507,8 @@ input:focus{
     width: 40%;
 }
 .error_div span{
-    color: black;
-    font-size: x-large;
+    color: var(--primary);
+    font-size: xx-large;
     text-align: center;
     font-weight: bold;
 }
