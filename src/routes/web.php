@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AccountManagement\ManageAccountController;
+use App\Http\Controllers\FinancialAccounts\FinancialAccountsOverviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,14 +56,17 @@ Route::post('/change-password', [ManageAccountController::class, 'changePassword
  */
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
-    Route::get('/', function () {
-        return view('index');
-    });
-    
+
+    Route::get('/', [FinancialAccountsOverviewController::class, 'show'])
+        ->name('accounts-overview');
+
+    Route::post('/create_account', [FinancialAccountsOverviewController::class, 'createFinancialAccount'])
+        ->middleware(['ajax', 'jsonify']);
+
     Route::get('/account', function () {
         return view('account');
     });
-    
+
     Route::get('/sap-reports', function () {
         return view('finances.sap_reports');
     });

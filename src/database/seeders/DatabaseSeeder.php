@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\FinancialOperation;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,6 +19,12 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\User::factory()->create([
             'email' => 'a@b.c',
+        ]);
+
+        $this->call([
+            AccountSeeder::class,
+            OperationTypeSeeder::class,
+            FinancialOperationSeeder::class,
         ]);
     }
 }
