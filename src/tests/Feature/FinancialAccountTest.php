@@ -74,4 +74,44 @@ class FinancialAccountTest extends TestCase
         $this->assertCount(1, $user->accounts);
     }
 
+    public function test_correct_view(){
+
+        $user = User::firstOrCreate(['email' => 'a@b.c']);
+        $response = $this->actingAs($user)->get('/');
+        $response
+            ->assertStatus(200)
+            ->assertViewIs('finances.index');
+    }
+
+    public function test_correct_view_data(){
+
+        $user = User::create([ 'email' => 'new@b.c' ]);
+
+        $account1 = Account::factory()->create(['user_id' => $user]);
+        $account2 = Account::factory()->create(['user_id' => $user]);
+
+        $gain = OperationType::factory()->create(['expense' => '0']);
+        $expense = OperationType::factory()->create(['expense' => '1']);
+
+        FinancialOperation::factory()->create([
+            'account_id' => $account1,
+            'operation_type_id' => $gain,
+            'sum' => 10]);
+        FinancialOperation::factory()->create([
+            'account_id' => $account2,
+            'operation_type_id' => $expense,
+            'sum' => 10]);
+
+        $response = $this->actingAs($user)->get('/');
+        $response
+            ->assertStatus(200)
+            ->assertViewIs('finances.index');
+
+        $data = $response->viewData('accounts');
+
+        $this->assertCount(2,$data);
+        $this->assertEquals(10,$data[0]->getBalance());
+        $this->assertEquals(-10,$data[1]->getBalance());
+    }
+
 }
