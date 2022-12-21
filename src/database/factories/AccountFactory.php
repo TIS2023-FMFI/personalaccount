@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,10 @@ class AccountFactory extends Factory
      */
     public function definition()
     {
+        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+
         return [
-            'user_id' => 1,
+            'user_id' => $user->id,
             'title' => fake()->text(20),
             'sap_id' => fake()->uuid()
         ];

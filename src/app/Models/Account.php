@@ -23,7 +23,6 @@ class Account extends Model
      */
     protected $guarded = ['id'];
 
-
     /**
      * Total sum of the operations for this account.
      *
@@ -49,8 +48,8 @@ class Account extends Model
     public function calculateBalance()
     {
         $balance = 0.0;
-        foreach ($this->financialOperations() as $operation){
-            $sum = $operation->sum();
+        foreach ($this->financialOperations as $operation){
+            $sum = $operation->sum;
             if ($operation->isExpense()) $sum *= -1;
             $balance += $sum;
         }

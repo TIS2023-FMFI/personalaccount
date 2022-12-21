@@ -14,7 +14,7 @@ class CreateFinancialAccountRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        return true;
     }
 
     /**
@@ -26,7 +26,6 @@ class CreateFinancialAccountRequest extends FormRequest
     {
         return [
             'title' => ['required'],
-            //TODO - constrain the format to match the actual IDs?
             'sap_id' => ['required']
         ];
     }

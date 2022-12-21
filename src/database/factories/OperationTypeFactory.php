@@ -17,7 +17,7 @@ class OperationTypeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->text(10),
+            'name' => fake()->unique()->text(10),
             'expense' => fake()->boolean()
         ];
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\FinancialAccounts;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FinancialAccounts\CreateFinancialAccountRequest;
 use App\Models\Account;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class FinancialAccountsOverviewController extends Controller
@@ -16,8 +17,7 @@ class FinancialAccountsOverviewController extends Controller
      */
     public function show(){
 
-        $id = Auth::id();
-        $accounts = Account::where('user_id', $id)->with('operations.operationType')->get();
+        $accounts = Auth::user()->accounts;
         foreach ($accounts as $account){
             $account->calculateBalance();
         }
@@ -48,7 +48,6 @@ class FinancialAccountsOverviewController extends Controller
 
         if ($account->save()) return response(trans('finance_accounts.new.success'), 201);
         return response(trans('finance_accounts.new.failed'), 500);
-
     }
 
 }

@@ -18,16 +18,18 @@ class FinancialOperationFactory extends Factory
      */
     public function definition()
     {
+        $checked = fake()->boolean(30);
+
         return [
         'account_id' => mt_rand(1,AccountSeeder::$accountsCount),
         'title' => fake()->text(20),
-        'date' => fake()->date,
+        'date' => fake()->date(),
         'operation_type_id' => mt_rand(1,OperationTypeSeeder::$operationTypesCount),
         'subject' => fake()->name,
-        'sum' => fake()->randomFloat(2,1),
-        'attachment' => fake()->filePath(),
-        'checked' => fake()->boolean(30),
-        'sap_id' => fake()->uuid
+        'sum' => fake()->randomFloat(2,1,1000),
+        'attachment' => fake()->unique()->filePath(),
+        'checked' => $checked,
+        'sap_id' => $checked? fake()->randomNumber(5) : null
         ];
     }
 }

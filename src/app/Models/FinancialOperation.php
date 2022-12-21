@@ -50,6 +50,6 @@ class FinancialOperation extends Model
      */
     public function isExpense(): bool
     {
-        return $this->operationType()->expense == 1;
+        return $this->operationType->expense == 1;
     }
 }
