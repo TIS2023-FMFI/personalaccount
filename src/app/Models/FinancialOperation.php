@@ -24,6 +24,13 @@ class FinancialOperation extends Model
     protected $guarded = ['id'];
 
     /**
+     * Array of related tables which should be eager-loaded from the DB along with this model.
+     *
+     * @var string[]
+     */
+    protected $with = ['operationType'];
+
+    /**
      * Returns the account to which this operation belongs.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -50,6 +57,6 @@ class FinancialOperation extends Model
      */
     public function isExpense(): bool
     {
-        return $this->operationType->expense == 1;
+        return $this->operationType->expense;
     }
 }

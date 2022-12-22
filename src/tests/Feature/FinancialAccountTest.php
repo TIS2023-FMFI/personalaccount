@@ -90,8 +90,8 @@ class FinancialAccountTest extends TestCase
         $account1 = Account::factory()->create(['user_id' => $user]);
         $account2 = Account::factory()->create(['user_id' => $user]);
 
-        $gain = OperationType::factory()->create(['expense' => '0']);
-        $expense = OperationType::factory()->create(['expense' => '1']);
+        $gain = OperationType::factory()->create(['name' => 'testGain', 'expense' => '0']);
+        $expense = OperationType::factory()->create(['name' => 'testExpense', 'expense' => '1']);
 
         FinancialOperation::factory()->create([
             'account_id' => $account1,

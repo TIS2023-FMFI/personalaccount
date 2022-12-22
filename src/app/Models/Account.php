@@ -24,6 +24,13 @@ class Account extends Model
     protected $guarded = ['id'];
 
     /**
+     * Array of related tables which should be eager-loaded from the DB along with this model.
+     *
+     * @var string[]
+     */
+    protected $with = ['financialOperations'];
+
+    /**
      * Total sum of the operations for this account.
      *
      * @var float
@@ -41,11 +48,11 @@ class Account extends Model
     }
 
     /**
-     * Calculates the balance and sets the balance variable.
+     * Returns the balance of this account.
      *
-     * @return void
+     * @return float
      */
-    public function calculateBalance()
+    public function getBalance() : float
     {
         $balance = 0.0;
         foreach ($this->financialOperations as $operation){
@@ -53,17 +60,7 @@ class Account extends Model
             if ($operation->isExpense()) $sum *= -1;
             $balance += $sum;
         }
-        $this->balance = $balance;
-    }
-
-    /**
-     * Returns the balance
-     *
-     * @return float
-     */
-    public function getBalance(): float
-    {
-        return $this->balance;
+        return $balance;
     }
 
     /**
@@ -73,6 +70,6 @@ class Account extends Model
      */
     public function hasNegativeBalance(): bool
     {
-        return $this->balance < 0.0;
+        return $this->getBalance() < 0.0;
     }
 }

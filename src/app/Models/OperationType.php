@@ -22,14 +22,4 @@ class OperationType extends Model
      * @var string[]
      */
     protected $guarded = ['id'];
-
-    /**
-     * Returns a collection of the operations which have this type.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function financialOperations()
-    {
-        return $this->hasMany(FinancialOperation::class);
-    }
 }

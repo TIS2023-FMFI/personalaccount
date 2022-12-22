@@ -21,15 +21,15 @@ class FinancialOperationFactory extends Factory
         $checked = fake()->boolean(30);
 
         return [
-        'account_id' => mt_rand(1,AccountSeeder::$accountsCount),
-        'title' => fake()->text(20),
-        'date' => fake()->date(),
-        'operation_type_id' => mt_rand(1,OperationTypeSeeder::$operationTypesCount),
-        'subject' => fake()->name,
-        'sum' => fake()->randomFloat(2,1,1000),
-        'attachment' => fake()->unique()->filePath(),
-        'checked' => $checked,
-        'sap_id' => $checked? fake()->randomNumber(5) : null
+            'account_id' => mt_rand(1,AccountSeeder::$accountsCount),
+            'title' => fake()->text(20),
+            'date' => fake()->date(),
+            'operation_type_id' => mt_rand(1,OperationTypeSeeder::$operationTypesCount),
+            'subject' => fake()->name,
+            'sum' => fake()->randomFloat(2,1,1000),
+            'attachment' => fake()->unique()->filePath(),
+            'checked' => $checked,
+            'sap_id' => $checked? fake()->randomNumber(5) : null
         ];
     }
 }

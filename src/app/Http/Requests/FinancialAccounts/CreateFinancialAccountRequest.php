@@ -24,9 +24,10 @@ class CreateFinancialAccountRequest extends FormRequest
      */
     public function rules()
     {
+        //note - for the 'max' to work, double quotes are apparently necessary (or the pipe delimiter notation)
         return [
-            'title' => ['required'],
-            'sap_id' => ['required']
+            'title' => ['required', "max:255"],
+            'sap_id' => ['required', "max:255"]
         ];
     }
 }

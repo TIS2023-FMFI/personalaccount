@@ -15,15 +15,11 @@ class FinancialAccountsOverviewController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function show(){
+    public function show()
+    {
 
-        $accounts = Auth::user()->accounts;
-        foreach ($accounts as $account){
-            $account->calculateBalance();
-        }
-
-        return view("finances.index", [
-            "accounts" => $accounts
+        return view('finances.index', [
+            'accounts' => Auth::user()->accounts
         ]);
     }
 
@@ -33,20 +29,19 @@ class FinancialAccountsOverviewController extends Controller
      * @param \App\Http\Requests\FinancialAccounts\CreateFinancialAccountRequest $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function createFinancialAccount(CreateFinancialAccountRequest $request){
+    public function createFinancialAccount(CreateFinancialAccountRequest $request)
+    {
 
-        $user_id = Auth::id();
+        $user = Auth::user();
         $title = $request->validated('title');
         $sap_id = $request->validated('sap_id');
 
-        $account = new Account;
-        $account->fill([
-            'user_id' => $user_id,
+        $account = $user->accounts()->create([
             'title' => $title,
             'sap_id' => $sap_id
         ]);
 
-        if ($account->save()) return response(trans('finance_accounts.new.success'), 201);
+        if ($account->exists()) return response(trans('finance_accounts.new.success'), 201);
         return response(trans('finance_accounts.new.failed'), 500);
     }
 

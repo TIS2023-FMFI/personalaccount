@@ -61,12 +61,10 @@ class User extends Authenticatable
     /**
      * Returns all the accounts belonging to this user.
      *
-     * Their operations and corresponding operation types are fetched from the DB as well,
-     * as they are necessary to calculate tha balance of each account.
-     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function accounts(){
-        return $this->hasMany(Account::class)->with('financialOperations.operationType');
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
     }
 }
