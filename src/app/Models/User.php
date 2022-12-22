@@ -34,16 +34,16 @@ class User extends Authenticatable
 
     /**
      * Indicates if the model should be timestamped, using created_at and updated_at columns.
-     * 
+     *
      * @var mixed
      */
     public $timestamps = false;
 
     /**
      * Set the user's password.
-     * 
+     *
      * Note: This method also clears the password_change_required flag.
-     * 
+     *
      * @param mixed $password
      * the plain-text password that should be set as the new password
      * @return bool
@@ -55,5 +55,17 @@ class User extends Authenticatable
         $this->password_change_required = false;
 
         return $this->save();
+    }
+
+
+    /**
+     * Returns all the accounts belonging to this user.
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function accounts()
+    {
+        return $this->hasMany(Account::class)->with('financialOperations');
     }
 }
