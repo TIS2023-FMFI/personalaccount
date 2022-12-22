@@ -1,5 +1,6 @@
 $(document).ready(function(){
 
+    // Initialize Toast -->
     const Toast = Swal.mixin({
         toast: true,
         position: 'bottom-end',
@@ -11,19 +12,10 @@ $(document).ready(function(){
         toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
+    // <-- Initialize Toast
 
-    $(".account").click(function() {
-        window.location.href = '/account';
-    });
-
-    $(".close-modal").click(function() {
-        $(".modal-box").css("display", "none");
-    });
-
-    $(".change-pass").click(function() {
-        $("#change-pass-modal").css("display", "flex");
-    });
-
+    // Authorization forms -->
+    // Create user form -->
     $(".create-user").click(function() {
         $("#create-user-modal").css("display", "flex");
     });
@@ -49,8 +41,10 @@ $(document).ready(function(){
 
             $(".modal-box").css("display", "none");
 
-            $("#create-user-email").val("");
+            $.fn.createUserClearForm(true);
         }).fail(function(response) {
+            $.fn.createUserClearForm();
+
             let messages = jQuery.parseJSON(response.responseText);
             if(typeof messages.displayMessage != 'undefined') {
                 Toast.fire({
@@ -58,8 +52,34 @@ $(document).ready(function(){
                     title: messages.displayMessage
                 })
             }
-            //console.log(response.responseJSON.errors);
+            
+            if (typeof response.responseJSON != 'undefined') {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.email != 'undefined') {
+                    $("#create-user-email").css("border-color", "red");
+
+                    errors.email.forEach(e => {
+                        $("#create-user-email-errors").append("<p>" + e + "</p>");
+                    });
+                }
+            }
         })
+    });
+
+    $.fn.createUserClearForm = function(isDone = false){ 
+        if (isDone) {
+            $("#create-user-email").val("");
+        }
+
+        $("#create-user-email").css("border-color", "var(--primary)");
+        $("#create-user-email-errors").empty();
+    }
+    // <-- Create user form
+
+    // Change password form -->
+    $(".change-pass").click(function() {
+        $("#change-pass-modal").css("display", "flex");
     });
 
     $("#change-pass-button").click(function() {
@@ -88,10 +108,10 @@ $(document).ready(function(){
 
             $(".modal-box").css("display", "none");
 
-            $("#change-pass-old").val("");
-            $("#change-pass-new1").val("");
-            $("#change-pass-new2").val("");
+            $.fn.changePassClearForm(true);
         }).fail(function(response) {
+            $.fn.changePassClearForm();
+
             let messages = jQuery.parseJSON(response.responseText);
             if(typeof messages.displayMessage != 'undefined') {
                 Toast.fire({
@@ -99,10 +119,47 @@ $(document).ready(function(){
                     title: messages.displayMessage
                 })
             }
-            //console.log(response.responseJSON.errors);
+            
+            if (typeof response.responseJSON != 'undefined') {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.old_password != 'undefined') {
+                    $("#change-pass-old").css("border-color", "red");
+
+                    errors.old_password.forEach(e => {
+                        $("#change-pass-old-errors").append("<p>" + e + "</p>");
+                    });
+                }
+
+                if (typeof errors.new_password != 'undefined') {
+                    $("#change-pass-new1").css("border-color", "red");
+
+                    errors.new_password.forEach(e => {
+                        $("#change-pass-new1-errors").append("<p>" + e + "</p>");
+                    });
+                }
+            }
         })
     });
 
+    $.fn.changePassClearForm = function(isDone = false){ 
+        if (isDone) {
+            $("#change-pass-old").val("");
+            $("#change-pass-new1").val("");
+            $("#change-pass-new2").val("");
+        }
+
+        $("#change-pass-old").css("border-color", "var(--primary)");
+        $("#change-pass-new1").css("border-color", "var(--primary)");
+        $("#change-pass-new2").css("border-color", "var(--primary)");
+
+        $("#change-pass-old-errors").empty();
+        $("#change-pass-new1-errors").empty();
+        $("#change-pass-new2-errors").empty();
+    }
+    // <-- Change password form
+
+    // Forgotten password form -->
     $(".forgot-pass-button").click(function() {
         let email = $("#forgot-pass-email").val();
         let csrf = $(this).data("csrf");
@@ -122,8 +179,10 @@ $(document).ready(function(){
                 title: message.displayMessage
             })
 
-            $("#forgot-pass-email").val("");
+            $.fn.forgotPassClearForm(true);
         }).fail(function(response) {
+            $.fn.forgotPassClearForm();
+
             let messages = jQuery.parseJSON(response.responseText);
             if(typeof messages.displayMessage != 'undefined') {
                 Toast.fire({
@@ -131,8 +190,44 @@ $(document).ready(function(){
                     title: messages.displayMessage
                 })
             }
-            //console.log(response.responseJSON.errors);
+
+            if (typeof response.responseJSON != 'undefined') {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.email != 'undefined') {
+                    $("#forgot-pass-email").css("border-color", "red");
+
+                    errors.email.forEach(e => {
+                        $("#forgot-pass-email-errors").append("<p>" + e + "</p>");
+                    });
+                }
+            }
         })
+    });
+
+    $.fn.forgotPassClearForm = function(isDone = false){ 
+        if (isDone) {
+            $("#forgot-pass-email").val("");
+        }
+
+        $("#forgot-pass-email").css("border-color", "var(--primary)");
+        $("#forgot-pass-email-errors").empty();
+    }
+    // <-- Forgotten password form
+    // <-- Authorization forms
+
+    // Closing modals -->
+    $(".close-modal").click(function() {
+        $(".modal-box").css("display", "none");
+    });
+
+    $('.cancel').click(function(){
+        $(".modal-box").css("display", "none");
+    })
+    // <-- Closing modals
+
+    $(".account").click(function() {
+        window.location.href = '/account';
     });
 
     $(".bi-info-circle").click(function(){
@@ -172,10 +267,6 @@ $(document).ready(function(){
         }else{
             window.location.href = '/sap-reports';
         }
-    })
-
-    $('.cancel').click(function(){
-        $(".modal-box").css("display", "none");
     })
 
     $("#add_sap_report").click(function(){

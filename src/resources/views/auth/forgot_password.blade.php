@@ -15,9 +15,16 @@
     <body>
         <div class="login-box">
             <div class="login">
+                
                 <h1>Zabudnuté heslo</h1>
-                <input type="text" id="forgot-pass-email" placeholder="E-mailová adresa">
+
+                <div class="input-box">
+                    <input type="text" id="forgot-pass-email" placeholder="E-mailová adresa">
+                    <div class="error-box" id="forgot-pass-email-errors"></div>
+                </div>
+
                 <button type="button" data-csrf="{{ csrf_token() }}" class="forgot-pass-button">Odoslať</button>
+
             </div>
         </div>
     </body>

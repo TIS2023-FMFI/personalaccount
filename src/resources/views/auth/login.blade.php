@@ -15,13 +15,34 @@
     <body>
         <div class="login-box">
             <div class="login">
+
                 <h1>Prihlásenie</h1>
+
                 <form method="POST" action="/login">
                     @csrf
-                    <input type="text" name="email" placeholder="E-mailová adresa">
-                    <input type="password" name="password" placeholder="Prihlasovacie heslo">
+                    
+                    @if ($errors->has('email'))
+                        <div class="input-box">
+                            <input type="text" name="email" placeholder="E-mailová adresa" style="border-color: red;">
+                        </div>
+                        <div class="input-box">
+                            <input type="password" name="password" placeholder="Prihlasovacie heslo" style="border-color: red;">
+                            <div class="error-box">
+                                <p>{{ $errors->first('email') }}</p>
+                            </div>
+                        </div>
+                    @else
+                        <div class="input-box">
+                            <input type="text" name="email" placeholder="E-mailová adresa">
+                        </div>
+                        <div class="input-box">
+                            <input type="password" name="password" placeholder="Prihlasovacie heslo">
+                        </div>
+                    @endif
+
                     <button type="submit" class="login-button">Prihlásiť sa</button>
                     <a href="/forgot-password">Zabudli ste heslo?</a>
+
                 </form>
             </div>
         </div>
