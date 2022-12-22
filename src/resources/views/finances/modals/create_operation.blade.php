@@ -12,24 +12,24 @@
     <select id="operation_choice" name="typ">
       <option value="default_opt">Vyberte typ operácie</option>
 
-      <option class="expense_opt" value="" style="display: none;">Náklady na služobnú cestu</option>
-      <option class="expense_opt" value="" style="display: none;">Malý nákup</option>
-      <option class="expense_opt" value="" style="display: none;">Nákup na faktúru</option>
-      <option class="expense_opt" value="" style="display: none;">Nákup z Marquetu</option>
-      <option class="expense_opt" value="lending_to" style="display: none;">Pôžička pre niekoho</option>
+      <option class="expense_opt" value="">Náklady na služobnú cestu</option>
+      <option class="expense_opt" value="">Malý nákup</option>
+      <option class="expense_opt" value="">Nákup na faktúru</option>
+      <option class="expense_opt" value="">Nákup z Marquetu</option>
+      <option class="expense_opt" value="lending_to">Pôžička pre niekoho</option>
 
       <option class="income_opt" value="">Zo služby s faktúrou</option>
       <option class="income_opt" value="">Projektový grant</option>
       <option class="income_opt" value="lending_from">Pôžička od niekoho</option>
-      <option class="income_opt" value="return_of_lending" style="display: none;">Splatenie pôžičky od niekoho</option>
+      <option class="income_opt" value="return_of_lending">Splatenie pôžičky od niekoho</option>
 
     </select>
     <input type="text" placeholder="Názov">
     <input type="text" placeholder="Subjekt">
     <input type="text" placeholder="Suma">
     <input type="text" placeholder="Názov">
-    <label class="lending_opt" style="display: none;">Splatné do:</label>
-    <input class="lending_opt" style="display: none;" type="date" placeholder="dd.mm.yyyy">
+    <label class="lending_opt">Splatné do:</label>
+    <input class="lending_opt" type="date" placeholder="dd.mm.yyyy">
     <label>Doklad:</label>
     <input type="file" id="operation_file" name="" accept=".doc, .docx, .pdf">
 

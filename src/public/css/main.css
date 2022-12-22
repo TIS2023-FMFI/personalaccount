@@ -449,6 +449,9 @@ input:focus{
     margin-right: 25px;
     font-size: 18px;
 }
+.expense_opt, .lending_opt, .edit_lending_opt{
+    display: none;
+}
 #check-operation-modal .modal p{
     font-size: 25px;
     text-align: center;

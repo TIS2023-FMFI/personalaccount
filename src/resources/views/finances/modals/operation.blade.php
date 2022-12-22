@@ -10,7 +10,7 @@
     <p>Suma:</p>
     <p>Dátum vytvorenia:</p>
     <p>Splatné do:</p>
-    <p href="file:PATH_TO_FILE">Doklad na stiahnutie</p>
+    <a href="file:PATH_TO_FILE">Doklad na stiahnutie</a>
   </div>
 
 </div>
