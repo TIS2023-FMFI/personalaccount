@@ -24,20 +24,6 @@ class Account extends Model
     protected $guarded = ['id'];
 
     /**
-     * Array of related tables which should be eager-loaded from the DB along with this model.
-     *
-     * @var string[]
-     */
-    protected $with = ['financialOperations'];
-
-    /**
-     * Total sum of the operations for this account.
-     *
-     * @var float
-     */
-    private float $balance = 0.0;
-
-    /**
      * Returns a list of operations belonging to this account.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -54,22 +40,10 @@ class Account extends Model
      */
     public function getBalance() : float
     {
-        $balance = 0.0;
-        foreach ($this->financialOperations as $operation){
-            $sum = $operation->sum;
-            if ($operation->isExpense()) $sum *= -1;
-            $balance += $sum;
-        }
-        return $balance;
+        $incomes = $this->financialOperations()->incomes()->sum('sum');
+        $expenses = $this->financialOperations()->expenses()->sum('sum');
+
+        return round($incomes - $expenses, 3);
     }
 
-    /**
-     * Returns whether the balance of this account is less than zero
-     *
-     * @return bool
-     */
-    public function hasNegativeBalance(): bool
-    {
-        return $this->getBalance() < 0.0;
-    }
 }

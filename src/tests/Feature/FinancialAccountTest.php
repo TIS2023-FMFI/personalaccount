@@ -30,7 +30,7 @@ class FinancialAccountTest extends TestCase
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
             ])->post(
-                '/create_account',
+                '/create-account',
                 [
                     'title' => '',
                     'sap_id' => '',
@@ -56,7 +56,7 @@ class FinancialAccountTest extends TestCase
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
             ])->post(
-                '/create_account',
+                '/create-account',
                 [
                     'title' => 'title',
                     'sap_id' => 'ID-123',

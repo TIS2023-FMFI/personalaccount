@@ -4,8 +4,6 @@ namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FinancialAccounts\CreateFinancialAccountRequest;
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class FinancialAccountsOverviewController extends Controller
@@ -41,7 +39,7 @@ class FinancialAccountsOverviewController extends Controller
             'sap_id' => $sap_id
         ]);
 
-        if ($account->exists()) return response(trans('finance_accounts.new.success'), 201);
+        if ($account->exists) return response(trans('finance_accounts.new.success'), 201);
         return response(trans('finance_accounts.new.failed'), 500);
     }
 

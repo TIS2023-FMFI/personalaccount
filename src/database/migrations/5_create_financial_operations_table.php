@@ -20,8 +20,7 @@ return new class extends Migration
             $table->string('title');
             $table->date('date');
             $table->unsignedBigInteger('operation_type_id');
-            $table->foreign('operation_type_id')->references("id")->on("operation_types")
-                ->cascadeOnDelete();
+            $table->foreign('operation_type_id')->references("id")->on("operation_types")->cascadeOnDelete();
             $table->string('subject');
             $table->unsignedDecimal('sum',10,2);
             $table->string('attachment')->unique();

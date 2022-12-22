@@ -60,15 +60,15 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/', [FinancialAccountsOverviewController::class, 'show'])
         ->name('accounts-overview');
 
-    Route::post('/create_account', [FinancialAccountsOverviewController::class, 'createFinancialAccount'])
+    Route::post('/create-account', [FinancialAccountsOverviewController::class, 'createFinancialAccount'])
         ->middleware(['ajax', 'jsonify']);
-    
+
     Route::get('/account', function () {
         return view('finances.account');
     });
 
     Route::get('/sap-reports', function () {
         return view('finances.sap_reports');
-    });    
+    });
 
 });

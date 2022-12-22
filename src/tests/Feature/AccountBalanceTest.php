@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\OperationType;
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -30,7 +29,6 @@ class AccountBalanceTest extends TestCase
             'sum' => 10]);
 
         $this->assertCount(1, $account->financialOperations);
-        $this->assertFalse($account->hasNegativeBalance());
         $this->assertEquals(10,$account->getBalance());
     }
 
@@ -45,7 +43,6 @@ class AccountBalanceTest extends TestCase
             'sum' => 10]);
 
         $this->assertCount(1, $account->financialOperations);
-        $this->assertTrue($account->hasNegativeBalance());
         $this->assertEquals(-10,$account->getBalance());
     }
 
@@ -65,7 +62,6 @@ class AccountBalanceTest extends TestCase
             'sum' => 10]);
 
         $this->assertCount(2, $account->financialOperations);
-        $this->assertFalse($account->hasNegativeBalance());
         $this->assertEquals(0,$account->getBalance());
     }
 
@@ -89,7 +85,6 @@ class AccountBalanceTest extends TestCase
             'sum' => 385.95]);
 
         $this->assertCount(3, $account->financialOperations);
-        $this->assertTrue($account->hasNegativeBalance());
         $this->assertEquals(-136.45,$account->getBalance());
     }
 

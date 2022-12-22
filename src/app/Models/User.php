@@ -61,10 +61,11 @@ class User extends Authenticatable
     /**
      * Returns all the accounts belonging to this user.
      *
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function accounts()
     {
-        return $this->hasMany(Account::class);
+        return $this->hasMany(Account::class)->with('financialOperations');
     }
 }

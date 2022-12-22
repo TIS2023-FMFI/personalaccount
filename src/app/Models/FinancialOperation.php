@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class FinancialOperation extends Model
 {
@@ -29,6 +30,20 @@ class FinancialOperation extends Model
      * @var string[]
      */
     protected $with = ['operationType'];
+
+    public function scopeExpenses(Builder $query): Builder
+    {
+        return $query
+            ->join('operation_types', 'operation_type_id','=','operation_types.id')
+            ->where('expense', '=', true);
+    }
+
+    public function scopeIncomes(Builder $query): Builder
+    {
+        return $query
+            ->join('operation_types', 'operation_type_id','=','operation_types.id')
+            ->where('expense', '=', false);
+    }
 
     /**
      * Returns the account to which this operation belongs.
