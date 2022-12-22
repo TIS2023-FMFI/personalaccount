@@ -31,6 +31,14 @@ class FinancialOperation extends Model
      */
     protected $with = ['operationType'];
 
+
+    /**
+     *  Extends a query asking for financial operations so that it demands only operations which represent expenses,
+     *  and returns the new query builder.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
     public function scopeExpenses(Builder $query): Builder
     {
         return $query
@@ -38,6 +46,13 @@ class FinancialOperation extends Model
             ->where('expense', '=', true);
     }
 
+    /**
+     *  Extends a query asking for financial operations so that it demands only operations which represent income,
+     *  and returns the new query builder.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
     public function scopeIncomes(Builder $query): Builder
     {
         return $query
