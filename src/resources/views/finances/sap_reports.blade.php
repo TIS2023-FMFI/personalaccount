@@ -35,8 +35,8 @@
         <td>1.</td>
         <td>12.12.2022</td>
         <td>
-            <a href="#"><i class="bi bi-download"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-download "></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -44,7 +44,7 @@
         <td>12.12.2022</td>
         <td>
             <a href="#"><i class="bi bi-download"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -52,7 +52,7 @@
         <td>12.12.2022</td>
         <td>
             <a href="#"><i class="bi bi-download"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -60,7 +60,7 @@
         <td>12.12.2022</td>
         <td>
             <a href="#"><i class="bi bi-download"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -68,7 +68,7 @@
         <td>12.12.2022</td>
         <td>
             <a href="#"><i class="bi bi-download"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
 </table>

@@ -2,7 +2,6 @@
 
   <div class="modal">
     <span class="close-modal"><i class="bi bi-x"></i></span>
-    <h2>Zmazať položku</h2>
     <p>Naozaj si želáte zmazať túto položku?</p>
     <div>
         <button class="proceed" type="button">Áno</button>

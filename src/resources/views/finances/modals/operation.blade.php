@@ -10,9 +10,7 @@
     <p>Suma:</p>
     <p>Dátum vytvorenia:</p>
     <p>Splatné do:</p>
-    <p>Doklad na stiahnutie:</p>
-    <button type="button">Stiahnuť</button>
-
+    <a href="file:PATH_TO_FILE">Doklad na stiahnutie</a>
   </div>
 
 </div>
