@@ -9,12 +9,12 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
         <script src="/js/main.js" rel="stylesheet"></script>
-        <title>Invalid Token</title>
+        <title>ERROR 500</title>
     </head>
     <body>
         <div class="login-box">
             <div class="error_div">
-                <span>Neplatný prihlasovací token!</span>
+                <span>Interná chyba servera alebo nesprávna konfigurácia a vašu žiadosť sa nepodarilo dokončiť.</span>
             </div>
         </div>
     </body>

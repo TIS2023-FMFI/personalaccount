@@ -31,8 +31,8 @@
         <th>Názov</th>
         <th>Dátum pridania</th>
         <th>Typ</th>
-        <th>Skontrolované</th>
-        <th>Suma</th>
+        <th class="w-100">Skontrolované</th>
+        <th class="align-right">Suma</th>
         <th></th>
     </tr>
     <tr>
@@ -41,7 +41,7 @@
         <td>12.12.2022</td>
         <td>Grant</td>
         <td>Nie</td>
-        <td style="color: green;">123€</td>
+        <td class="align-right" style="color: green;">123€</td>
         <td>
             <a href="#"><i class="bi bi-info-circle"></i></a>
             <a href="#"><i class="bi bi-check2-all"></i></a>
@@ -55,7 +55,7 @@
         <td>12.12.2022</td>
         <td>Grant</td>
         <td>Áno</td>
-        <td style="color: green;">3429€</td>
+        <td class="align-right" style="color: green;">3429€</td>
         <td>
             <a href="#"><i class="bi bi-info-circle"></i></a>
             <a href="#"><i class="bi bi-check2-all"></i></a>
@@ -69,7 +69,7 @@
         <td>12.12.2022</td>
         <td>Nákup</td>
         <td>Áno</td>
-        <td style="color: red;">-564€</td>
+        <td class="align-right" style="color: red;">-564€</td>
         <td>
             <a href="#"><i class="bi bi-info-circle"></i></a>
             <a href="#"><i class="bi bi-check2-all"></i></a>
@@ -83,7 +83,7 @@
         <td>12.12.2022</td>
         <td>Pôžička</td>
         <td>Áno</td>
-        <td style="color: red;">-1203€</td>
+        <td class="align-right" style="color: red;">-1203€</td>
         <td>
             <a href="#"><i class="bi bi-info-circle"></i></a>
             <a href="#"><i class="bi bi-check2-all"></i></a>
@@ -97,7 +97,7 @@
         <td>12.12.2022</td>
         <td>Pôžička</td>
         <td>Áno</td>
-        <td style="color: green;">123€</td>
+        <td class="align-right" style="color: green;">123€</td>
         <td>
             <a href="#"><i class="bi bi-info-circle"></i></a>
             <a href="#"><i class="bi bi-check2-all"></i></a>
