@@ -56,11 +56,11 @@ Route::post('/change-password', [ManageAccountController::class, 'changePassword
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/', function () {
-        return view('index');
+        return view('finances.index');
     });
     
     Route::get('/account', function () {
-        return view('account');
+        return view('finances.account');
     });
     
     Route::get('/sap-reports', function () {

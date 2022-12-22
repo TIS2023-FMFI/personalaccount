@@ -21,8 +21,11 @@
                 <button class="dropbtn">user@uniba.sk <i class="bi bi-caret-down-fill"></i></button>
                 <div class="dropdown-content">
                     <a class="change-pass">Zmena hesla</a>
-                    <a class="create-user" href="#">Pridať používateľa</a>
-                    <a href="/login">Odhlásiť sa</a>
+                    <a class="create-user">Vytvoriť používateľa</a>
+                    <form method="POST" action="/logout">
+                        @csrf
+                        <button type="submit" id="logout-button">Odhlásiť sa</button>
+                    </form>
                 </div>
             </div>
         </nav>
