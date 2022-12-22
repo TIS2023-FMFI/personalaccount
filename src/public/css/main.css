@@ -382,6 +382,25 @@ input:focus{
     margin-bottom: 20px;
     width: 70%;
 }
+.modal select {
+    width: 70%;
+    border: 1px solid var(--primary);
+    background-color: white;
+    font-size: 18px;
+    border-radius: 15px;
+    width: 75%;
+    padding: 10px 20px;
+    margin: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("/images/caret-down.svg");
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 8px) center;  
+}
+.modal select:focus{
+    outline: none;
+}
 .modal button{
     border: 1px solid var(--primary);
     background-color: white;
@@ -430,16 +449,9 @@ input:focus{
     margin-right: 25px;
     font-size: 18px;
 }
-#create-operation-modal .modal #operation_choice{
-    border: 1px solid var(--primary);
-    background-color: white;
-    font-size: 18px;
-    padding: 10px 10px;
-    border-radius: 15px;
-    margin: 10px 0px;
-}
 #check-operation-modal .modal p{
     font-size: 25px;
+    text-align: center;
 }
 .modal div .cancel{
     border-color: red;
@@ -447,6 +459,7 @@ input:focus{
 }
 #delete-operation-modal .modal p{
     font-size: 25px;
+    text-align: center;
 }
 #edit-operation-modal .modal div{
     display: flex;
@@ -455,38 +468,10 @@ input:focus{
 #edit-operation-modal .modal div{
     display: flex;
     flex-direction: row;
-}
-#edit_operation_choice{
-    border: 1px solid var(--primary);
-    background-color: white;
-    font-size: 18px;
-    border-radius: 15px;
-    padding: 10px 20px;
-    margin: 20px;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("/images/caret-down.svg");
-    background-size: 24px;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 8px) center;  
 }
 #edit-operation-modal div label{
     margin-right: 25px;
     font-size: 18px;
-}
-#operation_choice{
-    border: 1px solid var(--primary);
-    background-color: white;
-    font-size: 18px;
-    border-radius: 15px;
-    padding: 10px 20px;
-    margin: 20px;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("/images/caret-down.svg");
-    background-size: 24px;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 8px) center;  
 }
 .error_div{
     display: flex;
@@ -499,7 +484,6 @@ input:focus{
     transform: translateY(-50%);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
-    fe_wrong_login_link
     background-color: white;
     border-radius: 15px;
     padding: 40px;

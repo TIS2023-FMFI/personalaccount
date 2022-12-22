@@ -62,7 +62,7 @@ $(document).ready(function(){
         })
     });
 
-    $(".bi-info-circle").click(function(){
+    $(".operation-detail").click(function(){
         $("#operation-modal").css("display", "flex");
     })
 
@@ -70,26 +70,54 @@ $(document).ready(function(){
         $("#create-operation-modal").css("display", "flex");
     })
 
-    $(".operation_type").change(function(){
-        switch($(this).val()){
+    function updateSelectOptions(operation_type){
+        switch(operation_type){
             case 'income':
                 $(".expense_opt").css("display","none")
                 $(".income_opt").css("display","flex")
                 $("#operation_choice").val("default_opt")
+                $(".lending_opt").css("display","none")
+                $(".edit_lending_opt").css("display","none")
                 break;
             case 'expense':
                 $(".income_opt").css("display","none")
                 $(".expense_opt").css("display","flex")
                 $("#operation_choice").val("default_opt")
+                $(".lending_opt").css("display","none")
+                $(".edit_lending_opt").css("display","none")
                 break;
         } 
+    }
+
+    $(".operation_type").change(function(){
+        updateSelectOptions($(this).val())
     });
 
-    $(".bi-check2-all").click(function(){
+    $("#operation_choice").change(function(){
+        if($(this).val() == "lending_to" || 
+        $(this).val() == "lending_from" ||
+        $(this).val() == "return_of_lending"){
+            $(".lending_opt").css("display","flex")
+            return
+        }
+        $(".lending_opt").css("display","none")
+    })
+
+    $("#edit_operation_choice").change(function(){
+        if($(this).val() == "lending_to" || 
+        $(this).val() == "lending_from" ||
+        $(this).val() == "return_of_lending"){
+            $(".edit_lending_opt").css("display","flex")
+            return
+        }
+        $(".edit_lending_opt").css("display","none")
+    })
+
+    $(".operation-check").click(function(){
         $("#check-operation-modal").css("display", "flex");
     })
 
-    $(".bi-trash3").click(function(){
+    $(".operation-delete").click(function(){
         $("#delete-operation-modal").css("display", "flex");
     })
 
@@ -109,7 +137,7 @@ $(document).ready(function(){
         $("#add-report-modal").css("display","flex")
     })
 
-    $(".bi-pencil").click(function(){
+    $(".operation-edit").click(function(){
         $("#edit-operation-modal").css("display", "flex");
     })
 

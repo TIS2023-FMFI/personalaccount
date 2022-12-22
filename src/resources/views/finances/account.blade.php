@@ -43,10 +43,10 @@
         <td>Nie</td>
         <td class="align-right" style="color: green;">123€</td>
         <td>
-            <a href="#"><i class="bi bi-info-circle"></i></a>
-            <a href="#"><i class="bi bi-check2-all"></i></a>
-            <a href="#"><i class="bi bi-pencil"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
+            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
+            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -57,10 +57,10 @@
         <td>Áno</td>
         <td class="align-right" style="color: green;">3429€</td>
         <td>
-            <a href="#"><i class="bi bi-info-circle"></i></a>
-            <a href="#"><i class="bi bi-check2-all"></i></a>
-            <a href="#"><i class="bi bi-pencil"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
+            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
+            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -71,10 +71,10 @@
         <td>Áno</td>
         <td class="align-right" style="color: red;">-564€</td>
         <td>
-            <a href="#"><i class="bi bi-info-circle"></i></a>
-            <a href="#"><i class="bi bi-check2-all"></i></a>
-            <a href="#"><i class="bi bi-pencil"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
+            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
+            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -85,10 +85,10 @@
         <td>Áno</td>
         <td class="align-right" style="color: red;">-1203€</td>
         <td>
-            <a href="#"><i class="bi bi-info-circle"></i></a>
-            <a href="#"><i class="bi bi-check2-all"></i></a>
-            <a href="#"><i class="bi bi-pencil"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
+            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
+            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
     <tr>
@@ -99,10 +99,10 @@
         <td>Áno</td>
         <td class="align-right" style="color: green;">123€</td>
         <td>
-            <a href="#"><i class="bi bi-info-circle"></i></a>
-            <a href="#"><i class="bi bi-check2-all"></i></a>
-            <a href="#"><i class="bi bi-pencil"></i></a>
-            <a href="#"><i class="bi bi-trash3"></i></a>
+            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
+            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
+            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
+            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
         </td>
     </tr>
 </table>
