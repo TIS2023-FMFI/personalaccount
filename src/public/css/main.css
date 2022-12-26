@@ -1,5 +1,6 @@
 :root {
     --primary: rgb(29, 123, 238);
+    --secondary: rgb(137, 181, 234);
 }
 * {
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -304,13 +305,6 @@ footer {
     font-size: 40px;
     margin-bottom: 50px;
 }
-input {
-    padding: 10px 20px;
-    font-size: 20px;
-    border: none;
-    border-bottom: 2px solid var(--primary);
-    width: 70%;
-}
 .login button {
     border: 1px solid var(--primary);
     background-color: white;
@@ -329,9 +323,6 @@ input {
 }
 .login a:hover {
     opacity: 0.7;
-}
-input:focus{
-    outline: none;
 }
 .modal-box {
     display: none;
@@ -423,22 +414,31 @@ select:focus{
 .login-box .modal-box .close-modal {
     display: none;
 }
+.radio-buttons-box {
+    width: 70%;
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 30px;
+}
+.radio-buttons-box div {
+    display: flex;
+    flex-direction: row;
+}
+.radio-buttons-box input {
+    width: auto;
+}
+.radio-buttons-box label {
+    font-size: 20px;
+    color: black;
+}
 #operation-modal .modal{
     align-items: flex-start;
 }
 #operation-modal .modal h2, button{
     align-self: center;
 }
-#create-operation-modal .modal div{
-    display: flex;
-    flex-direction: row;
-}
 #create-operation-modal .modal h2{
     align-self: center;
-}
-#create-operation-modal div label{
-    margin-right: 25px;
-    font-size: 18px;
 }
 .expense_opt, .lending_opt, .edit_lending_opt{
     display: none;
@@ -455,31 +455,22 @@ select:focus{
     font-size: 25px;
     text-align: center;
 }
-#edit-operation-modal .modal div{
-    display: flex;
-    flex-direction: row;
-}
-#edit-operation-modal .modal div{
-    display: flex;
-    flex-direction: row;
-}
-#edit-operation-modal div label{
-    margin-right: 25px;
-    font-size: 18px;
-}
-#operation_choice{
-    border: 1px solid var(--primary);
+select {
+    border: none;
+    border-bottom: 2px solid var(--primary);
     background-color: white;
     font-size: 18px;
-    border-radius: 15px;
-    padding: 10px 20px;
-    margin: 20px;
+    padding: 5px 0;
     -webkit-appearance: none;
     appearance: none;
     background-image: url("/images/caret-down.svg");
     background-size: 24px;
     background-repeat: no-repeat;
     background-position: calc(100% - 8px) center;  
+}
+select:focus{
+    outline: none;
+    border-bottom: 2px solid var(--secondary);
 }
 form {
     display: flex;
@@ -499,7 +490,7 @@ form {
     cursor: pointer;
 }
 .error-box {
-    width: 80%;
+    width: 70%;
 }
 .error-box p {
     margin: 0;
@@ -542,4 +533,50 @@ form {
 }
 .w-100 {
     width: 100px;
+}
+input {
+    padding: 5px 0;
+    font-size: 20px;
+    border: none;
+    border-bottom: 2px solid var(--primary);
+    width: 100%;
+    cursor: text;
+}
+input:focus{
+    outline: none;
+    border-bottom: 2px solid var(--secondary);
+}
+.field {
+    display: flex;
+    flex-flow: column-reverse;
+    width: 70%;
+    margin-bottom: 5px;
+}
+label, input {
+    transition: all 0.4s;
+    touch-action: manipulation;
+}
+label {
+    font-size: 14px;
+    color: #999;
+}
+input:placeholder-shown + label {
+    cursor: text;
+    max-width: 66.66%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform-origin: left bottom;
+    transform: translate(0, 2.125rem) scale(1.5);
+}
+::-webkit-input-placeholder {
+    opacity: 0;
+    transition: inherit;
+}
+input:focus::-webkit-input-placeholder {
+    opacity: 1;
+}
+input:not(:placeholder-shown) + label,
+input:focus + label {
+    transform: translate(0, 0) scale(1);
 }

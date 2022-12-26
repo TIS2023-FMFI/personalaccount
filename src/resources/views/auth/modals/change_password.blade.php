@@ -8,17 +8,26 @@
 
     <form id="change-pass-form">
       <div class="input-box">
-        <input type="password" id="change-pass-old" placeholder="Aktuálne heslo">
+        <div class="field">
+          <input type="password" id="change-pass-old" placeholder="...">
+          <label for="change-pass-old">Aktuálne heslo</label>
+        </div>
         <div class="error-box" id="change-pass-old-errors"></div>
       </div>
 
       <div class="input-box">
-        <input type="password" id="change-pass-new1" placeholder="Nové heslo">
+        <div class="field">
+          <input type="password" id="change-pass-new1" placeholder="...">
+          <label for="change-pass-new1">Nové heslo</label>
+        </div>
         <div class="error-box" id="change-pass-new1-errors"></div>
       </div>
 
       <div class="input-box">
-        <input type="password" id="change-pass-new2" placeholder="Zopakujte heslo">
+        <div class="field">
+          <input type="password" id="change-pass-new2" placeholder="...">
+          <label for="change-pass-new2">Zopakujte heslo</label>
+        </div>
         <div class="error-box" id="change-pass-new2-errors"></div>
       </div>
 

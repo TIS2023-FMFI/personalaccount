@@ -20,10 +20,14 @@
                 <h2>Vytvoriť používateľa</h2>
 
                 <form id="first-user-form">
-                    <div class="input-box">
-                        <input type="email" id="first-user-email" placeholder="E-mailová adresa">
-                        <div class="error-box" id="first-user-email-errors"></div>
+                    
+                <div class="input-box">
+                    <div class="field">
+                    <input type="email" id="first-user-email" placeholder="...">
+                        <label for="first-user-email">E-mailová adresa</label>
                     </div>
+                    <div class="error-box" id="first-user-email-errors"></div>
+                </div>
                     
                     <button type="submit" data-csrf="{{ csrf_token() }}" id="first-user-button">Vytvoriť</button>
                 </form>

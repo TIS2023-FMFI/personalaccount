@@ -23,23 +23,35 @@
                     
                     @if ($errors->has('email'))
                         <div class="input-box">
-                            <input type="text" name="email" placeholder="E-mailová adresa" style="border-color: red;">
+                            <div class="field">
+                                <input type="text" name="email" id="login-email" placeholder="..." style="border-color: red;">
+                                <label for="login-email">E-mailová adresa</label>
+                            </div>
                             <div class="error-box">
                                 <p>{{ $errors->first('email') }}</p>
                             </div>
                         </div>
                         <div class="input-box">
-                            <input type="password" name="password" placeholder="Prihlasovacie heslo" style="border-color: red;">
+                            <div class="field">
+                                <input type="password" name="password" placeholder="..." style="border-color: red;">
+                                <label for="login-email">Prihlasovacie heslo</label>
+                            </div>
                             <div class="error-box">
                                 <p>{{ $errors->first('password') }}</p>
                             </div>
                         </div>
                     @else
                         <div class="input-box">
-                            <input type="text" name="email" placeholder="E-mailová adresa">
+                        <div class="field">
+                                <input type="text" name="email" id="login-email" placeholder="...">
+                                <label for="login-email">E-mailová adresa</label>
+                            </div>
                         </div>
                         <div class="input-box">
-                            <input type="password" name="password" placeholder="Prihlasovacie heslo">
+                        <div class="field">
+                                <input type="password" name="password" placeholder="...">
+                                <label for="login-email">Prihlasovacie heslo</label>
+                            </div>
                         </div>
                     @endif
 

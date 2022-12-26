@@ -20,7 +20,10 @@
 
                 <form id="forgot-pass-form">
                     <div class="input-box">
-                        <input type="text" id="forgot-pass-email" placeholder="E-mailová adresa">
+                        <div class="field">
+                            <input type="text" id="forgot-pass-email" placeholder="...">
+                            <label for="forgot-pass-email">E-mailová adresa</label>
+                        </div>
                         <div class="error-box" id="forgot-pass-email-errors"></div>
                     </div>
 

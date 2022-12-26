@@ -6,8 +6,12 @@
     <h2>Vytvoriť používateľa</h2>
 
     <form id="create-user-form">
+
       <div class="input-box">
-        <input type="email" id="create-user-email" placeholder="E-mailová adresa">
+        <div class="field">
+          <input type="email" id="create-user-email" placeholder="...">
+            <label for="create-user-email">E-mailová adresa</label>
+        </div>
         <div class="error-box" id="create-user-email-errors"></div>
       </div>
     
