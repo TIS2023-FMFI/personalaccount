@@ -18,7 +18,7 @@
 
                 <h1>Prihlásenie</h1>
 
-                <form method="POST" action="/login">
+                <form method="POST" action="/login" id="login-form">
                     @csrf
                     
                     @if ($errors->has('email'))
@@ -40,7 +40,7 @@
                         </div>
                     @endif
 
-                    <button type="submit" class="login-button">Prihlásiť sa</button>
+                    <button type="submit">Prihlásiť sa</button>
                     <a href="/forgot-password">Zabudli ste heslo?</a>
 
                 </form>

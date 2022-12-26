@@ -18,13 +18,14 @@
                 
                 <h1>Zabudnuté heslo</h1>
 
-                <div class="input-box">
-                    <input type="text" id="forgot-pass-email" placeholder="E-mailová adresa">
-                    <div class="error-box" id="forgot-pass-email-errors"></div>
-                </div>
+                <form id="forgot-pass-form">
+                    <div class="input-box">
+                        <input type="text" id="forgot-pass-email" placeholder="E-mailová adresa">
+                        <div class="error-box" id="forgot-pass-email-errors"></div>
+                    </div>
 
-                <button type="button" data-csrf="{{ csrf_token() }}" class="forgot-pass-button">Odoslať</button>
-
+                    <button type="submit" data-csrf="{{ csrf_token() }}" id="forgot-pass-button">Odoslať</button>
+                </form>
             </div>
         </div>
     </body>

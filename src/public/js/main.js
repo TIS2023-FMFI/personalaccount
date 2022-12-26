@@ -15,14 +15,81 @@ $(document).ready(function(){
     // <-- Initialize Toast
 
     // Authorization forms -->
+
+    // Submit login on enter
+    $("#login-form").keypress(e => {
+        if (e.which === 13) {
+            $('#login-form').submit();
+        }
+    });
+
+    // Create first user form -->
+    $("#first-user-form").on("submit", function(e) {
+        e.preventDefault();
+        
+        let email = $("#first-user-email").val();
+        let csrf = $("#first-user-button").data("csrf");
+
+        $.ajax({
+            url: "/register",
+            type: "POST",
+            data: {
+                "_token": csrf,
+                "email": email
+            }
+        }).done(function(response) {
+            window.location.href = '/login';
+        }).fail(function(response) {
+            $.fn.createFirstUserClearForm();
+
+            let messages = jQuery.parseJSON(response.responseText);
+            if(typeof messages.displayMessage != 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: messages.displayMessage
+                })
+            }
+            
+            if (typeof response.responseJSON != 'undefined') {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.email != 'undefined') {
+                    $("#first-user-email").css("border-color", "red");
+
+                    errors.email.forEach(e => {
+                        $("#first-user-email-errors").append("<p>" + e + "</p>");
+                    });
+                }
+            }
+        })
+    });
+
+    $.fn.createFirstUserClearForm = function(isDone = false){ 
+        if (isDone) {
+            $("#first-user-email").val("");
+        }
+
+        $("#create-user-email").css("border-color", "var(--primary)");
+        $("#create-user-email-errors").empty();
+    }
+
+    $("#first-user-form").keypress(e => {
+        if (e.which === 13) {
+            $('#first-user-form').submit();
+        }
+    });
+    // <-- Create first user form
+    
     // Create user form -->
     $(".create-user").click(function() {
         $("#create-user-modal").css("display", "flex");
     });
 
-    $("#create-user-button").click(function() {
+    $("#create-user-form").on("submit", function(e) {
+        e.preventDefault();
+
         let email = $("#create-user-email").val();
-        let csrf = $(this).data("csrf");
+        let csrf = $("#create-user-button").data("csrf");
 
         $.ajax({
             url: "/register",
@@ -75,6 +142,12 @@ $(document).ready(function(){
         $("#create-user-email").css("border-color", "var(--primary)");
         $("#create-user-email-errors").empty();
     }
+
+    $("#create-user-form").keypress(e => {
+        if (e.which === 13) {
+            $('#create-user-form').submit();
+        }
+    });
     // <-- Create user form
 
     // Change password form -->
@@ -82,12 +155,14 @@ $(document).ready(function(){
         $("#change-pass-modal").css("display", "flex");
     });
 
-    $("#change-pass-button").click(function() {
+    $("#change-pass-form").on("submit", function(e) {
+        e.preventDefault();
+
         let old = $("#change-pass-old").val();
         let new1 = $("#change-pass-new1").val();
         let new2 = $("#change-pass-new2").val();
 
-        let csrf = $(this).data("csrf");
+        let csrf = $("#change-pass-button").data("csrf");
 
         $.ajax({
             url: "/change-password",
@@ -157,12 +232,20 @@ $(document).ready(function(){
         $("#change-pass-new1-errors").empty();
         $("#change-pass-new2-errors").empty();
     }
+
+    $("#change-pass-form").keypress(e => {
+        if (e.which === 13) {
+            $('#change-pass-form').submit();
+        }
+    });
     // <-- Change password form
 
     // Forgotten password form -->
-    $(".forgot-pass-button").click(function() {
+    $("#forgot-pass-form").on("submit", function(e) {
+        e.preventDefault();
+
         let email = $("#forgot-pass-email").val();
-        let csrf = $(this).data("csrf");
+        let csrf = $("#forgot-pass-button").data("csrf");
 
         $.ajax({
             url: "/forgot-password",
@@ -213,6 +296,12 @@ $(document).ready(function(){
         $("#forgot-pass-email").css("border-color", "var(--primary)");
         $("#forgot-pass-email-errors").empty();
     }
+
+    $("#forgot-pass-form").keypress(e => {
+        if (e.which === 13) {
+            $('#forgot-pass-form').submit();
+        }
+    });
     // <-- Forgotten password form
     // <-- Authorization forms
 

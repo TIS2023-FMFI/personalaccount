@@ -13,6 +13,22 @@
         <title>Prihlásenie</title>
     </head>
     <body class="login-box">
-        @include('auth.modals.create_user')
+        <div class="modal-box">
+
+            <div class="modal">
+
+                <h2>Vytvoriť používateľa</h2>
+
+                <form id="first-user-form">
+                    <div class="input-box">
+                        <input type="email" id="first-user-email" placeholder="E-mailová adresa">
+                        <div class="error-box" id="first-user-email-errors"></div>
+                    </div>
+                    
+                    <button type="submit" data-csrf="{{ csrf_token() }}" id="first-user-button">Vytvoriť</button>
+                </form>
+            </div>
+
+        </div>
     </body>
 </html>
