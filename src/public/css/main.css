@@ -364,25 +364,6 @@ footer {
     text-decoration: none;
     cursor: pointer;
 }
-select {
-    width: 70%;
-    border: 1px solid var(--primary);
-    background-color: white;
-    font-size: 18px;
-    border-radius: 15px;
-    width: 75%;
-    padding: 10px 20px;
-    margin: 20px;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("/images/caret-down.svg");
-    background-size: 24px;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 8px) center;  
-}
-select:focus{
-    outline: none;
-}
 .modal button{
     border: 1px solid var(--primary);
     background-color: white;
@@ -471,6 +452,9 @@ select {
 select:focus{
     outline: none;
     border-bottom: 2px solid var(--secondary);
+}
+select:hover {
+    cursor: pointer;
 }
 form {
     display: flex;
