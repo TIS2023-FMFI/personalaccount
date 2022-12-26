@@ -24,11 +24,14 @@
                     @if ($errors->has('email'))
                         <div class="input-box">
                             <input type="text" name="email" placeholder="E-mailová adresa" style="border-color: red;">
+                            <div class="error-box">
+                                <p>{{ $errors->first('email') }}</p>
+                            </div>
                         </div>
                         <div class="input-box">
                             <input type="password" name="password" placeholder="Prihlasovacie heslo" style="border-color: red;">
                             <div class="error-box">
-                                <p>{{ $errors->first('email') }}</p>
+                                <p>{{ $errors->first('password') }}</p>
                             </div>
                         </div>
                     @else
