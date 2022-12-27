@@ -23,8 +23,8 @@ return new class extends Migration
             $table->foreign('operation_type_id')->references("id")->on("operation_types")->cascadeOnDelete();
             $table->string('subject');
             $table->unsignedDecimal('sum',10,2);
-            $table->string('attachment')->unique();
-            $table->boolean('checked');
+            $table->string('attachment')->unique()->nullable();
+            $table->boolean('checked')->nullable();
             $table->integer('sap_id')->nullable();
         });
     }
