@@ -4,7 +4,7 @@ namespace App\Http\Requests\FinancialAccounts;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateFinancialAccountRequest extends FormRequest
+class DownloadExportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,10 @@ class CreateFinancialAccountRequest extends FormRequest
      */
     public function rules()
     {
-        //note - for the 'max' to work, double quotes are apparently necessary (or the pipe delimiter notation)
         return [
-            'title' => ['required', "max:255"],
-            'sap_id' => ['required', "max:255"]
+            'account_id' => ['required', 'numeric', 'exists:accounts,id'],
+            'date_from' => ['required', 'date'],
+            'date_to' => ['required', 'date', 'after_or_equal:date_from']
         ];
     }
 }

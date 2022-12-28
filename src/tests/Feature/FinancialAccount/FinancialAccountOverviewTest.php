@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\FinancialAccount;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-class FinancialAccountTest extends TestCase
+class FinancialAccountOverviewTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -107,11 +107,11 @@ class FinancialAccountTest extends TestCase
             ->assertStatus(200)
             ->assertViewIs('finances.index');
 
-        $data = $response->viewData('accounts');
+        $accounts = $response->viewData('accounts');
 
-        $this->assertCount(2,$data);
-        $this->assertEquals(10,$data[0]->getBalance());
-        $this->assertEquals(-10,$data[1]->getBalance());
+        $this->assertCount(2,$accounts);
+        $this->assertEquals(10,$accounts[0]->getBalance());
+        $this->assertEquals(-10,$accounts[1]->getBalance());
     }
 
 }

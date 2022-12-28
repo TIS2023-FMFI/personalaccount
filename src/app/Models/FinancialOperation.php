@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 
 class FinancialOperation extends Model
 {
@@ -88,5 +89,61 @@ class FinancialOperation extends Model
     public function isExpense(): bool
     {
         return $this->operationType->expense;
+    }
+
+    /**
+     * Returns whether this operation is a lending
+     * (based on the operation type, not on existence of a DB 'lending' record).
+     *
+     * @return bool
+     */
+    public function islending(): bool
+    {
+        return $this->operationType->isLending();
+    }
+
+
+    public function lending(){
+        return $this->hasOne(Lending::class, 'id', 'id');
+    }
+
+    /*public function getExportData(){
+        return [
+            $this->id,
+            $this->account->sap_id,
+            $this->title,
+            $this->date,
+            $this->operationType->name,
+            $this->subject,
+            $this->getSumString(),
+            $this->attachment,
+            $this->getCheckedString(),
+            $this->sap_id
+        ];
+    }
+
+    public function getSumString(){
+        $string = sprintf("%.2f", $this->sum);
+        if ($this->isExpense()) $string .= "-";
+        return $string;
+    }
+
+    public function getCheckedString(){
+        if ($this->isLending()) return '';
+        return $this->checked ? 'TRUE' : 'FALSE';
+    }*/
+
+
+    /**
+     * Attempts to delete the file stored on the 'attachment' path.
+     */
+    public function deleteAttachmentIfExists()
+    {
+        $attachment = $this->attachment;
+        if ($attachment && Storage::exists($attachment)) Storage::delete($attachment);
+    }
+
+    public function getUserId(){
+        return $this->account->getUserId();
     }
 }

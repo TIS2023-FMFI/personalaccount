@@ -5,8 +5,10 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AccountManagement\ManageAccountController;
 use App\Http\Controllers\FinancialAccounts\AccountDetailController;
-use App\Http\Controllers\FinancialAccounts\OperationManagementController;
+use App\Http\Controllers\FinancialAccounts\CreateOperationController;
+use App\Http\Controllers\FinancialAccounts\OperationDetailController;
 use App\Http\Controllers\FinancialAccounts\FinancialAccountsOverviewController;
+use App\Http\Controllers\FinancialAccounts\UpdateOperationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,23 +62,34 @@ Route::post('/change-password', [ManageAccountController::class, 'changePassword
 Route::middleware(['auth', 'auth.session'])->group(function () {
 
     Route::get('/', [FinancialAccountsOverviewController::class, 'show'])
-        ->name('accounts-overview');
+        ->name('accounts_overview');
 
     Route::post('/create-account', [FinancialAccountsOverviewController::class, 'createFinancialAccount'])
         ->middleware(['ajax', 'jsonify']);
 
-    Route::get('/account/{id}', [AccountDetailController::class, 'show'])->name('account-detail');
+    Route::get('/account/{id}', [AccountDetailController::class, 'show'])
+        ->name('account_detail');
 
     Route::post('/account/{id}', [AccountDetailController::class, 'filterOperations'])
         ->middleware(['ajax', 'jsonify']);
 
-    Route::get('/account/{id}/export', [AccountDetailController::class, 'downloadExport']);
+    //Route::get('/account/{id}/export', [AccountDetailController::class, 'downloadExport']);
 
-    /*Route::post('/account/{id}/check_operation', [AccountDetailController::class, 'markOperationAsChecked'])
+    Route::get('/operation/{operation_id}', [OperationDetailController::class, 'show']);
+
+    Route::get('/edit_operation/{operation_id}', [UpdateOperationController::class, 'show']);
+
+    Route::post('/edit_operation', [UpdateOperationController::class, 'handleUpdateOperationRequest'])
         ->middleware(['ajax', 'jsonify']);
 
-    Route::post('/account/{id}/delete_operation', [AccountDetailController::class, 'deleteOperation'])
-        ->middleware(['ajax', 'jsonify']);*/
+    Route::post('/create_operation', [CreateOperationController::class, 'handleCreateOperationRequest'])
+        ->middleware(['ajax', 'jsonify']);
+
+    Route::post('/check_operation', [AccountDetailController::class, 'markOperationAsChecked'])
+        ->middleware(['ajax', 'jsonify']);
+
+    Route::post('/delete_operation', [AccountDetailController::class, 'deleteOperation'])
+        ->middleware(['ajax', 'jsonify']);
 
     Route::get('/sap-reports', function () {
         return view('finances.sap_reports');

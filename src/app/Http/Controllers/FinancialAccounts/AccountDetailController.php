@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialAccounts\DeleteOperationRequest;
 use App\Http\Requests\FinancialAccounts\FilterOperationsRequest;
-use App\Http\Requests\FinancialAccounts\MarkOperationRequest;
+use App\Http\Requests\FinancialOperations\DeleteOperationRequest;
+use App\Http\Requests\FinancialOperations\MarkOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Date;
 
 class AccountDetailController extends Controller
 {
-
     /**
      * @var int - number of operations to be shown on one page
      */
@@ -33,8 +34,9 @@ class AccountDetailController extends Controller
     }
 
     /**
-     * Handles the request to get the account detail page. Returns a view filled with the operations belonging to the given account.
-     * The operations are paginated and can be filtered by date by GET parameters 'from' (first date in the interval) and 'to' ('last date').
+     * Handles the request to get the account detail page. Returns a view filled with the operations belonging
+     * to the given account. The operations are paginated and can be filtered by date by GET parameters 'from'
+     * (first date in the interval) and 'to' ('last date').
      *
      * @param $id
      * @param Request $request
@@ -65,7 +67,7 @@ class AccountDetailController extends Controller
      * If the parameter isn't present, the minimal date is returned instead.
      *
      * @param Request $request
-     * @param $key
+     * @param $key - the GET parameter
      * @return \Illuminate\Support\Carbon
      */
     private function getDateFromRequestOrMin(Request $request, $key)
@@ -80,7 +82,7 @@ class AccountDetailController extends Controller
      * If the parameter isn't present, the maximal date is returned instead.
      *
      * @param Request $request
-     * @param $key
+     * @param $key - the GET parameter
      * @return \Illuminate\Support\Carbon
      */
     private function getDateFromRequestOrMax(Request $request, $key)
@@ -100,14 +102,14 @@ class AccountDetailController extends Controller
      */
     public function filterOperations($id, FilterOperationsRequest $request)
     {
-        return redirect()->route('account-detail', [
+        return redirect()->route('account_detail', [
             'id' => $id,
             'from' => $request->validated('date_from'),
             'to' => $request->validated('date_to')
         ]);
     }
 
-    /*public function downloadExport($id, Request $request)
+    /*public function downloadExport(Request $request)
     {
         $account = Account::findOrFail($id);
         $dateFrom = $this->getDateFromRequestOrMin($request, 'from');
@@ -130,23 +132,35 @@ class AccountDetailController extends Controller
 
         fclose($stream);
         return $stream;
-    }
+    }*/
 
+    /**
+     * Handles the request to delete a financial operation.
+     *
+     * @param DeleteOperationRequest $request
+     * @return Application|ResponseFactory|Response
+     */
     public function deleteOperation(DeleteOperationRequest $request)
     {
-        $operation = FinancialOperation::find($request->validated('id'));
+        $operation = FinancialOperation::findOrFail($request->validated('operation_id'));
         $operation->deleteAttachmentIfExists();
         if ($operation->delete()) return response(trans('finance_accounts.new.success'), 200);
         return response(trans('finance_accounts.new.failed'), 500);
     }
 
+    /**
+     * Handles the request to mark a financial operation as checked by the user.
+     *
+     * @param MarkOperationRequest $request
+     * @return Application|ResponseFactory|Response
+     */
     public function markOperationAsChecked(MarkOperationRequest $request)
     {
-        if (FinancialOperation::find($request->validated('id'))->update(['checked' => true]))
+        if (FinancialOperation::findOrFail($request->validated('operation_id'))->update(['checked' => true]))
         {
             return response(trans('finance_accounts.new.success'), 200);
         }
         return response(trans('finance_accounts.new.failed'), 500);
-    }*/
+    }
 
 }

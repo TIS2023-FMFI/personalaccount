@@ -15,7 +15,6 @@ class FinancialAccountsOverviewController extends Controller
      */
     public function show()
     {
-
         return view('finances.index', [
             'accounts' => Auth::user()->accounts
         ]);

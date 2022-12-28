@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OperationType extends Model
+class Lending extends Model
 {
-    use HasFactory;
+    use hasFactory;
 
     /**
      * Indicates if the model should be timestamped.
@@ -21,9 +21,15 @@ class OperationType extends Model
      *
      * @var string[]
      */
-    protected $guarded = ['id'];
+    protected $guarded = [];
 
-    public function isLending() : bool{
-        return in_array($this->name, ['Lending','Pôžička']);
+    public $incrementing = false;
+
+    public function financialOperation(){
+        return $this->belongsTo(FinancialOperation::class, 'id', 'id');
+    }
+
+    public function getReferencedLending(){
+        //
     }
 }

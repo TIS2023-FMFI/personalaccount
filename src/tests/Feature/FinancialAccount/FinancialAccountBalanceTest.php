@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\FinancialAccount;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -8,7 +8,7 @@ use App\Models\OperationType;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-class AccountBalanceTest extends TestCase
+class FinancialAccountBalanceTest extends TestCase
 {
     use DatabaseTransactions;
 
