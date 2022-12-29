@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model
@@ -27,11 +28,20 @@ class Account extends Model
     /**
      * Returns the user who owns this account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Returns the ID of the user who owns this account.
+     *
+     * @return mixed
+     */
+    public function getUserId(){
+        return $this->user->id;
     }
 
     /**
@@ -68,10 +78,6 @@ class Account extends Model
     public function operationsBetween($dateFrom, $dateTo): HasMany
     {
         return $this->financialOperations()->whereBetween('date',[$dateFrom, $dateTo]);
-    }
-
-    public function getUserId(){
-        return $this->user->id;
     }
 
 }

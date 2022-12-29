@@ -144,8 +144,8 @@ class AccountDetailController extends Controller
     {
         $operation = FinancialOperation::findOrFail($request->validated('operation_id'));
         $operation->deleteAttachmentIfExists();
-        if ($operation->delete()) return response(trans('finance_accounts.new.success'), 200);
-        return response(trans('finance_accounts.new.failed'), 500);
+        if ($operation->delete()) return response(trans('finance_operations.delete.success'), 200);
+        return response(trans('finance_operations.delete.failure'), 500);
     }
 
     /**
@@ -158,9 +158,9 @@ class AccountDetailController extends Controller
     {
         if (FinancialOperation::findOrFail($request->validated('operation_id'))->update(['checked' => true]))
         {
-            return response(trans('finance_accounts.new.success'), 200);
+            return response(trans('finance_operations.check.success'), 200);
         }
-        return response(trans('finance_accounts.new.failed'), 500);
+        return response(trans('finance_operations.check.failure'), 500);
     }
 
 }

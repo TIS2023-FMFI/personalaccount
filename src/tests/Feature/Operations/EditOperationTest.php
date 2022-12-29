@@ -13,7 +13,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class UpdateOperationTest extends TestCase
+class EditOperationTest extends TestCase
 {
     use DatabaseTransactions;
 

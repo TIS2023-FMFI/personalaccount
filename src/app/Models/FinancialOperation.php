@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
 class FinancialOperation extends Model
@@ -64,7 +66,7 @@ class FinancialOperation extends Model
     /**
      * Returns the account to which this operation belongs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account()
     {
@@ -72,9 +74,18 @@ class FinancialOperation extends Model
     }
 
     /**
+     * Returns the ID of the user who owns this operation's account.
+     *
+     * @return mixed
+     */
+    public function getUserId(){
+        return $this->account->getUserId();
+    }
+
+    /**
      * Returns the type of this operation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function operationType()
     {
@@ -103,8 +114,22 @@ class FinancialOperation extends Model
     }
 
 
+    /**
+     * Returns the lending record related to this operation, if it exists.
+     *
+     * @return HasOne
+     */
     public function lending(){
         return $this->hasOne(Lending::class, 'id', 'id');
+    }
+
+    /**
+     * Attempts to delete the file stored on the 'attachment' path.
+     */
+    public function deleteAttachmentIfExists()
+    {
+        $attachment = $this->attachment;
+        if ($attachment && Storage::exists($attachment)) Storage::delete($attachment);
     }
 
     /*public function getExportData(){
@@ -133,17 +158,4 @@ class FinancialOperation extends Model
         return $this->checked ? 'TRUE' : 'FALSE';
     }*/
 
-
-    /**
-     * Attempts to delete the file stored on the 'attachment' path.
-     */
-    public function deleteAttachmentIfExists()
-    {
-        $attachment = $this->attachment;
-        if ($attachment && Storage::exists($attachment)) Storage::delete($attachment);
-    }
-
-    public function getUserId(){
-        return $this->account->getUserId();
-    }
 }

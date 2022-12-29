@@ -5,7 +5,7 @@ namespace App\Http\Requests\FinancialOperations;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
-class UpdateOperationRequest extends FormRequest
+class EditOperationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

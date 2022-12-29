@@ -8,7 +8,7 @@ use App\Http\Controllers\FinancialAccounts\AccountDetailController;
 use App\Http\Controllers\FinancialAccounts\CreateOperationController;
 use App\Http\Controllers\FinancialAccounts\OperationDetailController;
 use App\Http\Controllers\FinancialAccounts\FinancialAccountsOverviewController;
-use App\Http\Controllers\FinancialAccounts\UpdateOperationController;
+use App\Http\Controllers\FinancialAccounts\EditOperationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,13 +73,13 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::post('/account/{id}', [AccountDetailController::class, 'filterOperations'])
         ->middleware(['ajax', 'jsonify']);
 
-    //Route::get('/account/{id}/export', [AccountDetailController::class, 'downloadExport']);
+    //Route::get('/export/{id}', [AccountDetailController::class, 'downloadExport']);
 
     Route::get('/operation/{operation_id}', [OperationDetailController::class, 'show']);
 
-    Route::get('/edit_operation/{operation_id}', [UpdateOperationController::class, 'show']);
+    Route::get('/edit_operation/{operation_id}', [EditOperationController::class, 'show']);
 
-    Route::post('/edit_operation', [UpdateOperationController::class, 'handleUpdateOperationRequest'])
+    Route::post('/edit_operation', [EditOperationController::class, 'handleEditOperationRequest'])
         ->middleware(['ajax', 'jsonify']);
 
     Route::post('/create_operation', [CreateOperationController::class, 'handleCreateOperationRequest'])

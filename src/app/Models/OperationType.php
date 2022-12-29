@@ -23,6 +23,14 @@ class OperationType extends Model
      */
     protected $guarded = ['id'];
 
+
+    /**
+     * Returns whether this operation type represents any kind of lending.
+     *
+     *  !!! PLACEHOLDER VALUES !!!
+     *
+     * @return bool
+     */
     public function isLending() : bool{
         return in_array($this->name, ['Lending','Pôžička']);
     }
