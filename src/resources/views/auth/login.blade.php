@@ -21,8 +21,8 @@
                 <form method="POST" action="/login" id="login-form">
                     @csrf
                     
-                    @if ($errors->has('email'))
-                        <div class="input-box">
+                    <div class="input-box">
+                        @if ($errors->has('email'))
                             <div class="field">
                                 <input type="text" name="email" id="login-email" placeholder="..." style="border-color: red;">
                                 <label for="login-email">E-mailová adresa</label>
@@ -30,8 +30,16 @@
                             <div class="error-box">
                                 <p>{{ $errors->first('email') }}</p>
                             </div>
-                        </div>
-                        <div class="input-box">
+                        @else
+                            <div class="field">
+                                <input type="text" name="email" id="login-email" placeholder="...">
+                                <label for="login-email">E-mailová adresa</label>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <div class="input-box">
+                        @if ($errors->has('password'))
                             <div class="field">
                                 <input type="password" name="password" placeholder="..." style="border-color: red;">
                                 <label for="login-email">Prihlasovacie heslo</label>
@@ -39,21 +47,13 @@
                             <div class="error-box">
                                 <p>{{ $errors->first('password') }}</p>
                             </div>
-                        </div>
-                    @else
-                        <div class="input-box">
-                        <div class="field">
-                                <input type="text" name="email" id="login-email" placeholder="...">
-                                <label for="login-email">E-mailová adresa</label>
-                            </div>
-                        </div>
-                        <div class="input-box">
-                        <div class="field">
+                        @else 
+                            <div class="field">
                                 <input type="password" name="password" placeholder="...">
                                 <label for="login-email">Prihlasovacie heslo</label>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
 
                     <button type="submit">Prihlásiť sa</button>
                     <a href="/forgot-password">Zabudli ste heslo?</a>
