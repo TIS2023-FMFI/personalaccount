@@ -42,25 +42,29 @@ $(document).ready(function(){
         }).fail(function(response) {
             $.fn.createFirstUserClearForm();
 
-            let messages = jQuery.parseJSON(response.responseText);
-            if(typeof messages.displayMessage != 'undefined') {
-                Toast.fire({
-                    icon: 'error',
-                    title: messages.displayMessage
-                })
-            }
-            
             if (typeof response.responseJSON != 'undefined') {
-                let errors = response.responseJSON.errors;
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-                if (typeof errors.email != 'undefined') {
-                    $("#first-user-email").css("border-color", "red");
-
-                    errors.email.forEach(e => {
-                        $("#first-user-email-errors").append("<p>" + e + "</p>");
-                    });
+                    if (typeof errors.email != 'undefined') {
+                        $("#first-user-email").css("border-color", "red");
+    
+                        errors.email.forEach(e => {
+                            $("#first-user-email-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
             }
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
         })
     });
 
@@ -112,25 +116,29 @@ $(document).ready(function(){
         }).fail(function(response) {
             $.fn.createUserClearForm();
 
-            let messages = jQuery.parseJSON(response.responseText);
-            if(typeof messages.displayMessage != 'undefined') {
-                Toast.fire({
-                    icon: 'error',
-                    title: messages.displayMessage
-                })
-            }
-            
             if (typeof response.responseJSON != 'undefined') {
-                let errors = response.responseJSON.errors;
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-                if (typeof errors.email != 'undefined') {
-                    $("#create-user-email").css("border-color", "red");
+                    if (typeof errors.email != 'undefined') {
+                        $("#create-user-email").css("border-color", "red");
 
-                    errors.email.forEach(e => {
-                        $("#create-user-email-errors").append("<p>" + e + "</p>");
-                    });
+                        errors.email.forEach(e => {
+                            $("#create-user-email-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
             }
+                
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
         })
     });
 
@@ -187,33 +195,37 @@ $(document).ready(function(){
         }).fail(function(response) {
             $.fn.changePassClearForm();
 
-            let messages = jQuery.parseJSON(response.responseText);
-            if(typeof messages.displayMessage != 'undefined') {
-                Toast.fire({
-                    icon: 'error',
-                    title: messages.displayMessage
-                })
-            }
-            
             if (typeof response.responseJSON != 'undefined') {
-                let errors = response.responseJSON.errors;
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-                if (typeof errors.old_password != 'undefined') {
-                    $("#change-pass-old").css("border-color", "red");
-
-                    errors.old_password.forEach(e => {
-                        $("#change-pass-old-errors").append("<p>" + e + "</p>");
-                    });
-                }
-
-                if (typeof errors.new_password != 'undefined') {
-                    $("#change-pass-new1").css("border-color", "red");
-
-                    errors.new_password.forEach(e => {
-                        $("#change-pass-new1-errors").append("<p>" + e + "</p>");
-                    });
+                    if (typeof errors.old_password != 'undefined') {
+                        $("#change-pass-old").css("border-color", "red");
+    
+                        errors.old_password.forEach(e => {
+                            $("#change-pass-old-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+    
+                    if (typeof errors.new_password != 'undefined') {
+                        $("#change-pass-new1").css("border-color", "red");
+    
+                        errors.new_password.forEach(e => {
+                            $("#change-pass-new1-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
             }
+                
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
         })
     });
 
@@ -266,25 +278,31 @@ $(document).ready(function(){
         }).fail(function(response) {
             $.fn.forgotPassClearForm();
 
-            let messages = jQuery.parseJSON(response.responseText);
-            if(typeof messages.displayMessage != 'undefined') {
-                Toast.fire({
-                    icon: 'error',
-                    title: messages.displayMessage
-                })
-            }
-
             if (typeof response.responseJSON != 'undefined') {
-                let errors = response.responseJSON.errors;
-
-                if (typeof errors.email != 'undefined') {
-                    $("#forgot-pass-email").css("border-color", "red");
-
-                    errors.email.forEach(e => {
-                        $("#forgot-pass-email-errors").append("<p>" + e + "</p>");
-                    });
+                if (response.status === 422) {
+                    if (typeof response.responseJSON != 'undefined') {
+                        let errors = response.responseJSON.errors;
+        
+                        if (typeof errors.email != 'undefined') {
+                            $("#forgot-pass-email").css("border-color", "red");
+        
+                            errors.email.forEach(e => {
+                                $("#forgot-pass-email-errors").append("<p>" + e + "</p>");
+                            });
+                        }
+                    }
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
             }
+                
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
         })
     });
 
