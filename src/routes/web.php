@@ -56,7 +56,6 @@ Route::post('/change-password', [ManageAccountController::class, 'changePassword
  */
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
-
     Route::get('/', [FinancialAccountsOverviewController::class, 'show'])
         ->name('accounts-overview');
 
@@ -70,5 +69,4 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/sap-reports', function () {
         return view('finances.sap_reports');
     });
-
 });

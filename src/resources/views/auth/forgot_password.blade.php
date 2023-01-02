@@ -8,15 +8,27 @@
         <link href="/css/main.css" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="/js/main.js" rel="stylesheet"></script>
         <title>Prihlásenie</title>
     </head>
     <body>
         <div class="login-box">
             <div class="login">
+                
                 <h1>Zabudnuté heslo</h1>
-                <input type="text" placeholder="E-mailová adresa">
-                <button type="button" class="forgot-pass-button">Odoslať</button>
+
+                <form id="forgot-pass-form">
+                    <div class="input-box">
+                        <div class="field">
+                            <input type="text" id="forgot-pass-email" placeholder="...">
+                            <label for="forgot-pass-email">E-mailová adresa</label>
+                        </div>
+                        <div class="error-box" id="forgot-pass-email-errors"></div>
+                    </div>
+
+                    <button type="submit" data-csrf="{{ csrf_token() }}" id="forgot-pass-button">Odoslať</button>
+                </form>
             </div>
         </div>
     </body>
