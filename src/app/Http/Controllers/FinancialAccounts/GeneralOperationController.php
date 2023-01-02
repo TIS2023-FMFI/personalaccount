@@ -36,9 +36,9 @@ class GeneralOperationController extends Controller
      * @param $userId
      * @return string
      */
-    public function generateAttachmentDirectory($userId): string
+    private function generateAttachmentDirectory($userId): string
     {
-        return sprintf('user_%d/attachments', $userId);
+        return sprintf('user_%02d/attachments', $userId);
     }
 
     /**
@@ -48,7 +48,7 @@ class GeneralOperationController extends Controller
      * @param $directory
      * @return string
      */
-    public function generateAttachmentName($directory): string
+    private function generateAttachmentName($directory): string
     {
         $num = 0;
         while(true){
@@ -65,7 +65,8 @@ class GeneralOperationController extends Controller
      * @return void
      */
     protected function deleteFileIfExists($path){
-        if ($path && Storage::exists($path)) Storage::delete($path);
+        if (! $path || ! Storage::exists($path)) return;
+        if (! Storage::delete($path)) throwException(new Exception("The file wasn't deleted."));
     }
 
     /**

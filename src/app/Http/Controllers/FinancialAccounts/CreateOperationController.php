@@ -36,6 +36,7 @@ class CreateOperationController extends GeneralOperationController
         catch (Exception $e){
             $this->deleteFileIfExists($attachmentPath);
             DB::rollBack();
+            // return \response($e->getMessage(), 500); //for debugging purposes
             return response('finance_operations.create.failure', 500);
         }
         DB::commit();

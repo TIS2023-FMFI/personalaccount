@@ -132,7 +132,12 @@ class FinancialOperation extends Model
         if ($attachment && Storage::exists($attachment)) Storage::delete($attachment);
     }
 
-    /*public function getExportData(){
+    /**
+     * Returns an array of data needed for the CSV export.
+     *
+     * @return array
+     */
+    public function getExportData(){
         return [
             $this->id,
             $this->account->sap_id,
@@ -147,15 +152,26 @@ class FinancialOperation extends Model
         ];
     }
 
+    /**
+     * Returns a string containing this operation's sum, with '-' after the number if it's an expense.
+     *
+     * @return string
+     */
     public function getSumString(){
         $string = sprintf("%.2f", $this->sum);
         if ($this->isExpense()) $string .= "-";
         return $string;
     }
 
+    /**
+     * Returns whether this operation is checked, in form of an all-caps string,
+     * or an empty string if this is a lending.
+     *
+     * @return string
+     */
     public function getCheckedString(){
         if ($this->isLending()) return '';
         return $this->checked ? 'TRUE' : 'FALSE';
-    }*/
+    }
 
 }

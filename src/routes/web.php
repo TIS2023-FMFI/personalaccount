@@ -67,32 +67,33 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::post('/create-account', [FinancialAccountsOverviewController::class, 'createFinancialAccount'])
         ->middleware(['ajax', 'jsonify']);
 
+
     Route::get('/account/{id}', [AccountDetailController::class, 'show'])
         ->name('account_detail');
-
     Route::post('/account/{id}', [AccountDetailController::class, 'filterOperations'])
         ->middleware(['ajax', 'jsonify']);
 
-    //Route::get('/export/{id}', [AccountDetailController::class, 'downloadExport']);
+    Route::get('/export/{id}', [AccountDetailController::class, 'downloadExport']);
 
     Route::get('/operation/{operation_id}', [OperationDetailController::class, 'show']);
 
-    Route::get('/edit_operation/{operation_id}', [EditOperationController::class, 'show']);
+    Route::get('/attachment/{operation_id}', [OperationDetailController::class, 'downloadAttachment']);
 
+    Route::get('/edit_operation/{operation_id}', [EditOperationController::class, 'show']);
     Route::post('/edit_operation', [EditOperationController::class, 'handleEditOperationRequest'])
         ->middleware(['ajax', 'jsonify']);
 
     Route::post('/create_operation', [CreateOperationController::class, 'handleCreateOperationRequest'])
         ->middleware(['ajax', 'jsonify']);
-
     Route::post('/check_operation', [AccountDetailController::class, 'markOperationAsChecked'])
         ->middleware(['ajax', 'jsonify']);
-
     Route::post('/delete_operation', [AccountDetailController::class, 'deleteOperation'])
         ->middleware(['ajax', 'jsonify']);
+
 
     Route::get('/sap-reports', function () {
         return view('finances.sap_reports');
     });
 
 });
+

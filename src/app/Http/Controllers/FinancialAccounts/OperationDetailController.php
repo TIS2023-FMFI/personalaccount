@@ -3,19 +3,14 @@
 namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialOperations\CreateOperationRequest;
-use App\Http\Requests\FinancialOperations\EditOperationRequest;
-use App\Models\Account;
 use App\Models\FinancialOperation;
-use App\Models\Lending;
-use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Testing\MimeType;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use function PHPUnit\Framework\throwException;
 
 class OperationDetailController extends Controller
@@ -37,16 +32,30 @@ class OperationDetailController extends Controller
         ]);
 
     }
-/*
-    public function downloadAttachment($operation){
+
+    /**
+     * Downloads the attachment file for the given operation.
+     *
+     * @param $operation_id
+     * @return StreamedResponse
+     */
+    public function downloadAttachment($operation_id){
+        $operation = FinancialOperation::findOrFail($operation_id);
         $path = $operation->attachment;
-        return Storage::download($operation->attachment, $this->generateDownloadFileName($path));
+        if (! Storage::exists($path)) throwException(new Exception("The requested file doesn't exist"));
+        return Storage::download($path, $this->generateDownloadFileName($path));
     }
 
+    /**
+     * Adds a file extension to the given file's name, based on the file's MIME type.
+     *
+     * @param $path
+     * @return string
+     */
     public function generateDownloadFileName($path){
         $mime = Storage::mimeType($path);
         $extension = MimeType::search($mime);
         return sprintf('%s.%s',basename($path),$extension);
     }
- */
+
 }

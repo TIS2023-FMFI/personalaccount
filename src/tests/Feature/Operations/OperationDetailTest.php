@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Operations;
 
+use App\Http\Controllers\FinancialAccounts\GeneralOperationController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -9,6 +10,8 @@ use App\Models\OperationType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class OperationDetailTest extends TestCase
@@ -17,6 +20,7 @@ class OperationDetailTest extends TestCase
 
     private Model $user, $account, $type, $lendingType;
     private array $headers;
+    private GeneralOperationController $controller;
 
     public function setUp(): void
     {
@@ -31,6 +35,8 @@ class OperationDetailTest extends TestCase
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
             'Accept' => 'application/json',
         ];
+
+        $this->controller = new GeneralOperationController;
 
     }
 
@@ -63,6 +69,53 @@ class OperationDetailTest extends TestCase
         $this->assertTrue($operation->is($response->viewData('operation')));
         $this->assertTrue($lending->is($response->viewData('lending')));
 
+    }
+
+    public function test_cant_view_nonexistent_operation(){
+
+        $response = $this->actingAs($this->user)->get("/operation/99999");
+        $response->assertStatus(404);
+    }
+
+    public function test_attachment_download(){
+
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->create('test.txt');
+        $path = $this->controller->saveAttachment($this->user->id, $file);
+
+        Storage::assertExists($path);
+
+        $operation = FinancialOperation::factory()
+            ->create([
+                'account_id' => $this->account,
+                'operation_type_id' => $this->type,
+                'attachment' => $path
+                ]);
+
+        $response = $this->actingAs($this->user)->get(sprintf('/attachment/%d', $operation->id));
+
+        $response->assertStatus(200);
+        $response->assertDownload();
+
+        Storage::fake('local');
+
+    }
+
+    public function test_cant_download_nonexistent_attachment(){
+
+        Storage::fake('local');
+
+        $operation = FinancialOperation::factory()
+            ->create([
+                'account_id' => $this->account,
+                'operation_type_id' => $this->type,
+                'attachment' => ''
+            ]);
+
+        $response = $this->actingAs($this->user)->get(sprintf('/attachment/%d', $operation->id));
+
+        $response->assertStatus(500);
     }
 
 }

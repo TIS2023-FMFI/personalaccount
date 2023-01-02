@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Operations;
 
+use App\Http\Controllers\FinancialAccounts\GeneralOperationController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -19,6 +20,7 @@ class EditOperationTest extends TestCase
 
     private Model $user, $account, $type, $lendingType;
     private array $headers;
+    private GeneralOperationController $controller;
 
     public function setUp(): void
     {
@@ -33,6 +35,8 @@ class EditOperationTest extends TestCase
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
             'Accept' => 'application/json',
         ];
+
+        $this->controller = new GeneralOperationController;
 
     }
 
@@ -126,16 +130,37 @@ class EditOperationTest extends TestCase
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
     }
 
+    public function test_update_operation_creates_file(){
+
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->create('test.txt');
+
+        $operation = FinancialOperation::factory()->create(
+            ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => null]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->post('/edit_operation', [
+                'id' => $operation->id,
+                'attachment' => $file
+            ]);
+
+        $response->assertStatus(200);
+        $operation->refresh();
+        $path = $operation->attachment;
+        Storage::disk('local')->assertExists($path);
+
+        Storage::fake('local');
+
+    }
+
     public function test_update_operation_replaces_file(){
 
         Storage::fake('local');
 
-        $dir = sprintf('user_%d/attachments', $this->user->id);
         $file = UploadedFile::fake()->create('test.txt');
-        $name = 'attachment_0000';
-        $oldPath = sprintf('%s/%s', $dir, $name);
+        $oldPath = $this->controller->saveAttachment($this->user->id, $file);
 
-        Storage::putFileAs($dir, $file, $name);
         Storage::assertExists($oldPath);
 
         $operation = FinancialOperation::factory()->create(

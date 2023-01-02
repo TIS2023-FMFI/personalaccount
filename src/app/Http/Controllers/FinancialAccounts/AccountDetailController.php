@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Date;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AccountDetailController extends Controller
 {
@@ -109,7 +110,14 @@ class AccountDetailController extends Controller
         ]);
     }
 
-    /*public function downloadExport(Request $request)
+    /**
+     * Handles a request to download a CSV export for the given account.
+     *
+     * @param $id
+     * @param Request $request
+     * @return StreamedResponse
+     */
+    public function downloadExport($id, Request $request)
     {
         $account = Account::findOrFail($id);
         $dateFrom = $this->getDateFromRequestOrMin($request, 'from');
@@ -120,6 +128,12 @@ class AccountDetailController extends Controller
         return response()->streamDownload(function() use ($operations){ $this->generateCSVfile($operations); }, 'export.csv');
     }
 
+    /**
+     * Writes a CSV file into output file stream, containing data about operations from the given list.
+     *
+     * @param $operations
+     * @return false|resource
+     */
     public function generateCSVfile($operations){
         $columns = ['ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Attachment', 'Checked', 'SAP ID'];
         $stream = fopen('php://output', 'w');
@@ -132,7 +146,7 @@ class AccountDetailController extends Controller
 
         fclose($stream);
         return $stream;
-    }*/
+    }
 
     /**
      * Handles the request to delete a financial operation.

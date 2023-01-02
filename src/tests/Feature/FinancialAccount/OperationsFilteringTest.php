@@ -13,7 +13,7 @@ use Tests\TestCase;
 /**
  * These tests must be run on a seeded database, as they generate plenty of models with foreign keys.
  */
-class OperationFilteringTest extends TestCase
+class OperationsFilteringTest extends TestCase
 {
     use DatabaseTransactions;
 

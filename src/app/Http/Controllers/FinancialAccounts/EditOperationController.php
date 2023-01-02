@@ -67,6 +67,7 @@ class EditOperationController extends GeneralOperationController
         catch (Exception $e){
             $this->deleteFileIfExists($new_attachment);
             DB::rollBack();
+            // return \response($e->getMessage(), 500); //for debugging purposes
             return response(trans('finance_operations.edit.failure'), 500);
         }
 
