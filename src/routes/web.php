@@ -89,3 +89,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
 });
 
+Route::get('/account/{account_id}', [AccountDetailController::class, 'show']);
+
+Route::get('/export/{account_id}', [AccountDetailController::class, 'downloadExport']);
+
