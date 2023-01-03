@@ -25,7 +25,6 @@ class EditOperationRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['required', 'numeric', 'exists:financial_operations'],
             'title' => ['nullable', "max:255"],
             'date' => ['nullable', 'date'],
             'operation_type_id' => ['nullable', "max:255"],

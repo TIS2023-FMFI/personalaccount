@@ -36,7 +36,8 @@ class Lending extends Model
      *
      * @return BelongsTo
      */
-    public function financialOperation(){
+    /*public function financialOperation()
+    {
         return $this->belongsTo(FinancialOperation::class, 'id', 'id');
-    }
+    }*/
 }

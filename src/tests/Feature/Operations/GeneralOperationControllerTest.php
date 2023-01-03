@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Operations;
 
-use App\Http\Controllers\FinancialAccounts\GeneralOperationController;
+use App\Http\Controllers\FinancialOperations\GeneralOperationController;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

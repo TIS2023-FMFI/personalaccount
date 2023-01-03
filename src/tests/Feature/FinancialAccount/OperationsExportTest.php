@@ -21,7 +21,7 @@ class OperationsExportTest extends TestCase
 
     private int $perPage, $extraRows;
     private array $dates;
-    private Model $user, $account, $icomeType, $expenseType, $lendingType;
+    private Model $user, $account, $incomeType, $expenseType, $lendingType;
 
     public function setUp(): void
     {
@@ -31,10 +31,10 @@ class OperationsExportTest extends TestCase
         $this->extraRows = 2; // header + extra '\n' symbol in a csv file
         $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
         $this->user = User::create([ 'email' => 'new@b.c' ]);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false]);
-        $this->expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true]);
-        $this->lendingType = OperationType::factory()->create(['name' => 'Lending', 'expense' => false]);
+        $this->account = Account::factory()->create(['title' => 'account', 'user_id' => $this->user]);
+        $this->incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false, 'lending' => false]);
+        $this->expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true, 'lending' => false]);
+        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'expense' => false, 'lending' => true]);
 
     }
 
@@ -52,7 +52,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => null
         ]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/export/%d', $this->account->id));
+        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -81,7 +81,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => null
         ]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/export/%d', $this->account->id));
+        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -110,7 +110,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => '99'
         ]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/export/%d', $this->account->id));
+        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -139,7 +139,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => null
         ]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/export/%d', $this->account->id));
+        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -147,7 +147,7 @@ class OperationsExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;2000-01-01;Lending;subject;100.00;attachments/test;;',
+        $expected = sprintf('%d;%s;title;2000-01-01;lending;subject;100.00;attachments/test;;',
             $operation->id,
             $this->account->sap_id);
 
@@ -159,7 +159,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/export/%d', $this->account->id));
+        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -176,10 +176,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
 
         $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                $this->dates[1],
-                $this->dates[2]
-            ));
+            ->get("/export/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[2]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -194,35 +191,13 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                $this->dates[2],
-                $this->dates[3]
-            ));
+            ->get("/export/{$this->account->id}?from={$this->dates[2]}&to={$this->dates[3]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
         $rows = explode("\n", $content);
 
         $this->assertCount($this->extraRows+0,$rows);
-    }
-
-    public function test_export_data_unbound_on_both_sides()
-    {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
-
-        $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                '',
-                ''
-            ));
-
-        $response->assertStatus(200);
-        $content = $response->streamedContent();
-        $rows = explode("\n", $content);
-
-        $this->assertCount($this->extraRows+3,$rows);
     }
 
     public function test_export_data_unbound_from_right()
@@ -232,10 +207,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                $this->dates[1],
-                ''
-            ));
+            ->get("/export/{$this->account->id}?from={$this->dates[1]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -251,10 +223,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                '',
-                $this->dates[1]
-            ));
+            ->get("/export/{$this->account->id}?to={$this->dates[1]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -269,10 +238,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                $this->dates[1],
-                $this->dates[0]
-            ));
+            ->get("/export/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[0]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -285,12 +251,49 @@ class OperationsExportTest extends TestCase
     {
 
         $response = $this->actingAs($this->user)
-            ->get(sprintf('/export/%d?from=%s&to=%s', $this->account->id,
-                $this->dates[1],
-                'invalid'
-            ));
+            ->get("/export/{$this->account->id}?from=invalid");
 
         $response->assertStatus(500);
+    }
+
+    public function test_export_filename(){
+
+        $response = $this->actingAs($this->user)
+            ->get("/export/{$this->account->id}");
+
+        $response->assertStatus(200);
+        $expected = 'attachment; filename=export_account.csv';
+        $this->assertEquals($expected, $response->headers->get('content-disposition'));
+    }
+
+    public function test_export_filename_filtered(){
+
+        $response = $this->actingAs($this->user)
+            ->get("/export/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
+
+        $response->assertStatus(200);
+        $expected = 'attachment; filename=export_account_from_01-01-2000_to_01-01-2001.csv';
+        $this->assertEquals($expected, $response->headers->get('content-disposition'));
+    }
+
+    public function test_export_filename_unbound_from_right(){
+
+        $response = $this->actingAs($this->user)
+            ->get("/export/{$this->account->id}?from={$this->dates[0]}");
+
+        $response->assertStatus(200);
+        $expected = 'attachment; filename=export_account_from_01-01-2000.csv';
+        $this->assertEquals($expected, $response->headers->get('content-disposition'));
+    }
+
+    public function test_export_filename_unbound_from_left(){
+
+        $response = $this->actingAs($this->user)
+            ->get("/export/{$this->account->id}?to={$this->dates[1]}");
+
+        $response->assertStatus(200);
+        $expected = 'attachment; filename=export_account_to_01-01-2001.csv';
+        $this->assertEquals($expected, $response->headers->get('content-disposition'));
     }
 
 }

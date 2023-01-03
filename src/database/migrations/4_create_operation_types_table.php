@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('operation_types', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->boolean('expense');
+            $table->boolean('expense')->default(false);
+            $table->boolean('lending')->default(false);
         });
     }
 

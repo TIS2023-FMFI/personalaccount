@@ -26,8 +26,8 @@ class CreateOperationTest extends TestCase
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->type = OperationType::factory()->create(['name' => 'test']);
-        $this->lendingType = OperationType::factory()->create(['name' => 'Lending']);
+        $this->type = OperationType::factory()->create(['name' => 'type', 'lending' => false]);
+        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'lending' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -49,7 +49,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/create_operation', $operationData);
+            ->post('/operation', $operationData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -69,7 +69,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/create_operation', $operationData);
+            ->post('/operation', $operationData);
 
         $response->assertStatus(422);
 
@@ -93,7 +93,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/create_operation', array_merge($operationData, $lendingData));
+            ->post('/operation', array_merge($operationData, $lendingData));
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -122,7 +122,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/create_operation', array_merge($operationData, $lendingData));
+            ->post('/operation', array_merge($operationData, $lendingData));
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -150,7 +150,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/create_operation', array_merge($operationData, $lendingData));
+            ->post('/operation', array_merge($operationData, $lendingData));
 
         $response->assertStatus(422);
 
@@ -171,7 +171,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/create_operation', $operationData);
+            ->post('/operation', $operationData);
 
         $response->assertStatus(201);
         $path = FinancialOperation::firstWhere('title', 'test_with_file')->attachment;

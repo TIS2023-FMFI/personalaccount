@@ -30,7 +30,7 @@ class FinancialAccountOverviewTest extends TestCase
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
             ])->post(
-                '/create-account',
+                '/account',
                 [
                     'title' => '',
                     'sap_id' => '',
@@ -56,7 +56,7 @@ class FinancialAccountOverviewTest extends TestCase
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
             ])->post(
-                '/create-account',
+                '/account',
                 [
                     'title' => 'title',
                     'sap_id' => 'ID-123',
@@ -90,16 +90,16 @@ class FinancialAccountOverviewTest extends TestCase
         $account1 = Account::factory()->create(['user_id' => $user]);
         $account2 = Account::factory()->create(['user_id' => $user]);
 
-        $gain = OperationType::factory()->create(['name' => 'testGain', 'expense' => '0']);
-        $expense = OperationType::factory()->create(['name' => 'testExpense', 'expense' => '1']);
+        $incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false, 'lending' => false]);
+        $expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true, 'lending' => false]);
 
         FinancialOperation::factory()->create([
             'account_id' => $account1,
-            'operation_type_id' => $gain,
+            'operation_type_id' => $incomeType,
             'sum' => 10]);
         FinancialOperation::factory()->create([
             'account_id' => $account2,
-            'operation_type_id' => $expense,
+            'operation_type_id' => $expenseType,
             'sum' => 10]);
 
         $response = $this->actingAs($user)->get('/');

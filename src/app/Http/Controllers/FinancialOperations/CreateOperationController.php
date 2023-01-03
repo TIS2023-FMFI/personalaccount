@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FinancialAccounts;
+namespace App\Http\Controllers\FinancialOperations;
 
 use App\Http\Requests\FinancialOperations\CreateOperationRequest;
 use App\Models\Account;
@@ -11,6 +11,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use function PHPUnit\Framework\throwException;
 
+/**
+ * Manages the functionality of the 'create operation' modal.
+ */
 class CreateOperationController extends GeneralOperationController
 {
 
@@ -29,11 +32,13 @@ class CreateOperationController extends GeneralOperationController
         if ($file) $attachmentPath = $this->saveAttachment($account->getUserId(), $file);
 
         DB::beginTransaction();
-        try{
+        try
+        {
             $operation = $this->createOperation($request, $account, $attachmentPath);
             if ($operation->isLending()) $this->upsertLending($request, $operation->id);
         }
-        catch (Exception $e){
+        catch (Exception $e)
+        {
             $this->deleteFileIfExists($attachmentPath);
             DB::rollBack();
             // return \response($e->getMessage(), 500); //for debugging purposes
