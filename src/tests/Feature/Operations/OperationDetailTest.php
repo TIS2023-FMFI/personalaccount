@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Operations;
 
-use App\Http\Controllers\FinancialAccounts\GeneralOperationController;
+use App\Http\Controllers\FinancialOperations\GeneralOperationController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -28,8 +28,8 @@ class OperationDetailTest extends TestCase
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->type = OperationType::factory()->create();
-        $this->lendingType = OperationType::factory()->create(['name' => 'Lending']);
+        $this->type = OperationType::factory()->create(['name' => 'type', 'lending' => false]);
+        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'lending' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -40,34 +40,29 @@ class OperationDetailTest extends TestCase
 
     }
 
-    public function test_operation_view(){
+    public function test_operation_data(){
 
         $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->get("/operation/$operation->id");
-        $response
-            ->assertStatus(200)
-            ->assertViewIs('finances.modals.operation');
+        $response->assertStatus(200)->assertJsonCount(2);
+        $content = $response->json();
+
+        $this->assertEquals($this->account->id, $content['operation']['account_id']);
+        $this->assertEquals($this->type->id, $content['operation']['operation_type_id']);
+        $this->assertEquals(null, $content['lending']);
     }
 
-    public function test_operation_view_data(){
-
-        $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
-
-        $response = $this->actingAs($this->user)->get("/operation/$operation->id");
-        $this->assertTrue($operation->is($response->viewData('operation')));
-        $this->assertEquals(null,$operation->is($response->viewData('lending')));
-
-    }
-
-    public function test_operation_view_data_with_lending(){
+    public function test_operation_data_with_lending(){
 
         $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->lendingType]);
-        $lending = Lending::factory()->create(['id' => $operation]);
+        Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->get("/operation/$operation->id");
-        $this->assertTrue($operation->is($response->viewData('operation')));
-        $this->assertTrue($lending->is($response->viewData('lending')));
+        $response->assertStatus(200);
+        $content = $response->json();
+
+        $this->assertEquals($operation->id, $content['lending']['id']);
 
     }
 
@@ -88,18 +83,19 @@ class OperationDetailTest extends TestCase
 
         $operation = FinancialOperation::factory()
             ->create([
+                'title' => 'operation',
                 'account_id' => $this->account,
                 'operation_type_id' => $this->type,
                 'attachment' => $path
                 ]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/attachment/%d', $operation->id));
+        $response = $this->actingAs($this->user)->get("/attachment/$operation->id");
 
         $response->assertStatus(200);
         $response->assertDownload();
+        $this->assertEquals('attachment; filename=attachment_operation.', $response->headers->get('content-disposition'));
 
         Storage::fake('local');
-
     }
 
     public function test_cant_download_nonexistent_attachment(){
@@ -113,7 +109,7 @@ class OperationDetailTest extends TestCase
                 'attachment' => ''
             ]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/attachment/%d', $operation->id));
+        $response = $this->actingAs($this->user)->get("/attachment/$operation->id");
 
         $response->assertStatus(500);
     }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Storage;
 
 class FinancialOperation extends Model
 {
@@ -78,7 +77,8 @@ class FinancialOperation extends Model
      *
      * @return mixed
      */
-    public function getUserId(){
+    public function getUserId()
+    {
         return $this->account->getUserId();
     }
 
@@ -97,7 +97,7 @@ class FinancialOperation extends Model
      *
      * @return bool
      */
-    public function isExpense(): bool
+    public function isExpense()
     {
         return $this->operationType->expense;
     }
@@ -108,28 +108,19 @@ class FinancialOperation extends Model
      *
      * @return bool
      */
-    public function islending(): bool
+    public function islending()
     {
-        return $this->operationType->isLending();
+        return $this->operationType->lending;
     }
-
 
     /**
      * Returns the lending record related to this operation, if it exists.
      *
      * @return HasOne
      */
-    public function lending(){
-        return $this->hasOne(Lending::class, 'id', 'id');
-    }
-
-    /**
-     * Attempts to delete the file stored on the 'attachment' path.
-     */
-    public function deleteAttachmentIfExists()
+    public function lending()
     {
-        $attachment = $this->attachment;
-        if ($attachment && Storage::exists($attachment)) Storage::delete($attachment);
+        return $this->hasOne(Lending::class, 'id', 'id');
     }
 
     /**
@@ -137,7 +128,8 @@ class FinancialOperation extends Model
      *
      * @return array
      */
-    public function getExportData(){
+    public function getExportData()
+    {
         return [
             $this->id,
             $this->account->sap_id,
@@ -157,10 +149,11 @@ class FinancialOperation extends Model
      *
      * @return string
      */
-    public function getSumString(){
-        $string = sprintf("%.2f", $this->sum);
-        if ($this->isExpense()) $string .= "-";
-        return $string;
+    public function getSumString()
+    {
+        $sumString = sprintf('%.2f', $this->sum);
+        if ($this->isExpense()) return "$sumString-";
+        return $sumString;
     }
 
     /**
@@ -169,7 +162,8 @@ class FinancialOperation extends Model
      *
      * @return string
      */
-    public function getCheckedString(){
+    public function getCheckedString()
+    {
         if ($this->isLending()) return '';
         return $this->checked ? 'TRUE' : 'FALSE';
     }

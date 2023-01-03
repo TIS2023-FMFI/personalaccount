@@ -40,7 +40,8 @@ class Account extends Model
      *
      * @return mixed
      */
-    public function getUserId(){
+    public function getUserId()
+    {
         return $this->user->id;
     }
 
@@ -59,7 +60,7 @@ class Account extends Model
      *
      * @return float
      */
-    public function getBalance() : float
+    public function getBalance()
     {
         $incomes = $this->financialOperations()->incomes()->sum('sum');
         $expenses = $this->financialOperations()->expenses()->sum('sum');
@@ -75,7 +76,7 @@ class Account extends Model
      * @param $dateTo - last date in the interval
      * @return HasMany
      */
-    public function operationsBetween($dateFrom, $dateTo): HasMany
+    public function operationsBetween($dateFrom, $dateTo)
     {
         return $this->financialOperations()->whereBetween('date',[$dateFrom, $dateTo]);
     }

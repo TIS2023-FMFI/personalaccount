@@ -32,8 +32,8 @@ class FinancialAccountDetailTest extends TestCase
         $this->perPage = AccountDetailController::$perPage;
         $this->user = User::create([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->type = OperationType::factory()->create(['name' => 'test']);
-        $this->lendingType = OperationType::factory()->create(['name' => 'Lending']);
+        $this->type = OperationType::factory()->create(['name' => 'type', 'lending' => false]);
+        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'lending' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -44,7 +44,7 @@ class FinancialAccountDetailTest extends TestCase
     public function test_correct_view()
     {
         $account = Account::factory()->create(['user_id' => $this->user]);
-        $response = $this->actingAs($this->user)->get(sprintf('/account/%d', $account->id));
+        $response = $this->actingAs($this->user)->get("/account/$account->id");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -56,7 +56,7 @@ class FinancialAccountDetailTest extends TestCase
         $account = Account::factory()->has(FinancialOperation::factory()->count(5))
             ->create(['user_id' => $this->user]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/account/%d', $account->id));
+        $response = $this->actingAs($this->user)->get("/account/$account->id");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -73,7 +73,7 @@ class FinancialAccountDetailTest extends TestCase
         $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
             ->create(['user_id' => $this->user]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/account/%d', $account->id));
+        $response = $this->actingAs($this->user)->get("/account/$account->id");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -95,7 +95,7 @@ class FinancialAccountDetailTest extends TestCase
         $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
             ->create(['user_id' => $this->user]);
 
-        $response = $this->actingAs($this->user)->get(sprintf('/account/%d?page=2', $account->id));
+        $response = $this->actingAs($this->user)->get("/account/$account->id?page=2");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -113,7 +113,7 @@ class FinancialAccountDetailTest extends TestCase
             ->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/delete_operation', ['operation_id' => $operation->id]);
+            ->delete("/operation/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('financial_operations', [
@@ -129,7 +129,7 @@ class FinancialAccountDetailTest extends TestCase
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/delete_operation', ['operation_id' => $operation->id]);
+            ->delete("/operation/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('financial_operations', [
@@ -151,7 +151,7 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'attachment' => $file, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/delete_operation', ['operation_id' => $operation->id]);
+            ->delete("/operation/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('financial_operations', [
@@ -168,7 +168,7 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/check_operation', ['operation_id' => $operation->id]);
+            ->patch("/operation/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
@@ -184,8 +184,8 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->lendingType]);
         Lending::factory()->create(['id' => $operation]);
 
-        $response = $this->actingAs($this->user)
-            ->withHeaders($this->headers)->post('/check_operation', ['operation_id' => $operation->id]);
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operation/$operation->id");
 
         $response->assertStatus(422);
 

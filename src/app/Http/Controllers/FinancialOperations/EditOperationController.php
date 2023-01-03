@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FinancialAccounts;
+namespace App\Http\Controllers\FinancialOperations;
 
 use App\Http\Requests\FinancialOperations\EditOperationRequest;
 use App\Models\FinancialOperation;
@@ -9,42 +9,26 @@ use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use function PHPUnit\Framework\throwException;
 
+/**
+ * Manages functionality of the 'edit operation' modal.
+ */
 class EditOperationController extends GeneralOperationController
 {
-    /**
-     * Returns the "edit operation" view, filled with current data about the operation.
-     *
-     * @param $operation_id
-     * @return Application|Factory|View
-     */
-    public function show($operation_id){
-
-        $operation = FinancialOperation::findOrFail($operation_id);
-        $lending = $operation->lending;
-
-        return view('finances.modals.edit_operation', [
-            'operation' => $operation,
-            'lending' => $lending
-        ]);
-
-    }
-
     /**
      * Handles the request to edit a financial operation. Manages updating the operation itself, its related
      * lending record and its attachment file if there are any.
      *
+     * @param $operation_id - route parameter
      * @param EditOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleEditOperationRequest(EditOperationRequest $request)
+    public function handleEditOperationRequest($operation_id, EditOperationRequest $request)
     {
-        $operation = FinancialOperation::find($request->validated('id'));
+        $operation = FinancialOperation::findOrFail($operation_id);
 
         $old_attachment = $operation->attachment;
         $new_attachment = null;
@@ -53,8 +37,8 @@ class EditOperationController extends GeneralOperationController
         if ($file) $new_attachment = $this->saveAttachment($operation->getUserId(), $file);
 
         DB::beginTransaction();
-        try{
-
+        try
+        {
             if ($this->typeChangedFromLending($request, $operation)) $this->deleteLending($operation);
             $this->updateOperation($request, $operation, ($file) ? $new_attachment : null);
 
@@ -62,18 +46,17 @@ class EditOperationController extends GeneralOperationController
             if ($operation->isLending()) $this->upsertLending($request, $operation->id);
 
             if ($file) $this->deleteFileIfExists($old_attachment);
-
         }
-        catch (Exception $e){
+        catch (Exception $e)
+        {
             $this->deleteFileIfExists($new_attachment);
             DB::rollBack();
-            // return \response($e->getMessage(), 500); //for debugging purposes
+            //return response($e->getMessage(), 500); //for debugging purposes
             return response(trans('finance_operations.edit.failure'), 500);
         }
 
         DB::commit();
         return response(trans('finance_operations.edit.success'), 200);
-
     }
 
     /**
@@ -84,7 +67,8 @@ class EditOperationController extends GeneralOperationController
      * @param $operation
      * @param $attachment - updated path to the operation's attachment file
      */
-    private function updateOperation(EditOperationRequest $request, $operation, $attachment){
+    private function updateOperation(EditOperationRequest $request, $operation, $attachment)
+    {
 
         $title = $request->validated('title');
         $date = $request->validated('date');
@@ -110,14 +94,14 @@ class EditOperationController extends GeneralOperationController
      * @param $operation
      * @return bool
      */
-    private function typeChangedFromLending(EditOperationRequest $request, $operation): bool
+    private function typeChangedFromLending(EditOperationRequest $request, $operation)
     {
         $newTypeId = $request->validated('operation_type_id');
         if (!$newTypeId) return false;
 
         $oldType = $operation->operationType;
         $newType = OperationType::findOrFail($newTypeId);
-        return $oldType->isLending() && ! $newType->isLending();
+        return $oldType->lending && ! $newType->lending;
     }
 
     /**
@@ -126,7 +110,8 @@ class EditOperationController extends GeneralOperationController
      * @param $operation
      * @return void
      */
-    private function deleteLending($operation){
+    private function deleteLending($operation)
+    {
         if (! Lending::destroy($operation->lending->id))
             throwException(new Exception('The lending wasn\'t deleted.'));
     }

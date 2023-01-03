@@ -62,17 +62,8 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[0],
-                    'date_to' => $this->dates[1]
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -87,17 +78,8 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[1],
-                    'date_to' => $this->dates[2],
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[2]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -110,46 +92,13 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[2],
-                    'date_to' => $this->dates[3],
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[2]}&to={$this->dates[3]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
 
         $this->assertCount(0,$response->viewData('operations'));
-    }
-
-    public function test_view_data_unbound_on_both_sides()
-    {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
-
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => null,
-                    'date_to' => null
-                ]
-            );
-
-        $response->assertStatus(200)
-            ->assertViewIs('finances.account');
-
-        $this->assertCount(3,$response->viewData('operations'));
     }
 
     public function test_view_data_unbound_from_right()
@@ -158,17 +107,8 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[1],
-                    'date_to' => null
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -182,17 +122,8 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => null,
-                    'date_to' => $this->dates[1]
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?to={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -200,39 +131,21 @@ class OperationsFilteringTest extends TestCase
         $this->assertCount(2,$response->viewData('operations'));
     }
 
-    public function test_filtering_invalid_interval()
+    public function test_filtering_invalid_interval_causes_redirect()
     {
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[1],
-                    'date_to' => $this->dates[0],
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[0]}");
 
-        $response->assertStatus(422);
+        $response->assertStatus(302);
     }
 
-    public function test_filtering_invalid_input()
+    public function test_filtering_invalid_input_causes_redirect()
     {
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[1],
-                    'date_to' => 'test',
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from=invalid");
 
-        $response->assertStatus(422);
+        $response->assertStatus(302);
     }
 
     public function test_pagination_is_used_with_filtered_data()
@@ -243,17 +156,8 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[0],
-                    'date_to' => $this->dates[1],
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -273,17 +177,8 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
-        $response = $this->followingRedirects()->actingAs($this->user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
-                sprintf('/account/%d', $this->account->id),
-                [
-                    'date_from' => $this->dates[0],
-                    'date_to' => $this->dates[1],
-                ]
-            );
+        $response = $this->actingAs($this->user)
+            ->get("/account/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $url = $response->viewData('operations')->url(2);
         $response = $this->actingAs($this->user)->get($url);

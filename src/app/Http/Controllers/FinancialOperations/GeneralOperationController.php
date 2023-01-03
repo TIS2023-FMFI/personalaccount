@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FinancialAccounts;
+namespace App\Http\Controllers\FinancialOperations;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lending;
@@ -10,7 +10,7 @@ use function PHPUnit\Framework\throwException;
 
 
 /**
- * Parent class containing general functions useful for multiple controllers.
+ * Parent class containing general functions useful for both 'create operation' and 'edit operation' controllers.
  */
 class GeneralOperationController extends Controller
 {
@@ -27,7 +27,7 @@ class GeneralOperationController extends Controller
         $dir = $this->generateAttachmentDirectory($userId);
         $filename = $this->generateAttachmentName($dir);
         Storage::putFileAs($dir, $file, $filename);
-        return sprintf('%s/%s', $dir, $filename);
+        return "$dir/$filename";
     }
 
     /**
@@ -59,17 +59,6 @@ class GeneralOperationController extends Controller
     }
 
     /**
-     * Deletes the file at the given path, if the file exists.
-     *
-     * @param $path
-     * @return void
-     */
-    protected function deleteFileIfExists($path){
-        if (! $path || ! Storage::exists($path)) return;
-        if (! Storage::delete($path)) throwException(new Exception("The file wasn't deleted."));
-    }
-
-    /**
      * Inserts a lending record into the database, related to the operation with the given id. If that operation already
      * has a lending record, the lending is instead updated with new data.
      *
@@ -86,6 +75,6 @@ class GeneralOperationController extends Controller
                 'previous_lending_id' => $request->validated('previous_lending_id'),
             ]
         );
-        if (!$lending->exists) throwException(new Exception("The lending wasn't created."));
+        if (!$lending->exists) throwException(new Exception('The lending wasn\'t created.'));
     }
 }

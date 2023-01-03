@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Operations;
 
-use App\Http\Controllers\FinancialAccounts\GeneralOperationController;
+use App\Http\Controllers\FinancialOperations\GeneralOperationController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -28,8 +28,8 @@ class EditOperationTest extends TestCase
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->type = OperationType::factory()->create(['name' => 'test']);
-        $this->lendingType = OperationType::factory()->create(['name' => 'Lending']);
+        $this->type = OperationType::factory()->create(['name' => 'type', 'lending' => false]);
+        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'lending' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -37,26 +37,6 @@ class EditOperationTest extends TestCase
         ];
 
         $this->controller = new GeneralOperationController;
-
-    }
-
-    public function test_edit_view(){
-
-        $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
-
-        $response = $this->actingAs($this->user)->get("/edit_operation/$operation->id");
-        $response
-            ->assertStatus(200)
-            ->assertViewIs('finances.modals.edit_operation');
-    }
-
-    public function test_edit_view_data(){
-
-        $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
-
-        $response = $this->actingAs($this->user)->get("/edit_operation/$operation->id");
-        $this->assertTrue($operation->is($response->viewData('operation')));
-        $this->assertEquals(null,$operation->is($response->viewData('lending')));
 
     }
 
@@ -72,7 +52,7 @@ class EditOperationTest extends TestCase
             ]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/edit_operation', ['id' => $operation->id, 'sum' => 100.5, 'subject' => 'new']);
+            ->put("/operation/$operation->id", ['id' => $operation->id, 'sum' => 100.5, 'subject' => 'new']);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
@@ -86,9 +66,9 @@ class EditOperationTest extends TestCase
     public function test_update_nonexisting_operation(){
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/edit_operation', ['id' => 99999, 'sum' => 100.5, 'subject' => 'new']);
+            ->put('/operation/99999', ['sum' => 100.5, 'subject' => 'new']);
 
-        $response->assertStatus(422);
+        $response->assertStatus(404);
     }
 
     public function test_update_type_to_lending_creates_lending_record(){
@@ -98,9 +78,8 @@ class EditOperationTest extends TestCase
 
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
 
-        $response = $this->actingAs($this->user)
-            ->withHeaders($this->headers)->post('/edit_operation', [
-                'id' => $operation->id,
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->put("/operation/$operation->id", [
                 'operation_type_id' => $this->lendingType->id,
                 'expected_date_of_return' => '2023-01-01'
             ]);
@@ -121,10 +100,7 @@ class EditOperationTest extends TestCase
         $this->assertDatabaseHas('lendings', ['id' => $operation->id]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/edit_operation', [
-                'id' => $operation->id,
-                'operation_type_id' => $this->type->id
-            ]);
+            ->put("/operation/$operation->id", ['operation_type_id' => $this->type->id]);
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
@@ -140,10 +116,7 @@ class EditOperationTest extends TestCase
             ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => null]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/edit_operation', [
-                'id' => $operation->id,
-                'attachment' => $file
-            ]);
+            ->put("/operation/$operation->id", ['attachment' => $file]);
 
         $response->assertStatus(200);
         $operation->refresh();
@@ -167,10 +140,7 @@ class EditOperationTest extends TestCase
             ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => $oldPath]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/edit_operation', [
-                'id' => $operation->id,
-                'attachment' => $file
-            ]);
+            ->put("/operation/$operation->id", ['attachment' => $file]);
 
         $response->assertStatus(200);
         $operation->refresh();

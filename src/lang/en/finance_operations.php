@@ -25,7 +25,8 @@ return [
     ],
     'check' => [
         'success' => 'The operation was marked as checked.',
-        'failure' => 'An error occurred while marking the operation.'
+        'failure' => 'An error occurred while marking the operation.',
+        'invalid' => 'A lending cannot be marked as checked.'
     ],
 
 ];

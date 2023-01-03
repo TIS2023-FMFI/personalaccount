@@ -26,7 +26,8 @@ return [
     ],
     'check' => [
             'success' => 'Operácia bola úspešne označená ako skontrolovaná.',
-            'failure' => 'Pri označovaní operácie došlo k chybe.'
+            'failure' => 'Pri označovaní operácie došlo k chybe.',
+            'invalid' => 'Pôžička nemôže byť označená ako skontrolovaná.'
     ],
 
 ];
