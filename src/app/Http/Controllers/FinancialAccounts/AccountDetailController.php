@@ -50,10 +50,7 @@ class AccountDetailController extends Controller
      */
     public function show($account_id, Request $request)
     {
-        $request->validate([
-            'from' => ['nullable', 'date'],
-            'to' => ['nullable', 'date', 'after_or_equal:from']
-        ]);
+        $this->validateInterval($request);
 
         $account = Account::findOrFail($account_id);
         $dateFrom = $this->getDateFromRequestOrMin($request, 'from');
@@ -68,6 +65,19 @@ class AccountDetailController extends Controller
             'operations' => $operations,
             'incomes_total' => $incomes,
             'expenses_total' => $expenses
+        ]);
+    }
+
+    /**
+     * Validates that 'to' and 'from' query parameters are either empty or contain a date interval.
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function validateInterval(Request $request){
+        $request->validate([
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from']
         ]);
     }
 
@@ -110,10 +120,7 @@ class AccountDetailController extends Controller
      */
     public function downloadExport($account_id, Request $request)
     {
-        $request->validate([
-            'from' => ['nullable', 'date'],
-            'to' => ['nullable', 'date', 'after_or_equal:from']
-        ]);
+        $this->validateInterval($request);
 
         $account = Account::findOrFail($account_id);
         $dateFrom = $this->getDateFromRequestOrMin($request, 'from');
@@ -190,10 +197,8 @@ class AccountDetailController extends Controller
         DB::beginTransaction();
         try
         {
-
             if (!$operation->delete()) throwException(new Exception('The operation wasn\'t deleted.'));
             if ($attachment) $this->deleteFileIfExists($attachment);
-
         }
         catch (Exception $e)
         {

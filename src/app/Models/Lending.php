@@ -31,13 +31,4 @@ class Lending extends Model
      */
     public $incrementing = false;
 
-    /**
-     * Returns the financial operation this lending belongs to.
-     *
-     * @return BelongsTo
-     */
-    /*public function financialOperation()
-    {
-        return $this->belongsTo(FinancialOperation::class, 'id', 'id');
-    }*/
 }
