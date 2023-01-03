@@ -232,7 +232,7 @@ class OperationsExportTest extends TestCase
         $this->assertCount($this->extraRows+2,$rows);
     }
 
-    public function test_filtering_export_invalid_interval()
+    public function test_filtering_export_invalid_interval_causes_redirect()
     {
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
@@ -240,20 +240,16 @@ class OperationsExportTest extends TestCase
         $response = $this->actingAs($this->user)
             ->get("/export/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[0]}");
 
-        $response->assertStatus(200);
-        $content = $response->streamedContent();
-        $rows = explode("\n", $content);
-
-        $this->assertCount($this->extraRows+0,$rows);
+        $response->assertStatus(302);
     }
 
-    public function test_filtering_export_invalid_input()
+    public function test_filtering_export_invalid_input_causes_redirect()
     {
 
         $response = $this->actingAs($this->user)
             ->get("/export/{$this->account->id}?from=invalid");
 
-        $response->assertStatus(500);
+        $response->assertStatus(302);
     }
 
     public function test_export_filename(){
