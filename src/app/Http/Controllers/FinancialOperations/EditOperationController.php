@@ -60,8 +60,7 @@ class EditOperationController extends GeneralOperationController
     }
 
     /**
-     * Changes the data in the DB record for the given operation according to the request. If the request doesn't
-     * contain values for some columns, the original values are left untouched.
+     * Changes the data in the DB record for the given operation according to the request.
      *
      * @param EditOperationRequest $request
      * @param $operation
@@ -69,19 +68,12 @@ class EditOperationController extends GeneralOperationController
      */
     private function updateOperation(EditOperationRequest $request, $operation, $attachment)
     {
-
-        $title = $request->validated('title');
-        $date = $request->validated('date');
-        $operationTypeId = $request->validated('operation_type_id');
-        $subject = $request->validated('subject');
-        $sum = $request->validated('sum');
-
         if (! $operation->update([
-            'title' => ($title) ? $title : $operation->title,
-            'date' => ($date) ? $date : $operation->date,
-            'operation_type_id' => ($operationTypeId) ? $operationTypeId : $operation->operationType->id,
-            'subject' => ($subject) ? $subject : $operation->subject,
-            'sum' => ($sum) ? $sum : $operation->sum,
+            'title' => $request->validated('title'),
+            'date' => $request->validated('date'),
+            'operation_type_id' => $request->validated('operation_type_id'),
+            'subject' => $request->validated('subject'),
+            'sum' => $request->validated('sum'),
             'attachment' => ($attachment) ? $attachment : $operation->attachment,
         ])) throwException(new Exception('The operation wasn\'t updated.'));
     }

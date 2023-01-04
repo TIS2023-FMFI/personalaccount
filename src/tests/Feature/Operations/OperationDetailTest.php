@@ -45,25 +45,10 @@ class OperationDetailTest extends TestCase
         $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->get("/operation/$operation->id");
-        $response->assertStatus(200)->assertJsonCount(2);
         $content = $response->json();
 
         $this->assertEquals($this->account->id, $content['operation']['account_id']);
         $this->assertEquals($this->type->id, $content['operation']['operation_type_id']);
-        $this->assertEquals(null, $content['lending']);
-    }
-
-    public function test_operation_data_with_lending(){
-
-        $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->lendingType]);
-        Lending::factory()->create(['id' => $operation]);
-
-        $response = $this->actingAs($this->user)->get("/operation/$operation->id");
-        $response->assertStatus(200);
-        $content = $response->json();
-
-        $this->assertEquals($operation->id, $content['lending']['id']);
-
     }
 
     public function test_cant_view_nonexistent_operation(){

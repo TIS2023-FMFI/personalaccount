@@ -45,28 +45,45 @@ class EditOperationTest extends TestCase
         $operation = FinancialOperation::factory()->create(
             [
                 'account_id' => $this->account,
-                'operation_type_id' => $this->type,
-                'title' => 'original',
-                'sum' => 100,
-                'subject' => 'original'
+                'operation_type_id' => $this->type
             ]);
 
+        $operationData = [
+            'account_id' => $this->account->id,
+            'title' => 'title',
+            'date' => '2022-12-24',
+            'operation_type_id' => $this->type->id,
+            'subject' => 'subject',
+            'sum' => 100,
+            'attachment' => null
+        ];
+
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", ['id' => $operation->id, 'sum' => 100.5, 'subject' => 'new']);
+            ->put("/operation/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
             'id' => $operation->id,
-            'title' => 'original',
-            'sum' => 100.5,
-            'subject' => 'new'
+            'title' => 'title',
+            'sum' => 100,
+            'subject' => 'subject'
         ]);
     }
 
     public function test_update_nonexisting_operation(){
 
+        $operationData = [
+            'account_id' => $this->account->id,
+            'title' => 'title',
+            'date' => '2022-12-24',
+            'operation_type_id' => $this->type->id,
+            'subject' => 'subject',
+            'sum' => 100,
+            'attachment' => null
+        ];
+
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put('/operation/99999', ['sum' => 100.5, 'subject' => 'new']);
+            ->put('/operation/9999', $operationData);
 
         $response->assertStatus(404);
     }
@@ -78,11 +95,23 @@ class EditOperationTest extends TestCase
 
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
 
+        $operationData = [
+            'account_id' => $this->account->id,
+            'title' => 'test',
+            'date' => '2022-12-24',
+            'operation_type_id' => $this->lendingType->id,
+            'subject' => 'test',
+            'sum' => 100,
+            'attachment' => null
+        ];
+
+        $lendingData = [
+            'expected_date_of_return' => '2023-01-01',
+            'previous_lending_id' => null
+        ];
+
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", [
-                'operation_type_id' => $this->lendingType->id,
-                'expected_date_of_return' => '2023-01-01'
-            ]);
+            ->put("/operation/$operation->id", array_merge($operationData, $lendingData));
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('lendings', [
@@ -99,8 +128,18 @@ class EditOperationTest extends TestCase
 
         $this->assertDatabaseHas('lendings', ['id' => $operation->id]);
 
+        $operationData = [
+            'account_id' => $this->account->id,
+            'title' => 'test',
+            'date' => '2022-12-24',
+            'operation_type_id' => $this->type->id,
+            'subject' => 'test',
+            'sum' => 100,
+            'attachment' => null
+        ];
+
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", ['operation_type_id' => $this->type->id]);
+            ->put("/operation/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
@@ -115,8 +154,18 @@ class EditOperationTest extends TestCase
         $operation = FinancialOperation::factory()->create(
             ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => null]);
 
+        $operationData = [
+            'account_id' => $this->account->id,
+            'title' => 'test',
+            'date' => '2022-12-24',
+            'operation_type_id' => $this->type->id,
+            'subject' => 'test',
+            'sum' => 100,
+            'attachment' => $file
+        ];
+
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", ['attachment' => $file]);
+            ->put("/operation/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $operation->refresh();
@@ -139,8 +188,18 @@ class EditOperationTest extends TestCase
         $operation = FinancialOperation::factory()->create(
             ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => $oldPath]);
 
+        $operationData = [
+            'account_id' => $this->account->id,
+            'title' => 'test',
+            'date' => '2022-12-24',
+            'operation_type_id' => $this->type->id,
+            'subject' => 'test',
+            'sum' => 100,
+            'attachment' => $file
+        ];
+
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", ['attachment' => $file]);
+            ->put("/operation/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $operation->refresh();

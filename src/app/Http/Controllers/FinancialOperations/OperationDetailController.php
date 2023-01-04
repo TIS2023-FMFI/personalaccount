@@ -23,13 +23,7 @@ class OperationDetailController extends Controller
      */
     public function getOperationData($operation_id)
     {
-
-        $operation = FinancialOperation::findOrFail($operation_id);
-
-        return [
-            'operation' => $operation,
-            'lending' => $operation->lending
-        ];
+        return ['operation' => FinancialOperation::findOrFail($operation_id)];
     }
 
     /**
@@ -52,7 +46,7 @@ class OperationDetailController extends Controller
      * @param $operation
      * @return string
      */
-    public function generateDownloadFileName($operation)
+    private function generateDownloadFileName($operation)
     {
         $mime = Storage::mimeType($operation->attachment);
         $extension = MimeType::search($mime);

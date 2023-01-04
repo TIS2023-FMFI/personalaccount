@@ -12,8 +12,8 @@ return [
     */
 
     'create' => [
-        'success' => 'The new operation was successfully created.',
-        'failure' => 'An error occurred while creating the new operation.'
+        'success' => 'The operation was successfully created.',
+        'failure' => 'An error occurred while creating the operation.'
     ],
     'edit' => [
         'success' => 'The operation was succesfully updated.',
