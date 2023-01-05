@@ -75,7 +75,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
         Route::post('/operation', [CreateOperationController::class, 'handleCreateOperationRequest']);
         Route::put('/operation/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
-        Route::patch('/operation/{operation}', [AccountDetailController::class, 'markOperationAsChecked']);
+        Route::patch('/operation/{operation}', [AccountDetailController::class, 'checkOrUncheckOperation']);
         Route::delete('/operation/{operation}', [AccountDetailController::class, 'deleteOperation']);
     });
 
