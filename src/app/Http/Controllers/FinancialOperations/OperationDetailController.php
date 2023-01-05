@@ -18,23 +18,26 @@ class OperationDetailController extends Controller
     /**
      * Returns data of a single operation.
      *
-     * @param $operation_id
+     * @param FinancialOperation $operation
      * @return array
      */
-    public function getOperationData($operation_id)
+    public function getOperationData(FinancialOperation $operation)
     {
-        return ['operation' => FinancialOperation::findOrFail($operation_id)];
+        $this->authorize('view', $operation);
+        
+        return ['operation' => $operation];
     }
 
     /**
      * Downloads the attachment file for the given operation.
      *
-     * @param $operation_id
+     * @param FinancialOperation $operation
      * @return StreamedResponse
      */
-    public function downloadAttachment($operation_id)
+    public function downloadAttachment(FinancialOperation $operation)
     {
-        $operation = FinancialOperation::findOrFail($operation_id);
+        $this->authorize('view', $operation);
+        
         $path = $operation->attachment;
         if (! Storage::exists($path)) throwException(new Exception('The requested file doesn\'t exist'));
         return Storage::download($path, $this->generateDownloadFileName($operation));

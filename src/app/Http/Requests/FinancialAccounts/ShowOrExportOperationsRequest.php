@@ -4,7 +4,7 @@ namespace App\Http\Requests\FinancialAccounts;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FilterOperationsRequest extends FormRequest
+class ShowOrExportOperationsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

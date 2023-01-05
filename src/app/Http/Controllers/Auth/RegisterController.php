@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use \Exception;
 
 /**
  * A controller responsible for registering new users.
@@ -28,11 +30,31 @@ class RegisterController extends Controller
         $email = $request->validated('email');
 
         try {
-            User::create([ 'email' => $email ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+            $this->registerWithEmail($email);
+        } catch (DatabaseException $e) {
+            return response($e->getMessage(), 500);
+        } catch (Exception $e) {
             return response(trans('auth.register.failed'), 500);
         }
 
         return response(trans('auth.register.success'), 201);
+    }
+
+    /**
+     * Register a new user identified by an email address.
+     * 
+     * @param string $email
+     * the email address identifying the new user
+     * @throws \App\Exceptions\DatabaseException
+     * thrown if an unspecified database error ocurred during the creation process
+     * @return void
+     */
+    private function registerWithEmail(string $email)
+    {
+        $user = User::create([ 'email' => $email ]);
+
+        if (!$user->exists) {
+            throw new DatabaseException(trans('auth.register.failed'));
+        }
     }
 }

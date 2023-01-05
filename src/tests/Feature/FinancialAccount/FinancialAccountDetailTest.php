@@ -30,10 +30,10 @@ class FinancialAccountDetailTest extends TestCase
         parent::setUp();
 
         $this->perPage = AccountDetailController::$perPage;
-        $this->user = User::create([ 'email' => 'new@b.c' ]);
+        $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->type = OperationType::factory()->create(['name' => 'type', 'lending' => false]);
-        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'lending' => true]);
+        $this->type = OperationType::firstOrCreate(['name' => 'type']);
+        $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',

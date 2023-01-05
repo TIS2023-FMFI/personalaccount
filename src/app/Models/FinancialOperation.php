@@ -73,16 +73,6 @@ class FinancialOperation extends Model
     }
 
     /**
-     * Returns the ID of the user who owns this operation's account.
-     *
-     * @return mixed
-     */
-    public function getUserId()
-    {
-        return $this->account->getUserId();
-    }
-
-    /**
      * Returns the type of this operation.
      *
      * @return BelongsTo
@@ -108,7 +98,7 @@ class FinancialOperation extends Model
      *
      * @return bool
      */
-    public function islending()
+    public function isLending()
     {
         return $this->operationType->lending;
     }

@@ -30,11 +30,11 @@ class OperationsExportTest extends TestCase
         $this->perPage = AccountDetailController::$perPage;
         $this->extraRows = 2; // header + extra '\n' symbol in a csv file
         $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
-        $this->user = User::create([ 'email' => 'new@b.c' ]);
+        $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['title' => 'account', 'user_id' => $this->user]);
-        $this->incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false, 'lending' => false]);
-        $this->expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true, 'lending' => false]);
-        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'expense' => false, 'lending' => true]);
+        $this->incomeType = OperationType::firstOrCreate(['name' => 'income', 'expense' => false, 'lending' => false]);
+        $this->expenseType = OperationType::firstOrCreate(['name' => 'expense', 'expense' => true, 'lending' => false]);
+        $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'expense' => false, 'lending' => true]);
 
     }
 

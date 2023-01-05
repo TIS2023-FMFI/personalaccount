@@ -28,8 +28,8 @@ class OperationDetailTest extends TestCase
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
-        $this->type = OperationType::factory()->create(['name' => 'type', 'lending' => false]);
-        $this->lendingType = OperationType::factory()->create(['name' => 'lending', 'lending' => true]);
+        $this->type = OperationType::firstOrCreate(['name' => 'type', 'lending' => false]);
+        $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',

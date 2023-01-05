@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -24,14 +25,29 @@ class JsonifyResponse
         $response = $next($request);
 
         if ($request->expectsJson() && !($response instanceof JsonResponse)) {
-            return response()
+            return $this->jsonifyResponse($response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Transform a plain-text response into a JSON response, by replacing its
+     * original content with a JSON of the form:
+     * [ "displayMessage": <original-content> ].
+     * 
+     * @param \Illuminate\Http\Response $response
+     * the response to transform
+     * @return \Illuminate\Http\JsonResponse
+     * the resulting JSON response
+     */
+    private function jsonifyResponse(Response $response)
+    {
+        return response()
                     ->json(
                         [ 'displayMessage' => $response->content() ],
                         $response->status(),
                         $response->headers->all()
                     );
-        }
-
-        return $response;
     }
 }

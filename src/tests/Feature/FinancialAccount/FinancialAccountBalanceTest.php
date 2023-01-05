@@ -20,8 +20,8 @@ class FinancialAccountBalanceTest extends TestCase
         parent::setUp();
 
         $this->account = Account::factory()->create();
-        $this->incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false, 'lending' => false]);
-        $this->expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true, 'lending' => false]);
+        $this->incomeType = OperationType::firstOrCreate(['name' => 'income', 'expense' => false, 'lending' => false]);
+        $this->expenseType = OperationType::firstOrCreate(['name' => 'expense', 'expense' => true, 'lending' => false]);
 
     }
 

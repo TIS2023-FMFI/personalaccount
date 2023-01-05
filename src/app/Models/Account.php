@@ -36,16 +36,6 @@ class Account extends Model
     }
 
     /**
-     * Returns the ID of the user who owns this account.
-     *
-     * @return mixed
-     */
-    public function getUserId()
-    {
-        return $this->user->id;
-    }
-
-    /**
      * Returns a list of operations belonging to this account.
      *
      * @return HasMany

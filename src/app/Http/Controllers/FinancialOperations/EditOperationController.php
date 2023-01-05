@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\FinancialOperations;
 
 use App\Http\Requests\FinancialOperations\UploadOperationRequest;
+use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
 use App\Models\OperationType;
@@ -22,19 +23,21 @@ class EditOperationController extends GeneralOperationController
      * Handles the request to edit a financial operation. Manages updating the operation itself, its related
      * lending record and its attachment file if there are any.
      *
-     * @param $operation_id - route parameter
+     * @param FinancialOperation $operation - route parameter
      * @param UploadOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleEditOperationRequest($operation_id, UploadOperationRequest $request)
+    public function handleEditOperationRequest(FinancialOperation $operation, UploadOperationRequest $request)
     {
-        $operation = FinancialOperation::findOrFail($operation_id);
+        $account = Account::findOrFail($request->validated('account_id'));
+
+        $this->authorize('updateAndMove', [$operation, $account]);
 
         $old_attachment = $operation->attachment;
         $new_attachment = null;
 
         $file = $request->file('attachment');
-        if ($file) $new_attachment = $this->saveAttachment($operation->getUserId(), $file);
+        if ($file) $new_attachment = $this->saveAttachment($account->user_id, $file);
 
         DB::beginTransaction();
         try

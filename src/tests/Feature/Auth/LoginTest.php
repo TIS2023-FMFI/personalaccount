@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -14,9 +14,7 @@ use Tests\TestCase;
 class LoginTest extends TestCase
 {
     private $email;
-
     private $password;
-
     private $emailRequired;
 
     public function setUp(): void
