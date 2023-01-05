@@ -201,7 +201,7 @@ class FinancialAccountDetailTest extends TestCase
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->patch("/operation/$operation->id");
+            ->patch("/operation/$operation->id", ['checked' => true]);
 
         $response->assertStatus(422);
 
