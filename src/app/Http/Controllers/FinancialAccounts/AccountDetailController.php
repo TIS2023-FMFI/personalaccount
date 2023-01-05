@@ -99,7 +99,7 @@ class AccountDetailController extends Controller
      * Handles a request to download a CSV export for the given account.
      *
      * @param $account_id
-     * @param Request $request
+     * @param FilterOperationsRequest $request
      * @return StreamedResponse
      */
     public function downloadExport($account_id, FilterOperationsRequest $request)
