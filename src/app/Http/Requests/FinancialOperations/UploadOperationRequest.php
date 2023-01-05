@@ -5,7 +5,7 @@ namespace App\Http\Requests\FinancialOperations;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
-class EditOperationRequest extends FormRequest
+class UploadOperationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,6 +25,7 @@ class EditOperationRequest extends FormRequest
     public function rules()
     {
         return [
+            'account_id' => ['required', 'numeric', 'exists:accounts,id'],
             'title' => ['required', "max:255"],
             'date' => ['required', 'date'],
             'operation_type_id' => ['required', 'numeric', 'exists:operation_types,id'],
@@ -34,6 +35,5 @@ class EditOperationRequest extends FormRequest
             'expected_date_of_return' => ['nullable', 'date'],
             'previous_lending_id' => ['nullable', 'numeric', 'exists:lendings,id'],
         ];
-
     }
 }

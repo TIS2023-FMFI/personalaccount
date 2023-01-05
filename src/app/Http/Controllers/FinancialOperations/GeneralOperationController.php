@@ -25,9 +25,7 @@ class GeneralOperationController extends Controller
     public function saveAttachment($userId, $file) : string
     {
         $dir = $this->generateAttachmentDirectory($userId);
-        $filename = $this->generateAttachmentName($dir);
-        Storage::putFileAs($dir, $file, $filename);
-        return "$dir/$filename";
+        return Storage::putFile($dir, $file);
     }
 
     /**
@@ -38,24 +36,7 @@ class GeneralOperationController extends Controller
      */
     private function generateAttachmentDirectory($userId): string
     {
-        return sprintf('user_%02d/attachments', $userId);
-    }
-
-    /**
-     * Returns the name for an attachment file in the form "attachment_{id}", where {id} is the smallest number
-     * not yet taken by any file in the directory.
-     *
-     * @param $directory
-     * @return string
-     */
-    private function generateAttachmentName($directory): string
-    {
-        $num = 0;
-        while(true){
-            $name = sprintf('attachment_%04d', $num);
-            if (!Storage::exists($directory.'/'.$name)) return $name;
-            $num++;
-        }
+        return "user_$userId/attachments";
     }
 
     /**

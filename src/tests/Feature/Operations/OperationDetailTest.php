@@ -78,7 +78,7 @@ class OperationDetailTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDownload();
-        $this->assertEquals('attachment; filename=attachment_operation.', $response->headers->get('content-disposition'));
+        $this->assertEquals('attachment; filename=attachment_operation.txt', $response->headers->get('content-disposition'));
 
         Storage::fake('local');
     }

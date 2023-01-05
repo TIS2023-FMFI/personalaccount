@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
-use App\Http\Requests\FinancialOperations\EditOperationRequest;
+use App\Http\Requests\FinancialOperations\UploadOperationRequest;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
 use App\Models\OperationType;
@@ -23,10 +23,10 @@ class EditOperationController extends GeneralOperationController
      * lending record and its attachment file if there are any.
      *
      * @param $operation_id - route parameter
-     * @param EditOperationRequest $request
+     * @param UploadOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleEditOperationRequest($operation_id, EditOperationRequest $request)
+    public function handleEditOperationRequest($operation_id, UploadOperationRequest $request)
     {
         $operation = FinancialOperation::findOrFail($operation_id);
 
@@ -40,7 +40,7 @@ class EditOperationController extends GeneralOperationController
         try
         {
             if ($this->typeChangedFromLending($request, $operation)) $this->deleteLending($operation);
-            $this->updateOperation($request, $operation, ($file) ? $new_attachment : null);
+            $this->updateOperation($request, $operation, $new_attachment);
 
             $operation->refresh();
             if ($operation->isLending()) $this->upsertLending($request, $operation->id);
@@ -62,13 +62,14 @@ class EditOperationController extends GeneralOperationController
     /**
      * Changes the data in the DB record for the given operation according to the request.
      *
-     * @param EditOperationRequest $request
+     * @param UploadOperationRequest $request
      * @param $operation
      * @param $attachment - updated path to the operation's attachment file
      */
-    private function updateOperation(EditOperationRequest $request, $operation, $attachment)
+    private function updateOperation(UploadOperationRequest $request, $operation, $attachment)
     {
         if (! $operation->update([
+            'account_id' => $request->validated('account_id'),
             'title' => $request->validated('title'),
             'date' => $request->validated('date'),
             'operation_type_id' => $request->validated('operation_type_id'),
@@ -82,16 +83,17 @@ class EditOperationController extends GeneralOperationController
      * Returns 'true' if the given operation was a lending originally, but it's requested to change
      * into a non-lending type. Otherwise, returns 'false'.
      *
-     * @param EditOperationRequest $request
+     * @param UploadOperationRequest $request
      * @param $operation
      * @return bool
      */
-    private function typeChangedFromLending(EditOperationRequest $request, $operation)
+    private function typeChangedFromLending(UploadOperationRequest $request, $operation)
     {
         $newTypeId = $request->validated('operation_type_id');
-        if (!$newTypeId) return false;
 
         $oldType = $operation->operationType;
+        if ($newTypeId == $oldType->id) return false;
+
         $newType = OperationType::findOrFail($newTypeId);
         return $oldType->lending && ! $newType->lending;
     }

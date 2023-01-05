@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
-use App\Http\Requests\FinancialOperations\CreateOperationRequest;
+use App\Http\Requests\FinancialOperations\UploadOperationRequest;
 use App\Models\Account;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -20,10 +20,10 @@ class CreateOperationController extends GeneralOperationController
     /**
      * Handles the request to create a new financial operation.
      *
-     * @param CreateOperationRequest $request
+     * @param UploadOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleCreateOperationRequest(CreateOperationRequest $request)
+    public function handleCreateOperationRequest(UploadOperationRequest $request)
     {
         $account = Account::findOrFail($request->validated('account_id'));
 

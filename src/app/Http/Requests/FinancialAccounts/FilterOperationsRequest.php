@@ -19,7 +19,7 @@ class FilterOperationsRequest extends FormRequest
 
     /**
      * Returns input data from the request.
-     * Parent function is overriden to make query paramaters accessible for valdiation.
+     * Parent function is overridden to make query parameters accessible for validation.
      *
      * @param $keys
      * @return array

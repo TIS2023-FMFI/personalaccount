@@ -188,6 +188,7 @@ class EditOperationTest extends TestCase
         $operation = FinancialOperation::factory()->create(
             ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => $oldPath]);
 
+        $newFile = UploadedFile::fake()->create('test.txt');
         $operationData = [
             'account_id' => $this->account->id,
             'title' => 'test',
@@ -195,7 +196,7 @@ class EditOperationTest extends TestCase
             'operation_type_id' => $this->type->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => $file
+            'attachment' => $newFile
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
@@ -207,7 +208,7 @@ class EditOperationTest extends TestCase
         Storage::disk('local')->assertExists($newPath);
         Storage::disk('local')->assertMissing($oldPath);
 
-        Storage::fake('local');
+        //Storage::fake('local');
 
     }
 
