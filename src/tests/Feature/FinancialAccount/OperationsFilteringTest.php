@@ -28,7 +28,7 @@ class OperationsFilteringTest extends TestCase
 
         $this->perPage = AccountDetailController::$perPage;
         $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
-        $this->user = User::create([ 'email' => 'new@b.c' ]);
+        $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
 
     }

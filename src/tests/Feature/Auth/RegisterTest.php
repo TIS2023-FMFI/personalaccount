@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,8 +12,9 @@ use Tests\TestCase;
 class RegisterTest extends TestCase
 {
     private $email;
-
     private $emailRequired;
+
+    private $ajaxHeaders;
 
     public function setUp(): void
     {
@@ -26,6 +27,11 @@ class RegisterTest extends TestCase
         $this->emailRequired = App::isLocale('en')
             ? trans('validation.required', [ 'attribute' => 'email' ])
             : trans('validation.custom.email.required');
+
+        $this->ajaxHeaders = [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ];
     }
     
     public function test_that_only_ajax_requests_are_handled()
@@ -42,10 +48,8 @@ class RegisterTest extends TestCase
         User::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $response = $this->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+        $response = $this->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/register',
                                 [ 'email' => '' ]
                             );
@@ -58,10 +62,8 @@ class RegisterTest extends TestCase
     {
         User::firstOrCreate([ 'email' => 'a@b.c' ]);
 
-        $response = $this->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+        $response = $this->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/register',
                                 [ 'email' => '' ]
                             );
@@ -75,10 +77,8 @@ class RegisterTest extends TestCase
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
 
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/register',
                                 [ 'email' => '' ]
                             );
@@ -96,10 +96,8 @@ class RegisterTest extends TestCase
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
 
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/register',
                                 [ 'email' => 'xxx' ]
                             );
@@ -117,10 +115,8 @@ class RegisterTest extends TestCase
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/register',
                                 [ 'email' => $user->email ]
                             );
@@ -139,10 +135,8 @@ class RegisterTest extends TestCase
         $email = 'x@x.x';
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/register',
                                 [ 'email' => $email ]
                             );

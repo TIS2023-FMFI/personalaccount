@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Http\Requests\FinancialOperations\UploadOperationRequest;
 use App\Models\Account;
+use App\Models\FinancialOperation;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -27,9 +28,11 @@ class CreateOperationController extends GeneralOperationController
     {
         $account = Account::findOrFail($request->validated('account_id'));
 
+        $this->authorize('create', [FinancialOperation::class, $account]);
+
         $attachmentPath = null;
         $file = $request->file('attachment');
-        if ($file) $attachmentPath = $this->saveAttachment($account->getUserId(), $file);
+        if ($file) $attachmentPath = $this->saveAttachment($account->user_id, $file);
 
         DB::beginTransaction();
         try

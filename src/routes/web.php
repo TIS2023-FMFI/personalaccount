@@ -9,6 +9,7 @@ use App\Http\Controllers\FinancialAccounts\FinancialAccountsOverviewController;
 use App\Http\Controllers\FinancialOperations\CreateOperationController;
 use App\Http\Controllers\FinancialOperations\EditOperationController;
 use App\Http\Controllers\FinancialOperations\OperationDetailController;
+use App\Models\FinancialOperation;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,7 +28,6 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::middleware('guest')->group(function () {
-    
     Route::get('/login', [LoginController::class, 'show'])
         ->name('login');
     Route::post('/login', [LoginController::class, 'login']);
@@ -61,23 +61,22 @@ Route::post('/change-password', [ManageAccountController::class, 'changePassword
  */
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
-
     Route::get('/', [FinancialAccountsOverviewController::class, 'show'])
         ->name('accounts_overview');
 
-    Route::get('/account/{account_id}', [AccountDetailController::class, 'show']);
-    Route::get('/export/{account_id}', [AccountDetailController::class, 'downloadExport']);
-    Route::get('/operation/{operation_id}', [OperationDetailController::class, 'getOperationData']);
-    Route::get('/attachment/{operation_id}', [OperationDetailController::class, 'downloadAttachment']);
+    Route::get('/account/{account}', [AccountDetailController::class, 'show']);
+    Route::get('/export/{account}', [AccountDetailController::class, 'downloadExport']);
+
+    Route::get('/operation/{operation}', [OperationDetailController::class, 'getOperationData']);
+    Route::get('/attachment/{operation}', [OperationDetailController::class, 'downloadAttachment']);
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-
         Route::post('/account', [FinancialAccountsOverviewController::class, 'createFinancialAccount']);
 
         Route::post('/operation', [CreateOperationController::class, 'handleCreateOperationRequest']);
-        Route::put('/operation/{operation_id}', [EditOperationController::class, 'handleEditOperationRequest']);
-        Route::patch('/operation/{operation_id}', [AccountDetailController::class, 'markOperationAsChecked']);
-        Route::delete('/operation/{operation_id}', [AccountDetailController::class, 'deleteOperation']);
+        Route::put('/operation/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
+        Route::patch('/operation/{operation}', [AccountDetailController::class, 'markOperationAsChecked']);
+        Route::delete('/operation/{operation}', [AccountDetailController::class, 'deleteOperation']);
     });
 
     Route::get('/sap-reports', function () {

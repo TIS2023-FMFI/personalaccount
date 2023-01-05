@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialAccounts\FilterOperationsRequest;
+use App\Http\Requests\FinancialAccounts\ShowOrExportOperationsRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -45,13 +45,14 @@ class AccountDetailController extends Controller
      * to the given account. The operations are paginated and can be filtered by date by GET parameters 'from'
      * (first date in the interval) and 'to' ('last date').
      *
-     * @param $account_id - route parameter
-     * @param FilterOperationsRequest $request - the GET request containing query parameters
+     * @param Account $account - route parameter
+     * @param ShowOrExportOperationsRequest $request - the GET request containing query parameters
      * @return Application|Factory|View
      */
-    public function show($account_id, FilterOperationsRequest $request)
+    public function show(Account $account, ShowOrExportOperationsRequest $request)
     {
-        $account = Account::findOrFail($account_id);
+        $this->authorize('view', $account);
+        
         $dateFrom = $this->getFromDateOrMin($request);
         $dateTo = $this->getToDateOrMax($request);
 
@@ -71,10 +72,10 @@ class AccountDetailController extends Controller
      * Returns a date taken from the query parameter of a given request, specified by the $key parameter.
      * If the parameter isn't present, the minimal possible date is returned instead.
      *
-     * @param FilterOperationsRequest $request
+     * @param ShowOrExportOperationsRequest $request
      * @return Carbon
      */
-    private function getFromDateOrMin(FilterOperationsRequest $request)
+    private function getFromDateOrMin(ShowOrExportOperationsRequest $request)
     {
         $date = $request->validated('from');
         if ($date) return Date::create($date);
@@ -85,10 +86,10 @@ class AccountDetailController extends Controller
      * Returns a date taken from the query parameter of a given request, specified by the $key parameter.
      * If the parameter isn't present, the maximal possible date is returned instead.
      *
-     * @param FilterOperationsRequest $request
+     * @param ShowOrExportOperationsRequest $request
      * @return Carbon
      */
-    private function getToDateOrMax(FilterOperationsRequest $request)
+    private function getToDateOrMax(ShowOrExportOperationsRequest $request)
     {
         $date = $request->validated('to');
         if ($date) return Date::create($date);
@@ -98,13 +99,14 @@ class AccountDetailController extends Controller
     /**
      * Handles a request to download a CSV export for the given account.
      *
-     * @param $account_id
-     * @param FilterOperationsRequest $request
+     * @param Account $account
+     * @param ShowOrExportOperationsRequest $request
      * @return StreamedResponse
      */
-    public function downloadExport($account_id, FilterOperationsRequest $request)
+    public function downloadExport(Account $account, ShowOrExportOperationsRequest $request)
     {
-        $account = Account::findOrFail($account_id);
+        $this->authorize('view', $account);
+        
         $dateFrom = $this->getFromDateOrMin($request);
         $dateTo = $this->getToDateOrMax($request);
 
@@ -168,12 +170,13 @@ class AccountDetailController extends Controller
     /**
      * Handles the request to delete a financial operation.
      *
-     * @param $operation_id - route parameter
+     * @param FinancialOperation $operation - route parameter
      * @return Application|ResponseFactory|Response
      */
-    public function deleteOperation($operation_id)
+    public function deleteOperation(FinancialOperation $operation)
     {
-        $operation = FinancialOperation::findOrFail($operation_id);
+        $this->authorize('delete', $operation);
+        
         $attachment = $operation->attachment;
 
         DB::beginTransaction();
@@ -195,15 +198,15 @@ class AccountDetailController extends Controller
     /**
      * Handles the request to mark a financial operation as checked by the user.
      *
-     * @param $operation_id  - route parameter
+     * @param FinancialOperation $operation  - route parameter
      * @return Application|ResponseFactory|Response
      */
-    public function markOperationAsChecked($operation_id)
+    public function markOperationAsChecked(FinancialOperation $operation)
     {
-        if (Lending::find($operation_id))
-            return response(trans('finance_operations.check.invalid'), 422);
+        $this->authorize('update', $operation);
 
-        $operation = FinancialOperation::findOrFail($operation_id);
+        if ($operation->isLending())
+            return response(trans('finance_operations.check.invalid'), 422);
 
         if ($operation->update(['checked' => true]))
             return response(trans('finance_operations.check.success'), 200);
