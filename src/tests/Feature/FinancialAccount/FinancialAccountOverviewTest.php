@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\FinancialAccount;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-class FinancialAccountTest extends TestCase
+class FinancialAccountOverviewTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -30,7 +30,7 @@ class FinancialAccountTest extends TestCase
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
             ])->post(
-                '/create-account',
+                '/account',
                 [
                     'title' => '',
                     'sap_id' => '',
@@ -56,7 +56,7 @@ class FinancialAccountTest extends TestCase
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
             ])->post(
-                '/create-account',
+                '/account',
                 [
                     'title' => 'title',
                     'sap_id' => 'ID-123',
@@ -90,16 +90,16 @@ class FinancialAccountTest extends TestCase
         $account1 = Account::factory()->create(['user_id' => $user]);
         $account2 = Account::factory()->create(['user_id' => $user]);
 
-        $gain = OperationType::factory()->create(['name' => 'testGain', 'expense' => '0']);
-        $expense = OperationType::factory()->create(['name' => 'testExpense', 'expense' => '1']);
+        $incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false, 'lending' => false]);
+        $expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true, 'lending' => false]);
 
         FinancialOperation::factory()->create([
             'account_id' => $account1,
-            'operation_type_id' => $gain,
+            'operation_type_id' => $incomeType,
             'sum' => 10]);
         FinancialOperation::factory()->create([
             'account_id' => $account2,
-            'operation_type_id' => $expense,
+            'operation_type_id' => $expenseType,
             'sum' => 10]);
 
         $response = $this->actingAs($user)->get('/');
@@ -107,11 +107,11 @@ class FinancialAccountTest extends TestCase
             ->assertStatus(200)
             ->assertViewIs('finances.index');
 
-        $data = $response->viewData('accounts');
+        $accounts = $response->viewData('accounts');
 
-        $this->assertCount(2,$data);
-        $this->assertEquals(10,$data[0]->getBalance());
-        $this->assertEquals(-10,$data[1]->getBalance());
+        $this->assertCount(2,$accounts);
+        $this->assertEquals(10,$accounts[0]->getBalance());
+        $this->assertEquals(-10,$accounts[1]->getBalance());
     }
 
 }

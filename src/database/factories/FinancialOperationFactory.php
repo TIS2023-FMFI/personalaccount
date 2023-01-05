@@ -23,7 +23,7 @@ class FinancialOperationFactory extends Factory
         return [
             'account_id' => mt_rand(1,AccountSeeder::$accountsCount),
             'title' => fake()->text(20),
-            'date' => fake()->date(),
+            'date' => fake()->date,
             'operation_type_id' => mt_rand(1,OperationTypeSeeder::$operationTypesCount),
             'subject' => fake()->name,
             'sum' => fake()->randomFloat(2,1,1000),

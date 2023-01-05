@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class FinancialOperation extends Model
 {
@@ -63,7 +65,7 @@ class FinancialOperation extends Model
     /**
      * Returns the account to which this operation belongs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account()
     {
@@ -71,9 +73,19 @@ class FinancialOperation extends Model
     }
 
     /**
+     * Returns the ID of the user who owns this operation's account.
+     *
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->account->getUserId();
+    }
+
+    /**
      * Returns the type of this operation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function operationType()
     {
@@ -85,8 +97,75 @@ class FinancialOperation extends Model
      *
      * @return bool
      */
-    public function isExpense(): bool
+    public function isExpense()
     {
         return $this->operationType->expense;
     }
+
+    /**
+     * Returns whether this operation is a lending
+     * (based on the operation type, not on existence of a DB 'lending' record).
+     *
+     * @return bool
+     */
+    public function islending()
+    {
+        return $this->operationType->lending;
+    }
+
+    /**
+     * Returns the lending record related to this operation, if it exists.
+     *
+     * @return HasOne
+     */
+    public function lending()
+    {
+        return $this->hasOne(Lending::class, 'id', 'id');
+    }
+
+    /**
+     * Returns an array of data needed for the CSV export.
+     *
+     * @return array
+     */
+    public function getExportData()
+    {
+        return [
+            $this->id,
+            $this->account->sap_id,
+            $this->title,
+            $this->date,
+            $this->operationType->name,
+            $this->subject,
+            $this->getSumString(),
+            $this->attachment,
+            $this->getCheckedString(),
+            $this->sap_id
+        ];
+    }
+
+    /**
+     * Returns a string containing this operation's sum, with '-' after the number if it's an expense.
+     *
+     * @return string
+     */
+    public function getSumString()
+    {
+        $sumString = sprintf('%.2f', $this->sum);
+        if ($this->isExpense()) return "$sumString-";
+        return $sumString;
+    }
+
+    /**
+     * Returns whether this operation is checked, in form of an all-caps string,
+     * or an empty string if this is a lending.
+     *
+     * @return string
+     */
+    public function getCheckedString()
+    {
+        if ($this->isLending()) return '';
+        return $this->checked ? 'TRUE' : 'FALSE';
+    }
+
 }

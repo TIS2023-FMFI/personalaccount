@@ -3,7 +3,6 @@
 namespace App\Http\Requests\FinancialAccounts;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class CreateFinancialAccountRequest extends FormRequest
 {

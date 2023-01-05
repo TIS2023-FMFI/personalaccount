@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class OperationType extends Model
+class Lending extends Model
 {
-    use HasFactory;
+    use hasFactory;
 
     /**
      * Indicates if the model should be timestamped.
@@ -21,6 +22,13 @@ class OperationType extends Model
      *
      * @var string[]
      */
-    protected $guarded = ['id'];
+    protected $guarded = [];
+
+    /**
+     * Whether the DB record for this model should have its ID set automatically according to the incrementing ID rules.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
 }

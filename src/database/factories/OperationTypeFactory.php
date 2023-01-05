@@ -18,7 +18,8 @@ class OperationTypeFactory extends Factory
     {
         return [
             'name' => fake()->unique()->text(10),
-            'expense' => fake()->boolean()
+            'expense' => fake()->boolean(),
+            'lending' => fake()->boolean(0.2)
         ];
     }
 }
