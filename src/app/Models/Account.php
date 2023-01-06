@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Account extends Model
 {
@@ -43,6 +44,18 @@ class Account extends Model
     public function financialOperations()
     {
         return $this->hasMany(FinancialOperation::class);
+    }
+
+    /**
+     * Get the account's SAP identifier in the form of a string consisting
+     * only of alphanumeric characters and dash ('-') symbols.
+     *  
+     * @return string
+     * the transformed SAP identifier
+     */
+    public function getSanitizedSapId()
+    {
+        return Str::replace($this->sap_id, '-', '/');
     }
 
     /**
