@@ -4,15 +4,14 @@ namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FinancialAccounts\ShowOrExportOperationsRequest;
+use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
-use App\Models\Lending;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
@@ -52,7 +51,7 @@ class AccountDetailController extends Controller
     public function show(Account $account, ShowOrExportOperationsRequest $request)
     {
         $this->authorize('view', $account);
-        
+
         $dateFrom = $this->getFromDateOrMin($request);
         $dateTo = $this->getToDateOrMax($request);
 
@@ -106,7 +105,7 @@ class AccountDetailController extends Controller
     public function downloadExport(Account $account, ShowOrExportOperationsRequest $request)
     {
         $this->authorize('view', $account);
-        
+
         $dateFrom = $this->getFromDateOrMin($request);
         $dateTo = $this->getToDateOrMax($request);
 
@@ -176,7 +175,7 @@ class AccountDetailController extends Controller
     public function deleteOperation(FinancialOperation $operation)
     {
         $this->authorize('delete', $operation);
-        
+
         $attachment = $operation->attachment;
 
         DB::beginTransaction();
@@ -196,22 +195,23 @@ class AccountDetailController extends Controller
     }
 
     /**
-     * Handles the request to mark a financial operation as checked by the user.
+     * Handles the request to mark/unmark a financial operation as checked by the user.
      *
-     * @param FinancialOperation $operation  - route parameter
+     * @param FinancialOperation $operation - route parameter
+     * @param CheckOrUncheckOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function markOperationAsChecked(FinancialOperation $operation)
+    public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
     {
         $this->authorize('update', $operation);
 
         if ($operation->isLending())
-            return response(trans('finance_operations.check.invalid'), 422);
+            return response(trans('finance_operations.invalid_check'), 422);
 
-        if ($operation->update(['checked' => true]))
-            return response(trans('finance_operations.check.success'), 200);
+        if ($operation->update(['checked' => $request->validated('checked')]))
+            return response(trans('finance_operations.edit.success'), 200);
 
-        return response(trans('finance_operations.check.failure'), 500);
+        return response(trans('finance_operations.edit.failure'), 500);
     }
 
 }

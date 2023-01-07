@@ -168,12 +168,28 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->patch("/operation/$operation->id");
+            ->patch("/operation/$operation->id", ['checked' => true]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
             'id' => $operation->id,
             'checked' => true
+        ]);
+    }
+
+    public function test_uncheck_operation()
+    {
+
+        $operation = FinancialOperation::factory()->create(
+            ['account_id' => $this->account, 'checked' => true, 'operation_type_id' => $this->type]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operation/$operation->id", ['checked' => false]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('financial_operations', [
+            'id' => $operation->id,
+            'checked' => false
         ]);
     }
 
@@ -185,7 +201,7 @@ class FinancialAccountDetailTest extends TestCase
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->patch("/operation/$operation->id");
+            ->patch("/operation/$operation->id", ['checked' => true]);
 
         $response->assertStatus(422);
 
