@@ -1,13 +1,14 @@
 <?php
 
-namespace Tests\Feature\AccountManagement;
+namespace Tests\Feature\UserAccountManagement;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
-class ManageAccountTest extends TestCase
+class ManageUserAccountTest extends TestCase
 {
     private $oldPassword;
     private $newPassword;
@@ -18,8 +19,13 @@ class ManageAccountTest extends TestCase
     {
         parent::setUp();
 
-        $this->oldPassword = trans('validation.attributes.old_password');
-        $this->newPassword = trans('validation.attributes.new_password');
+        $this->oldPassword = App::isLocale('en')
+            ? 'old password'
+            : trans('validation.attributes.old_password');
+
+        $this->newPassword = App::isLocale('en')
+            ? 'new password'
+            : trans('validation.attributes.new_password');
 
         $this->ajaxHeaders = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',

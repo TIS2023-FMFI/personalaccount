@@ -334,7 +334,7 @@ $(document).ready(function(){
     // <-- Closing modals
 
     $(".account").click(function() {
-        window.location.href = '/account';
+        window.location.href = '/accounts';
     });
 
     $(".operation-detail").click(function(){
@@ -398,7 +398,7 @@ $(document).ready(function(){
 
     $(".toggle-button").change(function(){
         if($(this).attr('checked')){
-            window.location.href = '/account';
+            window.location.href = '/accounts';
         }else{
             window.location.href = '/sap-reports';
         }

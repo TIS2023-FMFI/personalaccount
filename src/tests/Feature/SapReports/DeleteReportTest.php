@@ -38,7 +38,7 @@ class DeleteReportTest extends TestCase
 
     public function test_that_unauthenticated_user_cannot_delete_report()
     {
-        $response = $this->delete('/sap-report/' . $this->report->id);
+        $response = $this->delete('/sap-reports/' . $this->report->id);
 
         $response
             ->assertStatus(302);
@@ -47,7 +47,7 @@ class DeleteReportTest extends TestCase
     public function test_that_user_cannot_delete_nonexisting_report()
     {
         $response = $this->actingAs($this->user)
-                            ->delete('/sap-report/99999');
+                            ->delete('/sap-reports/99999');
         
         $response
             ->assertStatus(404);
@@ -56,7 +56,7 @@ class DeleteReportTest extends TestCase
     public function test_that_only_ajax_requests_are_handled()
     {
         $response = $this->actingAs($this->user)
-                            ->delete('/sap-report/' . $this->report->id);
+                            ->delete('/sap-reports/' . $this->report->id);
         
         $response
             ->assertStatus(500);
@@ -66,7 +66,7 @@ class DeleteReportTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
-                            ->delete('/sap-report/' . $this->report->id);
+                            ->delete('/sap-reports/' . $this->report->id);
         
         $response
             ->assertStatus(200);

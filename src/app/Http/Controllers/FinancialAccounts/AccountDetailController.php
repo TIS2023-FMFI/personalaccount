@@ -189,10 +189,10 @@ class AccountDetailController extends Controller
         {
             DB::rollBack();
             //return response($e->getMessage(), 500); //for debugging purposes
-            return response(trans('finance_operations.delete.failure'), 500);
+            return response(trans('financial_operations.delete.failure'), 500);
         }
         DB::commit();
-        return response(trans('finance_operations.delete.success'), 200);
+        return response(trans('financial_operations.delete.success'), 200);
     }
 
     /**
@@ -206,12 +206,12 @@ class AccountDetailController extends Controller
         $this->authorize('update', $operation);
 
         if ($operation->isLending())
-            return response(trans('finance_operations.check.invalid'), 422);
+            return response(trans('financial_operations.check.invalid'), 422);
 
         if ($operation->update(['checked' => true]))
-            return response(trans('finance_operations.check.success'), 200);
+            return response(trans('financial_operations.check.success'), 200);
 
-        return response(trans('finance_operations.check.failure'), 500);
+        return response(trans('financial_operations.check.failure'), 500);
     }
 
 }

@@ -50,7 +50,7 @@ class FinancialAccountOverviewTest extends TestCase
         $response = $this->actingAs($user)
             ->withHeaders($this->ajaxHeaders)
             ->post(
-                '/account',
+                '/accounts',
                 [
                     'title' => '',
                     'sap_id' => '',
@@ -74,7 +74,7 @@ class FinancialAccountOverviewTest extends TestCase
         $response = $this->actingAs($user)
             ->withHeaders($this->ajaxHeaders)
             ->post(
-                '/account',
+                '/accounts',
                 [
                     'title' => 'title',
                     'sap_id' => 'ID-123',
@@ -99,7 +99,7 @@ class FinancialAccountOverviewTest extends TestCase
         $response = $this->actingAs($user)
             ->withHeaders($this->ajaxHeaders)
             ->post(
-                '/account',
+                '/accounts',
                 [
                     'title' => str_repeat('a', 256),
                     'sap_id' => '',
@@ -121,7 +121,7 @@ class FinancialAccountOverviewTest extends TestCase
         $response = $this->actingAs($user)
             ->withHeaders($this->ajaxHeaders)
             ->post(
-                '/account',
+                '/accounts',
                 [
                     'title' => '',
                     'sap_id' => str_repeat('a', 256),
@@ -143,7 +143,7 @@ class FinancialAccountOverviewTest extends TestCase
         $response = $this->actingAs($user)
             ->withHeaders($this->ajaxHeaders)
             ->post(
-                '/account',
+                '/accounts',
                 [
                     'title' => 'title',
                     'sap_id' => 'AO-06/0-',

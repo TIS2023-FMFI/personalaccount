@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Operations;
+namespace Tests\Feature\FinancialOperations;
 
 use App\Http\Controllers\FinancialOperations\GeneralOperationController;
 use App\Models\Account;
@@ -44,7 +44,7 @@ class OperationDetailTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
 
-        $response = $this->actingAs($this->user)->get("/operation/$operation->id");
+        $response = $this->actingAs($this->user)->get("/operations/$operation->id");
         $content = $response->json();
 
         $this->assertEquals($this->account->id, $content['operation']['account_id']);
@@ -53,7 +53,7 @@ class OperationDetailTest extends TestCase
 
     public function test_cant_view_nonexistent_operation(){
 
-        $response = $this->actingAs($this->user)->get("/operation/99999");
+        $response = $this->actingAs($this->user)->get("/operations/99999");
         $response->assertStatus(404);
     }
 
@@ -74,7 +74,7 @@ class OperationDetailTest extends TestCase
                 'attachment' => $path
                 ]);
 
-        $response = $this->actingAs($this->user)->get("/attachment/$operation->id");
+        $response = $this->actingAs($this->user)->get("/operations/$operation->id/attachment");
 
         $response->assertStatus(200);
         $response->assertDownload();
@@ -94,7 +94,7 @@ class OperationDetailTest extends TestCase
                 'attachment' => ''
             ]);
 
-        $response = $this->actingAs($this->user)->get("/attachment/$operation->id");
+        $response = $this->actingAs($this->user)->get("/operations/$operation->id/attachment");
 
         $response->assertStatus(500);
     }

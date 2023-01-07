@@ -44,7 +44,7 @@ class ReportsOverviewTest extends TestCase
 
     public function test_that_unauthenticated_user_cannot_view_reports()
     {
-        $response = $this->get('/account/' . $this->account->id . '/sap-reports');
+        $response = $this->get('/accounts/' . $this->account->id . '/sap-reports');
 
         $response
             ->assertStatus(302);
@@ -53,7 +53,7 @@ class ReportsOverviewTest extends TestCase
     public function test_that_user_cannot_view_reports_for_nonexisting_account()
     {
         $response = $this->actingAs($this->user)
-                            ->get('/account/99999/sap-reports');
+                            ->get('/accounts/99999/sap-reports');
         
         $response
             ->assertStatus(404);
@@ -62,7 +62,7 @@ class ReportsOverviewTest extends TestCase
     public function test_that_correct_view_is_shown()
     {
         $response = $this->actingAs($this->user)
-                            ->get('/account/' . $this->account->id . '/sap-reports');
+                            ->get('/accounts/' . $this->account->id . '/sap-reports');
 
         $response
             ->assertStatus(200)
@@ -72,7 +72,7 @@ class ReportsOverviewTest extends TestCase
     public function test_that_results_are_paginated()
     {
         $response = $this->actingAs($this->user)
-                            ->get('/account/' . $this->account->id . '/sap-reports');
+                            ->get('/accounts/' . $this->account->id . '/sap-reports');
         
         $response
             ->assertStatus(200)
@@ -90,7 +90,7 @@ class ReportsOverviewTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports?page=' . $this->pages
                             );
 
@@ -108,7 +108,7 @@ class ReportsOverviewTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports?from=test'
                             );
 
@@ -128,7 +128,7 @@ class ReportsOverviewTest extends TestCase
         
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports?from=' . $from
                             );
 
@@ -144,7 +144,7 @@ class ReportsOverviewTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports?to=test'
                             );
 
@@ -164,7 +164,7 @@ class ReportsOverviewTest extends TestCase
         
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports?to=' . $to
                             );
 
@@ -180,7 +180,7 @@ class ReportsOverviewTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports?from=2000-01-01&to=1999-01-01'
                             );
 
@@ -202,7 +202,7 @@ class ReportsOverviewTest extends TestCase
         
         $response = $this->actingAs($this->user)
                             ->get(
-                                '/account/'. $this->account->id
+                                '/accounts/'. $this->account->id
                                 . '/sap-reports'
                                 ."?from=$from&to=$to"
                             );

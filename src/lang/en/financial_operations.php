@@ -4,10 +4,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Accounts Language Lines
+    | Operations Language Lines
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used during financial accounts management.
+    | The following language lines are used during financial operations management.
     |
     */
 

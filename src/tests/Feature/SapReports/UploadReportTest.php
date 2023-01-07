@@ -41,7 +41,7 @@ class ReportDetalTest extends TestCase
 
     public function test_that_unauthenticated_user_cannot_upload_report()
     {
-        $response = $this->post('/sap-report', [ 'account_id' => '', 'sap_report' => '' ]);
+        $response = $this->post('/sap-reports', [ 'account_id' => '', 'sap_report' => '' ]);
 
         $response
             ->assertStatus(302);
@@ -51,7 +51,7 @@ class ReportDetalTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->post(
-                                '/sap-report',
+                                '/sap-reports',
                                 [ 'account_id' => '', 'sap_report' => '' ]
                             );
 
@@ -64,7 +64,7 @@ class ReportDetalTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
-                                '/sap-report',
+                                '/sap-reports',
                                 [ 'account_id' => '', 'sap_report' => '' ]
                             );
 
@@ -81,7 +81,7 @@ class ReportDetalTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
-                                '/sap-report',
+                                '/sap-reports',
                                 [ 'account_id' => 'abc', 'sap_report' => '' ]
                             );
 
@@ -98,7 +98,7 @@ class ReportDetalTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
-                                '/sap-report',
+                                '/sap-reports',
                                 [ 'account_id' => '99999', 'sap_report' => '' ]
                             );
 
@@ -115,7 +115,7 @@ class ReportDetalTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
-                                '/sap-report',
+                                '/sap-reports',
                                 [ 'account_id' => '', 'sap_report' => '' ]
                             );
 
@@ -140,7 +140,7 @@ class ReportDetalTest extends TestCase
         
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/sap-report', $requestData);
+                            ->post('/sap-reports', $requestData);
 
         $response
             ->assertStatus(422)
@@ -163,7 +163,7 @@ class ReportDetalTest extends TestCase
         
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/sap-report', $requestData);
+                            ->post('/sap-reports', $requestData);
 
         $response
             ->assertStatus(201);

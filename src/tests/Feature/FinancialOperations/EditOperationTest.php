@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Operations;
+namespace Tests\Feature\FinancialOperations;
 
 use App\Http\Controllers\FinancialOperations\GeneralOperationController;
 use App\Models\Account;
@@ -59,7 +59,7 @@ class EditOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", $operationData);
+            ->put("/operations/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
@@ -83,7 +83,7 @@ class EditOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put('/operation/9999', $operationData);
+            ->put('/operations/9999', $operationData);
 
         $response->assertStatus(404);
     }
@@ -111,7 +111,7 @@ class EditOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", array_merge($operationData, $lendingData));
+            ->put("/operations/$operation->id", array_merge($operationData, $lendingData));
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('lendings', [
@@ -139,7 +139,7 @@ class EditOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", $operationData);
+            ->put("/operations/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
@@ -165,7 +165,7 @@ class EditOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", $operationData);
+            ->put("/operations/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $operation->refresh();
@@ -200,7 +200,7 @@ class EditOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operation/$operation->id", $operationData);
+            ->put("/operations/$operation->id", $operationData);
 
         $response->assertStatus(200);
         $operation->refresh();

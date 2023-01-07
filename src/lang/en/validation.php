@@ -172,9 +172,6 @@ return [
     */
 
     'attributes' => [
-        'old_password' => 'old password',
-        'new_password' => 'new password',
-
         'sap_id' => 'SAP ID',
         'sap_report' => 'SAP Report',
     ],

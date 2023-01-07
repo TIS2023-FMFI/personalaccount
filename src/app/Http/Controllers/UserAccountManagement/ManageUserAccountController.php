@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\AccountManagement;
+namespace App\Http\Controllers\UserAccountManagement;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AccountManagement\ChangePasswordRequest;
+use App\Http\Requests\UserAccountManagement\ChangePasswordRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Hash;
  * This controller provides methods to:
  *      - change a user's password
  */
-class ManageAccountController extends Controller
+class ManageUserAccountController extends Controller
 {
     /**
      * Handles a request to change the password of the currently authenticated user.
      * 
-     * @param \App\Http\Requests\AccountManagement\ChangePasswordRequest $request
+     * @param \App\Http\Requests\UserAccountManagement\ChangePasswordRequest $request
      * the request to handle
      * @return \Illuminate\Http\Response
      * a response containing the information about the result of this operation

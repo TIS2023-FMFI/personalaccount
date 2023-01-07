@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Operations;
+namespace Tests\Feature\FinancialOperations;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -50,7 +50,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', $operationData);
+            ->post('/operations', $operationData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -70,7 +70,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', $operationData);
+            ->post('/operations', $operationData);
 
         $response->assertStatus(422);
 
@@ -94,7 +94,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', array_merge($operationData, $lendingData));
+            ->post('/operations', array_merge($operationData, $lendingData));
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -123,7 +123,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', array_merge($operationData, $lendingData));
+            ->post('/operations', array_merge($operationData, $lendingData));
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -151,7 +151,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', array_merge($operationData, $lendingData));
+            ->post('/operations', array_merge($operationData, $lendingData));
 
         $response->assertStatus(422);
 
@@ -172,7 +172,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', $operationData);
+            ->post('/operations', $operationData);
 
         $response->assertStatus(201);
         $path = FinancialOperation::firstWhere('title', 'test_with_file')->attachment;

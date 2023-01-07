@@ -67,7 +67,7 @@ class FinancialOperationPolicyTest extends TestCase
     public function test_that_unauthorized_user_cannot_view_operation()
     {
         $response = $this->actingAs($this->otherUser)
-                            ->get('/operation/' . $this->operation->id);
+                            ->get('/operations/' . $this->operation->id);
         
         $response
             ->assertStatus(403);
@@ -76,7 +76,7 @@ class FinancialOperationPolicyTest extends TestCase
     public function test_that_unauthorized_user_cannot_download_attachement()
     {
         $response = $this->actingAs($this->otherUser)
-                            ->get('/attachment/' . $this->operation->id);
+                            ->get('/operations/' . $this->operation->id . '/attachment');
         
         $response
             ->assertStatus(403);
@@ -90,7 +90,7 @@ class FinancialOperationPolicyTest extends TestCase
 
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/operation', $newOperation);
+                            ->post('/operations', $newOperation);
         
         $response
             ->assertStatus(403);
@@ -105,7 +105,7 @@ class FinancialOperationPolicyTest extends TestCase
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
                             ->put(
-                                '/operation/' . $this->operation->id,
+                                '/operations/' . $this->operation->id,
                                 $updated
                             );
         
@@ -122,7 +122,7 @@ class FinancialOperationPolicyTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->put(
-                                '/operation/' . $this->operation->id,
+                                '/operations/' . $this->operation->id,
                                 $updated
                             );
         
@@ -134,7 +134,7 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->patch('/operation/' . $this->operation->id);
+                            ->patch('/operations/' . $this->operation->id);
         
         $response
             ->assertStatus(403);
@@ -144,7 +144,7 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->delete('/operation/' . $this->operation->id);
+                            ->delete('/operations/' . $this->operation->id);
         
         $response
             ->assertStatus(403);
