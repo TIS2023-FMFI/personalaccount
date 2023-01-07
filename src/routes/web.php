@@ -9,6 +9,10 @@ use App\Http\Controllers\FinancialAccounts\FinancialAccountsOverviewController;
 use App\Http\Controllers\FinancialOperations\CreateOperationController;
 use App\Http\Controllers\FinancialOperations\EditOperationController;
 use App\Http\Controllers\FinancialOperations\OperationDetailController;
+use App\Http\Controllers\SapReports\DeleteReportController;
+use App\Http\Controllers\SapReports\ReportDetailController;
+use App\Http\Controllers\SapReports\ReportsOverviewController;
+use App\Http\Controllers\SapReports\UploadReportController;
 use App\Models\FinancialOperation;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +74,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/operation/{operation}', [OperationDetailController::class, 'getOperationData']);
     Route::get('/attachment/{operation}', [OperationDetailController::class, 'downloadAttachment']);
 
+    Route::get('/account/{account}/sap-reports', [ReportsOverviewController::class, 'show']);
+    Route::get('/sap-report/{report}', [ReportDetailController::class, 'download']);
+
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/account', [FinancialAccountsOverviewController::class, 'createFinancialAccount']);
 
@@ -77,10 +84,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::put('/operation/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
         Route::patch('/operation/{operation}', [AccountDetailController::class, 'markOperationAsChecked']);
         Route::delete('/operation/{operation}', [AccountDetailController::class, 'deleteOperation']);
-    });
 
-    Route::get('/sap-reports', function () {
-        return view('finances.sap_reports');
+        Route::post('/sap-report', [UploadReportController::class, 'upload']);
+        Route::delete('/sap-report/{report}', [DeleteReportController::class, 'delete']);
     });
 });
 
