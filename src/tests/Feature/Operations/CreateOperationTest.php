@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -176,6 +177,9 @@ class CreateOperationTest extends TestCase
         $response->assertStatus(201);
         $path = FinancialOperation::firstWhere('title', 'test_with_file')->attachment;
         Storage::disk('local')->assertExists($path);
+
+        $p = 'ahoj.txt';
+        dd(Storage::delete($p));
 
         Storage::fake('local');
 

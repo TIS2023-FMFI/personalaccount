@@ -7,11 +7,33 @@ use App\Models\FinancialOperation;
 use App\Models\OperationType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class FinancialAccountOverviewTest extends TestCase
 {
     use DatabaseTransactions;
+
+    private $titleAttr;
+    private $sapIdAttr;
+
+    private $ajaxHeaders;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->titleAttr = App::isLocale('en')
+            ? 'title'
+            : trans('validation.attributes.title');
+
+        $this->sapIdAttr = trans('validation.attributes.sap_id');
+
+        $this->ajaxHeaders = [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ];
+    }
 
     public function test_all_accounts_for_user_are_retrieved()
     {
@@ -26,10 +48,8 @@ class FinancialAccountOverviewTest extends TestCase
         $user = User::create([ 'email' => 'new@b.c' ]);
 
         $response = $this->actingAs($user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
+            ->withHeaders($this->ajaxHeaders)
+            ->post(
                 '/account',
                 [
                     'title' => '',
@@ -52,10 +72,8 @@ class FinancialAccountOverviewTest extends TestCase
         $this->assertCount(0, $user->accounts);
 
         $response = $this->actingAs($user)
-            ->withHeaders([
-                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->post(
+            ->withHeaders($this->ajaxHeaders)
+            ->post(
                 '/account',
                 [
                     'title' => 'title',
@@ -72,6 +90,72 @@ class FinancialAccountOverviewTest extends TestCase
 
         $user->refresh();
         $this->assertCount(1, $user->accounts);
+    }
+
+    public function test_request_failure_when_title_too_long()
+    {
+        $user = User::create([ 'email' => 'new@b.c' ]);
+
+        $response = $this->actingAs($user)
+            ->withHeaders($this->ajaxHeaders)
+            ->post(
+                '/account',
+                [
+                    'title' => str_repeat('a', 256),
+                    'sap_id' => '',
+                ]
+            );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'errors.title.0',
+                trans('validation.max.string', [ 'attribute' => $this->titleAttr, 'max' => 255 ])
+            );
+    }
+
+    public function test_request_failure_when_sap_id_too_long()
+    {
+        $user = User::create([ 'email' => 'new@b.c' ]);
+
+        $response = $this->actingAs($user)
+            ->withHeaders($this->ajaxHeaders)
+            ->post(
+                '/account',
+                [
+                    'title' => '',
+                    'sap_id' => str_repeat('a', 256),
+                ]
+            );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'errors.sap_id.0',
+                trans('validation.max.string', [ 'attribute' => $this->sapIdAttr, 'max' => 255 ])
+            );
+    }
+
+    public function test_request_failure_when_sap_id_has_incorrect_format()
+    {
+        $user = User::create([ 'email' => 'new@b.c' ]);
+
+        $response = $this->actingAs($user)
+            ->withHeaders($this->ajaxHeaders)
+            ->post(
+                '/account',
+                [
+                    'title' => 'title',
+                    'sap_id' => 'AO-06/0-',
+                ]
+            );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'errors.sap_id.0',
+                trans('validation.regex', [ 'attribute' => $this->sapIdAttr ])
+            );
     }
 
     public function test_correct_view(){

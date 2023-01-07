@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SendLoginLinkRequest;
 use App\Mail\LoginLink;
 use App\Models\LoginToken;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Mail;
 use \App\Models\User;
 use \Exception;
@@ -47,11 +47,8 @@ class ForgotPasswordController extends Controller
         $email = $request->validated('email');
         
         try {
-            $user = $this->findUserByEmail($email);
-            $this->sendLoginLinkToUser($user);
-        } catch (DatabaseException $e) {
-            return response($e->getMessage(), 500);
-        } catch (QueryException $e) {
+            $this->sendLoginLinkToEmailAddress($email);
+        } catch (ModelNotFoundException|DatabaseException $e) {
             return response(trans('auth.login-link.generation.failed'), 500);
         } catch (Exception $e) {
             return response(trans('auth.login-link.sending.failed'), 500);
@@ -61,44 +58,56 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Find a user by their email address.
+     * Send a login link to a user's email address.
      * 
      * @param string $email
-     * the email address identifying the user
+     * the email address of the user
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * thrown if no user was found for the given email address
      * @throws \App\Exceptions\DatabaseException
-     * thrown if no user was found
-     * @return \App\Models\User
-     * the user identified by the provided email address
+     * thrown if the login token generated for the user could not be persisted
+     * @return void
      */
-    private function findUserByEmail(string $email)
+    private function sendLoginLinkToEmailAddress(string $email)
     {
-        $user = User::where('email', $email)->first();
+        $user = User::where('email', $email)->firstOrFail();
+        $token = $this->generateTokenForUser($user);
+        
+        $this->sendLoginLinkToUser($user, $token);
+    }
 
-        if (!$user) {
-            throw new DatabaseException(trans('auth.login-link.generation.failed'));
+    /**
+     * Generate a new login link for a user.
+     * 
+     * @param \App\Models\User $user
+     * the user for whom to generate the token
+     * @throws \App\Exceptions\DatabaseException
+     * thrown if the generated token could not be persisted
+     * @return \App\Models\LoginToken
+     * the generated token
+     */
+    private function generateTokenForUser(User $user)
+    {
+        $token = LoginToken::generate($user);
+
+        if (!$token->exists) {
+            throw new DatabaseException('Generated token not persisted.');
         }
 
-        return $user;
+        return $token;
     }
 
     /**
      * Send a login link to a user.
      * 
-     * @param User $user
+     * @param \App\Models\User $user
      * the user to whom to send the login link
-     * @throws \App\Exceptions\DatabaseException
-     * thrown if an unspecified database error ocurred during the creation of a
-     * login token that should be embedded in the login link
+     * @param \App\Models\LoginToken $token
+     * the token to embed in the login link
      * @return void
      */
-    private function sendLoginLinkToUser(User $user)
+    private function sendLoginLinkToUser(User $user, LoginToken $token)
     {
-        $token = LoginToken::generate($user);
-
-        if (!$token->exists) {
-            throw new DatabaseException(trans('auth.login-link.generation.failed'));
-        }
-
         Mail::to($user->email)->queue(
             new LoginLink($token->token, $token->valid_until)
         );

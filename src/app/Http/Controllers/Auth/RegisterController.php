@@ -31,8 +31,6 @@ class RegisterController extends Controller
 
         try {
             $this->registerWithEmail($email);
-        } catch (DatabaseException $e) {
-            return response($e->getMessage(), 500);
         } catch (Exception $e) {
             return response(trans('auth.register.failed'), 500);
         }
@@ -54,7 +52,7 @@ class RegisterController extends Controller
         $user = User::create([ 'email' => $email ]);
 
         if (!$user->exists) {
-            throw new DatabaseException(trans('auth.register.failed'));
+            throw new DatabaseException('User model not saved.');
         }
     }
 }

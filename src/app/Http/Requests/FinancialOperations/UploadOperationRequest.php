@@ -26,10 +26,10 @@ class UploadOperationRequest extends FormRequest
     {
         return [
             'account_id' => ['required', 'numeric', 'exists:accounts,id'],
-            'title' => ['required', "max:255"],
+            'title' => ['required', 'max:255'],
             'date' => ['required', 'date'],
             'operation_type_id' => ['required', 'numeric', 'exists:operation_types,id'],
-            'subject' => ['required', "max:255"],
+            'subject' => ['required', 'max:255'],
             'sum' => ['required', 'numeric', 'min:0'],
             'attachment' => ['nullable', File::types(['txt','pdf'])],
             'expected_date_of_return' => ['nullable', 'date'],

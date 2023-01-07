@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\Storage;
 
 class SapReport extends Model
 {
@@ -42,27 +39,48 @@ class SapReport extends Model
     }
 
     /**
-     * Generate a name for the SAP report file represented by the model.
+     * Generate a user-friendly name for the SAP report file represented by the model.
      * 
-     * @throws FileNotFoundException
-     * thrown if the file associated with the model was be found
      * @return string
      * the generated file name
      */
-    public function generateReportFileName()
-    {
-        $mimeType = Storage::mimeType($this->path);
-
-        if ($mimeType === false) {
-            throw new FileNotFoundException();
-        }
-
-        $extension = MimeType::search($mimeType);
-        
+    public function generateDisplayableFileName()
+    {   
         $sanitizedSapId = $this->account->getSanitizedSapId();
-        $contentClause = 'sap-repport';
+        $contentClause = trans('files.sap_repport');
         $uploadedOn = Date::parse($this->uploaded_on)->format('d-m-Y');
 
-        return "${sanitizedSapId}_${contentClause}_${uploadedOn}.${extension}";
+        $fileName = "${sanitizedSapId}_${contentClause}_${uploadedOn}";
+
+        return $this->appendFileExtension($fileName);
+    }
+
+    /**
+     * Append the extension of the SAP report file represented by the model to a
+     * file name. If the SAP report file has no extension, nothing is appended.
+     * 
+     * @param string $fileName
+     * the file name to which to append the extension
+     * @return string
+     * the extended file name
+     */
+    private function appendFileExtension(string $fileName)
+    {
+        $extension = pathinfo($this->path, PATHINFO_EXTENSION);
+
+        return (empty($extension)) ? $fileName : $fileName . ".${extension}";
+    }
+
+    /**
+     * Get the path to the directory within which a user's reports are stored.
+     * 
+     * @param User $user
+     * the user whose directory for reports to consider
+     * @return string
+     * the path to the user's directory
+     */
+    public static function getReportsDirectoryPath(User $user)
+    {
+        return "reports/user_${user}";
     }
 }

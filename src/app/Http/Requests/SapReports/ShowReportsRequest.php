@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\FinancialAccounts;
+namespace App\Http\Requests\SapReports;
 
 use App\Http\Requests\Base\DateRequest;
 
-class ShowOrExportOperationsRequest extends DateRequest
+class ShowReportsRequest extends DateRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,6 +13,6 @@ class ShowOrExportOperationsRequest extends DateRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 }

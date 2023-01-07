@@ -24,6 +24,6 @@ return [
             Best regards,
             Your :appName team
             HERE,
-    ]
+    ],
 
 ];
