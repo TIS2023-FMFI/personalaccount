@@ -10,8 +10,9 @@ use Tests\TestCase;
 class ManageAccountTest extends TestCase
 {
     private $oldPassword;
-    
     private $newPassword;
+
+    private $ajaxHeaders;
 
     public function setUp(): void
     {
@@ -19,6 +20,11 @@ class ManageAccountTest extends TestCase
 
         $this->oldPassword = trans('validation.attributes.old_password');
         $this->newPassword = trans('validation.attributes.new_password');
+
+        $this->ajaxHeaders = [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ];
     }
 
     public function test_that_unauthenticated_user_cannot_change_password()
@@ -52,10 +58,8 @@ class ManageAccountTest extends TestCase
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => '',
@@ -79,10 +83,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => 'abc',
@@ -106,10 +108,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -133,10 +133,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -160,10 +158,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -187,10 +183,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -214,10 +208,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -244,10 +236,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -274,10 +264,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -304,10 +292,8 @@ class ManageAccountTest extends TestCase
         $user->setPassword($oldPassword);
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,
@@ -336,10 +322,8 @@ class ManageAccountTest extends TestCase
         $newPassword = 'ABCd@f78';
  
         $response = $this->actingAs($user)
-                            ->withHeaders([ 
-                                'HTTP_X-Requested-With' => 'XMLHttpRequest',
-                                'Accept' => 'application/json',
-                            ])->post(
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
                                 '/change-password',
                                 [
                                     'old_password' => $oldPassword,

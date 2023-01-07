@@ -34,7 +34,7 @@ class AccountPolicyTest extends TestCase
     public function test_that_unauthorized_user_cannot_view_account()
     {
         $response = $this->actingAs($this->otherUser)
-                            ->get("/account/" . $this->account->id);
+                            ->get('/account/' . $this->account->id);
         
         $response
             ->assertStatus(403);
@@ -43,7 +43,7 @@ class AccountPolicyTest extends TestCase
     public function test_that_unauthorized_user_cannot_download_operations_export()
     {
         $response = $this->actingAs($this->otherUser)
-                            ->get("/export/" . $this->account->id);
+                            ->get('/export/' . $this->account->id);
         
         $response
             ->assertStatus(403);

@@ -66,7 +66,7 @@ class Account extends Model
      */
     public function getSanitizedSapId()
     {
-        return Str::replace($this->sap_id, '-', '/');
+        return Str::replace('/', '-', $this->sap_id);
     }
 
     /**
@@ -92,7 +92,7 @@ class Account extends Model
      */
     public function operationsBetween($dateFrom, $dateTo)
     {
-        return $this->financialOperations()->whereBetween('date',[$dateFrom, $dateTo]);
+        return $this->financialOperations()->whereBetween('date', [$dateFrom, $dateTo]);
     }
 
     /**
@@ -107,6 +107,6 @@ class Account extends Model
      */
     public function sapReportsBetween(Carbon $from, Carbon $to)
     {
-        return $this->sapReports()->whereBetween('uploaded_on',[$from, $to]);
+        return $this->sapReports()->whereBetween('uploaded_on', [$from, $to]);
     }
 }

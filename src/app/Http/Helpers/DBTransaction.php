@@ -4,6 +4,12 @@ namespace App\Http\Helpers;
 use Illuminate\Support\Facades\DB;
 use \Exception;
 
+/**
+ * A helper class to represent a database transaction.
+ * 
+ * This class provides methods to:
+ *      - execute a constructed transaction
+ */
 class DBTransaction
 {
     /**

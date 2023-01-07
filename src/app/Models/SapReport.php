@@ -47,7 +47,7 @@ class SapReport extends Model
     public function generateDisplayableFileName()
     {   
         $sanitizedSapId = $this->account->getSanitizedSapId();
-        $contentClause = trans('files.sap_repport');
+        $contentClause = trans('files.sap_report');
         $uploadedOn = Date::parse($this->uploaded_on)->format('d-m-Y');
 
         $fileName = "${sanitizedSapId}_${contentClause}_${uploadedOn}";

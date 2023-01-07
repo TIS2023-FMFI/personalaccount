@@ -5,6 +5,11 @@ namespace App\Http\Requests\SapReports;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
+/**
+ * A request upload a new SAP report.
+ * 
+ * Fields: account_id, sap_report.
+ */
 class UploadReportRequest extends FormRequest
 {
     /**
@@ -14,7 +19,7 @@ class UploadReportRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

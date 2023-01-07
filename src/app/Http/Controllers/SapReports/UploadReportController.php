@@ -34,7 +34,7 @@ class UploadReportController extends Controller
      * a response containing the information about the result of this operation
      * presented as a plain-text message
      */
-    public function uploadReport(UploadReportRequest $request)
+    public function upload(UploadReportRequest $request)
     {
         $account = Account::findOrFail($request->validated('account_id'));
 
@@ -68,8 +68,8 @@ class UploadReportController extends Controller
         $reportPath = $this->saveReportFileToUserStorage($accountOwner, $report);
 
         $createRecordTransaction = new DBTransaction(
-            fn() => $this->createReportRecord($account, $reportPath),
-            fn() => Storage::delete($reportPath)
+            fn () => $this->createReportRecord($account, $reportPath),
+            fn () => Storage::delete($reportPath)
         );
 
         $createRecordTransaction->run();
@@ -111,8 +111,7 @@ class UploadReportController extends Controller
      */
     private function createReportRecord(Account $account, string $reportPath)
     {
-        $report = SapReport::create([
-            'account_id' => $account,
+        $report = $account->sapReports()->create([
             'path' => $reportPath,
             'uploaded_on' => now(),
         ]);

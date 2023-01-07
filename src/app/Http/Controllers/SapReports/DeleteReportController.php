@@ -11,7 +11,10 @@ use \Exception;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Summary of DeleteReportController
+ * A controller responsible for deleting SAP reports.
+ * 
+ * This controller provides methods to:
+ *      - delete a SAP report
  */
 class DeleteReportController extends Controller
 {
@@ -49,7 +52,7 @@ class DeleteReportController extends Controller
     private function deleteWithinTransaction(SapReport $report)
     {
         $deleteRecordAndFileTransaction = new DBTransaction(
-            fn() => $this->deleteReportRecordAndFile($report)
+            fn () => $this->deleteReportRecordAndFile($report)
         );
 
         $deleteRecordAndFileTransaction->run();

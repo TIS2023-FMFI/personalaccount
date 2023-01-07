@@ -177,12 +177,5 @@ class CreateOperationTest extends TestCase
         $response->assertStatus(201);
         $path = FinancialOperation::firstWhere('title', 'test_with_file')->attachment;
         Storage::disk('local')->assertExists($path);
-
-        $p = 'ahoj.txt';
-        dd(Storage::delete($p));
-
-        Storage::fake('local');
-
     }
-
 }

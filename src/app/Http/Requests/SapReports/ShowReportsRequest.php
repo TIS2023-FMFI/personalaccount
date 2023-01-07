@@ -4,6 +4,11 @@ namespace App\Http\Requests\SapReports;
 
 use App\Http\Requests\Base\DateRequest;
 
+/**
+ * A request to show SAP reports filtered by the date they were uploaded.
+ * 
+ * Fields: from, to.
+ */
 class ShowReportsRequest extends DateRequest
 {
     /**
@@ -13,6 +18,6 @@ class ShowReportsRequest extends DateRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 }

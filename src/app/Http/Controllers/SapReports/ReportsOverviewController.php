@@ -40,7 +40,7 @@ class ReportsOverviewController extends Controller
         $this->authorize('view', $account);
         
         $from = $request->getValidatedFromDateOrMin();
-        $to = $request->getValidatedToDateOrMin();
+        $to = $request->getValidatedToDateOrMax();
         $reports = $this->retrieveSapReports($account, $from, $to);
 
         return view('finances.sap_reports', [
@@ -65,7 +65,7 @@ class ReportsOverviewController extends Controller
     {
         return $account
                 ->sapReportsBetween($from, $to)
-                ->orderBy('upladed_on', 'desc')
+                ->orderBy('uploaded_on', 'desc')
                 ->paginate($this::$resultsPerPage)
                 ->withQueryString();
     }
