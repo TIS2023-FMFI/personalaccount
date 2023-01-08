@@ -9,7 +9,7 @@
 
       <div class="input-box">
         <div class="field">
-          <input type="email" id="create-user-email" placeholder="...">
+          <input type="email" id="create-user-email">
             <label for="create-user-email">E-mailová adresa</label>
         </div>
         <div class="error-box" id="create-user-email-errors"></div>
