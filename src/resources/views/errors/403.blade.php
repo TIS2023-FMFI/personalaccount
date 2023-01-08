@@ -14,7 +14,7 @@
     <body>
         <div class="login-box">
             <div class="error_div">
-                <span>Interná chyba servera alebo nesprávna konfigurácia. Vašu žiadosť sa nepodarilo dokončiť.</span>
+                <span>Prístup zamietnutý!</span>
             </div>
         </div>
     </body>
