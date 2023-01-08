@@ -333,6 +333,20 @@ $(document).ready(function(){
     })
     // <-- Closing modals
 
+    // Account modals -->
+    $(".add_account_button i").click(function() {
+        $("#create-account-modal").css("display", "flex");
+    });
+
+    $(".edit_account").click(function() {
+        $("#edit-account-modal").css("display", "flex");
+    });
+
+    $(".delete_account").click(function() {
+        $("#delete-account-modal").css("display", "flex");
+    });
+    // <-- Account modals
+
     $(".account").click(function() {
         window.location.href = '/account';
     });
@@ -411,5 +425,7 @@ $(document).ready(function(){
     $(".operation-edit").click(function(){
         $("#edit-operation-modal").css("display", "flex");
     })
+
+
 
 })
