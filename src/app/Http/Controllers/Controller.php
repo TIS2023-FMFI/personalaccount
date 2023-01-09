@@ -8,7 +8,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Storage;
-use function PHPUnit\Framework\throwException;
 
 class Controller extends BaseController
 {
@@ -23,7 +22,7 @@ class Controller extends BaseController
     protected function deleteFileIfExists($path)
     {
         if (! $path || ! Storage::exists($path)) return;
-        if (! Storage::delete($path)) throwException(new Exception('The file wasn\'t deleted.'));
+        if (! Storage::delete($path)) throw new Exception('The file wasn\'t deleted.');
     }
 
     /**

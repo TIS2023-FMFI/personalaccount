@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
-use App\Http\Requests\FinancialOperations\UploadOperationRequest;
+use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -12,22 +13,21 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use function PHPUnit\Framework\throwException;
 
 /**
  * Manages functionality of the 'edit operation' modal.
  */
-class EditOperationController extends GeneralOperationController
+class UpdateOperationController extends GeneralOperationController
 {
     /**
      * Handles the request to edit a financial operation. Manages updating the operation itself, its related
      * lending record and its attachment file if there are any.
      *
      * @param FinancialOperation $operation - route parameter
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleEditOperationRequest(FinancialOperation $operation, UploadOperationRequest $request)
+    public function handleEditOperationRequest(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
         $old_attachment = $operation->attachment;
         $new_attachment = null;
@@ -51,21 +51,21 @@ class EditOperationController extends GeneralOperationController
             $this->deleteFileIfExists($new_attachment);
             DB::rollBack();
             //return response($e->getMessage(), 500); //for debugging purposes
-            return response(trans('financial_operations.edit.failure'), 500);
+            return response(trans('financial_operations.update.failure'), 500);
         }
 
         DB::commit();
-        return response(trans('financial_operations.edit.success'), 200);
+        return response(trans('financial_operations.update.success'));
     }
 
     /**
      * Changes the data in the DB record for the given operation according to the request.
      *
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @param $operation
      * @param $attachment - updated path to the operation's attachment file
      */
-    private function updateOperation(UploadOperationRequest $request, $operation, $attachment)
+    private function updateOperation(CreateOrUpdateOperationRequest $request, $operation, $attachment)
     {
         if (! $operation->update([
             'title' => $request->validated('title'),
@@ -74,18 +74,18 @@ class EditOperationController extends GeneralOperationController
             'subject' => $request->validated('subject'),
             'sum' => $request->validated('sum'),
             'attachment' => ($attachment) ? $attachment : $operation->attachment,
-        ])) throwException(new Exception('The operation wasn\'t updated.'));
+        ])) throw new Exception('The operation wasn\'t updated.');
     }
 
     /**
      * Returns 'true' if the given operation was a lending originally, but it's requested to change
      * into a non-lending type. Otherwise, returns 'false'.
      *
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @param $operation
      * @return bool
      */
-    private function typeChangedFromLending(UploadOperationRequest $request, $operation)
+    private function typeChangedFromLending(CreateOrUpdateOperationRequest $request, $operation)
     {
         $newTypeId = $request->validated('operation_type_id');
 
@@ -105,7 +105,24 @@ class EditOperationController extends GeneralOperationController
     private function deleteLending($operation)
     {
         if (! Lending::destroy($operation->lending->id))
-            throwException(new Exception('The lending wasn\'t deleted.'));
+            throw new Exception('The lending wasn\'t deleted.');
     }
 
+    /**
+     * Handles the request to mark/unmark a financial operation as checked by the user.
+     *
+     * @param FinancialOperation $operation - route parameter
+     * @param CheckOrUncheckOperationRequest $request
+     * @return Application|ResponseFactory|Response
+     */
+    public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
+    {
+        if ($operation->isLending())
+            return response(trans('financial_operations.invalid_check'), 422);
+
+        if ($operation->update(['checked' => $request->validated('checked')]))
+            return response(trans('financial_operations.edit.success'));
+
+        return response(trans('financial_operations.edit.failure'), 500);
+    }
 }

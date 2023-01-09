@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialAccounts\CreateFinancialAccountRequest;
+use App\Http\Requests\FinancialAccounts\CreateOrUpdateAccountRequest;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Manages the 'financial accounts' screen and all the functionality available directly from that screen.
  */
-class FinancialAccountsOverviewController extends Controller
+class AccountsOverviewController extends Controller
 {
     /**
      * Returns the 'index' view filled with a list of accounts belonging to the current user
@@ -31,10 +31,10 @@ class FinancialAccountsOverviewController extends Controller
     /**
      * Handles the request to add a new financial account for the current user
      *
-     * @param CreateFinancialAccountRequest $request
+     * @param CreateOrUpdateAccountRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function createFinancialAccount(CreateFinancialAccountRequest $request)
+    public function createFinancialAccount(CreateOrUpdateAccountRequest $request)
     {
         $user = Auth::user();
         $title = $request->validated('title');
@@ -45,8 +45,7 @@ class FinancialAccountsOverviewController extends Controller
             'sap_id' => $sap_id
         ]);
 
-        if ($account->exists) return response(trans('financial_accounts.new.success'), 201);
-        return response(trans('financial_accounts.new.failed'), 500);
+        if ($account->exists) return response(trans('financial_accounts.create.success'), 201);
+        return response(trans('financial_accounts.create.failed'), 500);
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
-use App\Http\Requests\FinancialOperations\UploadOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use Exception;
@@ -10,7 +10,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use function PHPUnit\Framework\throwException;
 
 /**
  * Manages the functionality of the 'create operation' modal.
@@ -22,10 +21,10 @@ class CreateOperationController extends GeneralOperationController
      * Handles the request to create a new financial operation.
      *
      * @param Account $account - route parameter
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleCreateOperationRequest(Account $account, UploadOperationRequest $request)
+    public function handleCreateOperationRequest(Account $account, CreateOrUpdateOperationRequest $request)
     {
         $attachmentPath = null;
         $file = $request->file('attachment');
@@ -68,7 +67,7 @@ class CreateOperationController extends GeneralOperationController
             'sum' => $request->validated('sum'),
             'attachment' => $attachment,
         ]);
-        if (!$operation->exists) throwException(new Exception('The operation wasn\'t created.'));
+        if (!$operation->exists) throw new Exception('The operation wasn\'t created.');
         return $operation;
     }
 }

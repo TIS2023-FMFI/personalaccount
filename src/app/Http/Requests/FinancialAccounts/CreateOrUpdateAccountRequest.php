@@ -4,18 +4,13 @@ namespace App\Http\Requests\FinancialAccounts;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateFinancialAccountRequest extends FormRequest
+/**
+ * A request to create new or update an existing financial account.
+ * 
+ * Fields: title, sap_id.
+ */
+class CreateOrUpdateAccountRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

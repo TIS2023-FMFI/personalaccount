@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\FinancialAccount;
 
-use App\Http\Controllers\FinancialAccounts\AccountDetailController;
+use App\Http\Controllers\FinancialOperations\OperationsOverviewController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\User;
@@ -26,7 +26,7 @@ class OperationsFilteringTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = AccountDetailController::$perPage;
+        $this->perPage = OperationsOverviewController::$perPage;
         $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);

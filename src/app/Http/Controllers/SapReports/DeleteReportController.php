@@ -35,7 +35,7 @@ class DeleteReportController extends Controller
             return response(trans('sap_reports.delete.failed'), 500);
         }
 
-        return response(trans('sap_reports.delete.success'), 200);
+        return response(trans('sap_reports.delete.success'));
     }
 
     /**

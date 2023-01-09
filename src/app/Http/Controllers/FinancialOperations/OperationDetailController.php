@@ -8,7 +8,6 @@ use Exception;
 use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use function PHPUnit\Framework\throwException;
 
 /**
  * Manages the functionality of the 'operation detail' modal.
@@ -35,7 +34,7 @@ class OperationDetailController extends Controller
     public function downloadAttachment(FinancialOperation $operation)
     {
         $path = $operation->attachment;
-        if (! Storage::exists($path)) throwException(new Exception('The requested file doesn\'t exist'));
+        if (! Storage::exists($path)) throw new Exception('The requested file doesn\'t exist');
         return Storage::download($path, $this->generateDownloadFileName($operation));
     }
 
