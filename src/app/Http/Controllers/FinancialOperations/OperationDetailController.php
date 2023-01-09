@@ -23,8 +23,6 @@ class OperationDetailController extends Controller
      */
     public function getOperationData(FinancialOperation $operation)
     {
-        $this->authorize('view', $operation);
-        
         return ['operation' => $operation];
     }
 
@@ -36,8 +34,6 @@ class OperationDetailController extends Controller
      */
     public function downloadAttachment(FinancialOperation $operation)
     {
-        $this->authorize('view', $operation);
-        
         $path = $operation->attachment;
         if (! Storage::exists($path)) throwException(new Exception('The requested file doesn\'t exist'));
         return Storage::download($path, $this->generateDownloadFileName($operation));

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialAccounts\ShowOrExportOperationsRequest;
+use App\Http\Requests\Base\DateRequest;
 use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -45,13 +45,11 @@ class AccountDetailController extends Controller
      * (first date in the interval) and 'to' ('last date').
      *
      * @param Account $account - route parameter
-     * @param ShowOrExportOperationsRequest $request - the GET request containing query parameters
+     * @param DateRequest $request - the GET request containing query parameters
      * @return Application|Factory|View
      */
-    public function show(Account $account, ShowOrExportOperationsRequest $request)
+    public function show(Account $account, DateRequest $request)
     {
-        $this->authorize('view', $account);
-
         $dateFrom = $this->getFromDateOrMin($request);
         $dateTo = $this->getToDateOrMax($request);
 
@@ -71,10 +69,10 @@ class AccountDetailController extends Controller
      * Returns a date taken from the query parameter of a given request, specified by the $key parameter.
      * If the parameter isn't present, the minimal possible date is returned instead.
      *
-     * @param ShowOrExportOperationsRequest $request
+     * @param DateRequest $request
      * @return Carbon
      */
-    private function getFromDateOrMin(ShowOrExportOperationsRequest $request)
+    private function getFromDateOrMin(DateRequest $request)
     {
         $date = $request->validated('from');
         if ($date) return Date::create($date);
@@ -85,10 +83,10 @@ class AccountDetailController extends Controller
      * Returns a date taken from the query parameter of a given request, specified by the $key parameter.
      * If the parameter isn't present, the maximal possible date is returned instead.
      *
-     * @param ShowOrExportOperationsRequest $request
+     * @param DateRequest $request
      * @return Carbon
      */
-    private function getToDateOrMax(ShowOrExportOperationsRequest $request)
+    private function getToDateOrMax(DateRequest $request)
     {
         $date = $request->validated('to');
         if ($date) return Date::create($date);
@@ -99,13 +97,11 @@ class AccountDetailController extends Controller
      * Handles a request to download a CSV export for the given account.
      *
      * @param Account $account
-     * @param ShowOrExportOperationsRequest $request
+     * @param DateRequest $request
      * @return StreamedResponse
      */
-    public function downloadExport(Account $account, ShowOrExportOperationsRequest $request)
+    public function downloadExport(Account $account, DateRequest $request)
     {
-        $this->authorize('view', $account);
-
         $dateFrom = $this->getFromDateOrMin($request);
         $dateTo = $this->getToDateOrMax($request);
 
@@ -174,8 +170,6 @@ class AccountDetailController extends Controller
      */
     public function deleteOperation(FinancialOperation $operation)
     {
-        $this->authorize('delete', $operation);
-
         $attachment = $operation->attachment;
 
         DB::beginTransaction();
@@ -203,8 +197,6 @@ class AccountDetailController extends Controller
      */
     public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
     {
-        $this->authorize('update', $operation);
-
         if ($operation->isLending())
             return response(trans('financial_operations.invalid_check'), 422);
 

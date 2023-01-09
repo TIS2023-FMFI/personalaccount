@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
+use App\Models\SapReport;
 use App\Policies\AccountPolicy;
 use App\Policies\FinancialOperationPolicy;
+use App\Policies\SapReportPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -19,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Account::class => AccountPolicy::class,
         FinancialOperation::class => FinancialOperationPolicy::class,
+        SapReport::class => SapReportPolicy::class,
     ];
 
     /**

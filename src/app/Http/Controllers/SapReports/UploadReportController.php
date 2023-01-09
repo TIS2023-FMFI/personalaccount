@@ -28,19 +28,17 @@ class UploadReportController extends Controller
     /**
      * Handle a request to upload a SAP report.
      * 
-     * @param \App\Models\Account $account
-     * the account with which to associate the report
      * @param \App\Http\Requests\SapReports\UploadReportRequest $request
      * the request containing the SAP report file and the id of an account with
      * which to associate the report
+     * @param \App\Models\Account $account
+     * the account with which to associate the report
      * @return \Illuminate\Http\Response
      * a response containing the information about the result of this operation
      * presented as a plain-text message
      */
-    public function upload(Account $account, UploadReportRequest $request)
+    public function upload(UploadReportRequest $request, Account $account)
     {
-        // $this->authorize('create', [SapReport::class, $account]);
-
         $report = $request->file('sap_report');
 
         try {
@@ -102,11 +100,11 @@ class UploadReportController extends Controller
      * Create and persist a SAP Report model representing the saved SAP report
      * file.
      * 
-     * @param Account $account
+     * @param \App\Models\Account $account
      * the account with which to associate the report
      * @param string $reportPath
      * the path to the saved SAP report file
-     * @throws DatabaseException
+     * @throws \App\Exceptions\DatabaseException
      * thrown if the SAP Report model could not be persisted
      * @return void
      */

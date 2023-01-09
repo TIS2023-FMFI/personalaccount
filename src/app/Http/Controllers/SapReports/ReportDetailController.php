@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SapReports;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SapReports\DownloadReportRequest;
 use App\Models\SapReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,8 +24,6 @@ class ReportDetailController extends Controller
      */
     public function download(SapReport $report)
     {
-        // $this->authorize('view', $report);
-        
         $path = $report->path;
         $fileName = $report->generateDisplayableFileName();
 

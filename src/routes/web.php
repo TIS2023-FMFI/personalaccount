@@ -81,17 +81,27 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      * Financial Operations
      */
 
-    Route::get('/accounts/{account}/operations', [AccountDetailController::class, 'show']);
-    Route::get('/accounts/{account}/operations/export', [AccountDetailController::class, 'downloadExport']);
+    Route::middleware('can:view,account')->group(function () {
+        Route::get('/accounts/{account}/operations', [AccountDetailController::class, 'show']);
+        Route::get('/accounts/{account}/operations/export', [AccountDetailController::class, 'downloadExport']);
+    });
 
-    Route::get('/operations/{operation}', [OperationDetailController::class, 'getOperationData']);
-    Route::get('/operations/{operation}/attachment', [OperationDetailController::class, 'downloadAttachment']);
+    Route::middleware('can:view,operation')->group(function () {
+        Route::get('/operations/{operation}', [OperationDetailController::class, 'getOperationData']);
+        Route::get('/operations/{operation}/attachment', [OperationDetailController::class, 'downloadAttachment']);
+    });
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'handleCreateOperationRequest']);
-        Route::put('/operations/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
-        Route::patch('/operations/{operation}', [AccountDetailController::class, 'markOperationAsChecked']);
-        Route::delete('/operations/{operation}', [AccountDetailController::class, 'deleteOperation']);
+        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'handleCreateOperationRequest'])
+            ->middleware('can:create,App\Models\FinancialOperation,account');
+
+        Route::middleware('can:update,operation')->group(function () {
+            Route::put('/operations/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
+            Route::patch('/operations/{operation}', [AccountDetailController::class, 'checkOrUncheckOperation']);
+        });
+        
+        Route::delete('/operations/{operation}', [AccountDetailController::class, 'deleteOperation'])
+            ->middleware('can:delete,operation');
     });
 
 
@@ -99,12 +109,17 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      * SAP Reports
      */
 
-    Route::get('/accounts/{account}/sap-reports', [ReportsOverviewController::class, 'show']);
+    Route::get('/accounts/{account}/sap-reports', [ReportsOverviewController::class, 'show'])
+        ->middleware('can:view,account');
 
-    Route::get('/sap-reports/{report}', [ReportDetailController::class, 'download']);
+    Route::get('/sap-reports/{report}/raw', [ReportDetailController::class, 'download'])
+        ->middleware('can:view,report');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/accounts/{account}/sap-reports', [UploadReportController::class, 'upload']);
-        Route::delete('/sap-reports/{report}', [DeleteReportController::class, 'delete']);
+        Route::post('/accounts/{account}/sap-reports', [UploadReportController::class, 'upload'])
+            ->middleware('can:create,App\Models\SapReport,account');
+        
+        Route::delete('/sap-reports/{report}', [DeleteReportController::class, 'delete'])
+            ->middleware('can:delete,report');
     });
 });

@@ -184,7 +184,7 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'checked' => true, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->patch("/operation/$operation->id", ['checked' => false]);
+            ->patch("/operations/$operation->id", ['checked' => false]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [

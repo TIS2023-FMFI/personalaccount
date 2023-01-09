@@ -31,7 +31,7 @@ class ReportDetailTest extends TestCase
 
     public function test_that_unauthenticated_user_cannot_download_report()
     {
-        $response = $this->get('/sap-reports/' . $this->report->id);
+        $response = $this->get('/sap-reports/' . $this->report->id . '/raw');
 
         $response
             ->assertStatus(302);
@@ -40,7 +40,7 @@ class ReportDetailTest extends TestCase
     public function test_that_user_cannot_download_nonexisting_report()
     {
         $response = $this->actingAs($this->user)
-                            ->get('/sap-reports/99999');
+                            ->get('/sap-reports/99999/raw');
         
         $response
             ->assertStatus(404);
@@ -49,7 +49,7 @@ class ReportDetailTest extends TestCase
     public function test_that_user_can_download_existing_report()
     {
         $response = $this->actingAs($this->user)
-                            ->get('/sap-reports/' . $this->report->id);
+                            ->get('/sap-reports/' . $this->report->id . '/raw');
 
         $expectedName =
             $this->account->getSanitizedSapId()
