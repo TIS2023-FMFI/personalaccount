@@ -31,7 +31,7 @@ class SapReportFactory extends Factory
 
                 return $filePath;
             },
-            'uploaded_on' => fake()->date
+            'exported_or_uploaded_on' => fake()->date
         ];
     }
 }

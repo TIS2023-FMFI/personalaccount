@@ -5,10 +5,12 @@ namespace Tests\Feature\SapReports;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class ReportDetalTest extends TestCase
+class UploadReportTest extends TestCase
 {
     private $user, $account;
     private $accountIdAttr, $sapReportAttr;
@@ -150,7 +152,7 @@ class ReportDetalTest extends TestCase
             );
     }
 
-    public function test_that_sap_report_is_uploaded_if_request_is_valid()
+    public function test_that_sap_report_is_uploaded_with_date_uploaded()
     {
         Storage::fake();
         $uploadedReport = UploadedFile::fake()
@@ -170,6 +172,44 @@ class ReportDetalTest extends TestCase
 
         $report = $this->account->sapReports()->first();
         $this->assertNotNull($report);
+        $this->assertEquals(
+            now()->format('d-m-Y'),
+            $report->exported_or_uploaded_on->format('d-m-Y')
+        );
+
+        Storage::assertExists($report->path);
+
+        $report->delete();
+    }
+
+    public function test_that_sap_report_is_uploaded_with_date_exported()
+    {
+        $exported = '4.5.2020';
+        $reportContent = $exported . ' test';
+        
+        Storage::fake();
+        $uploadedReport = UploadedFile::fake()
+                            ->createWithContent('test', $reportContent)
+                            ->mimeType('text/plain');
+
+        $requestData = [
+            'account_id' => $this->account->id,
+            'sap_report' => $uploadedReport,
+        ];
+        
+        $response = $this->actingAs($this->user)
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post('/sap-reports', $requestData);
+
+        $response
+            ->assertStatus(201);
+
+        $report = $this->account->sapReports()->first();
+        $this->assertNotNull($report);
+        $this->assertEquals(
+            Carbon::createFromFormat('d.m.Y', $exported)->format('d-m-Y'),
+            $report->exported_or_uploaded_on->format('d-m-Y')
+        );
 
         Storage::assertExists($report->path);
 

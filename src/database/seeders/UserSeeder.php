@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
 class UserSeeder extends Seeder
 {
     /**
-     * The number of users to create.
+     * The number of random users to create.
      * 
      * @var int
      */
@@ -22,6 +22,8 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        User::factory()->create([ 'email' => 'a@b.c' ]);
+
         User::factory()->count($this::$userCount)->create();
     }
 }

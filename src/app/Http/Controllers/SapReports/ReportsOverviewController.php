@@ -26,7 +26,7 @@ class ReportsOverviewController extends Controller
 
     /**
      * Show the SAP Reports view for an account with reports filtered based on
-     * the date they were uploaded. The filtered reports are paginated.
+     * the date they were exported or uploaded. The filtered reports are paginated.
      * 
      * @param ShowReportsRequest $request
      * the request containing the date interval used for filtering
@@ -49,8 +49,8 @@ class ReportsOverviewController extends Controller
     }
 
     /**
-     * Retrieve the paginated SAP Reports for an account which were uploaded
-     * within a specified period.
+     * Retrieve the paginated SAP Reports for an account which were exported or
+     * uploaded within a specified period.
      * 
      * @param Account $account
      * the account for which to show the SAP reports
@@ -65,7 +65,7 @@ class ReportsOverviewController extends Controller
     {
         return $account
                 ->sapReportsBetween($from, $to)
-                ->orderBy('uploaded_on', 'desc')
+                ->orderBy('exported_or_uploaded_on', 'desc')
                 ->paginate($this::$resultsPerPage)
                 ->withQueryString();
     }

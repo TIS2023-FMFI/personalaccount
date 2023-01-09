@@ -18,7 +18,16 @@ class SapReport extends Model
     protected $fillable = [
         'account_id',
         'path',
-        'uploaded_on'
+        'exported_or_uploaded_on'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<int, string>
+     */
+    protected $casts = [
+        'exported_or_uploaded_on' => 'date',
     ];
 
     /**
@@ -48,9 +57,9 @@ class SapReport extends Model
     {   
         $sanitizedSapId = $this->account->getSanitizedSapId();
         $contentClause = trans('files.sap_report');
-        $uploadedOn = Date::parse($this->uploaded_on)->format('d-m-Y');
+        $exportedOrUploadedOn = $this->exported_or_uploaded_on->format('d-m-Y');
 
-        $fileName = "${sanitizedSapId}_${contentClause}_${uploadedOn}";
+        $fileName = "${sanitizedSapId}_${contentClause}_${exportedOrUploadedOn}";
 
         return $this->appendFileExtension($fileName);
     }
@@ -81,6 +90,6 @@ class SapReport extends Model
      */
     public static function getReportsDirectoryPath(User $user)
     {
-        return "reports/user_${user}";
+        return 'reports/user_' . $user->id;
     }
 }

@@ -119,12 +119,12 @@ class ReportsOverviewTest extends TestCase
 
     public function test_that_from_is_used()
     {
-        $sorted = $this->reports->sortBy('uploaded_on');
+        $sorted = $this->reports->sortBy('exported_or_uploaded_on');
         
         $filtered = $sorted->skip($this->reports->count() / 2);
         
         $expectedTotal = $filtered->count();
-        $from = $filtered->first()['uploaded_on'];
+        $from = $filtered->first()['exported_or_uploaded_on'];
         
         $response = $this->actingAs($this->user)
                             ->get(
@@ -155,12 +155,12 @@ class ReportsOverviewTest extends TestCase
 
     public function test_that_to_is_used()
     {
-        $sorted = $this->reports->sortByDesc('uploaded_on');
+        $sorted = $this->reports->sortByDesc('exported_or_uploaded_on');
         
         $filtered = $sorted->skip($this->reports->count() / 2);
         
         $expectedTotal = $filtered->count();
-        $to = $filtered->first()['uploaded_on'];
+        $to = $filtered->first()['exported_or_uploaded_on'];
         
         $response = $this->actingAs($this->user)
                             ->get(
@@ -191,14 +191,14 @@ class ReportsOverviewTest extends TestCase
 
     public function test_that_from_and_to_is_used()
     {
-        $sorted = $this->reports->sortBy('uploaded_on');
+        $sorted = $this->reports->sortBy('exported_or_uploaded_on');
         
         $filtered = $sorted->skip($this->reports->count() / 4);
         $filtered = $filtered->take($filtered->count() / 2);
         
         $expectedTotal = $filtered->count();
-        $from = $filtered->first()['uploaded_on'];
-        $to = $filtered->last()['uploaded_on'];
+        $from = $filtered->first()['exported_or_uploaded_on'];
+        $to = $filtered->last()['exported_or_uploaded_on'];
         
         $response = $this->actingAs($this->user)
                             ->get(

@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\SapReports;
 
 use App\Exceptions\DatabaseException;
+use App\Exceptions\FileFormatException;
 use App\Exceptions\StorageException;
 use App\Http\Helpers\DBTransaction;
+use App\Http\Helpers\SapReportParser;
 use \Exception;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SapReports\UploadReportRequest;
 use App\Models\Account;
 use App\Models\SapReport;
 use App\Models\User;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -111,13 +114,35 @@ class UploadReportController extends Controller
      */
     private function createReportRecord(Account $account, string $reportPath)
     {
+        $absoluteReportPath = Storage::path($reportPath);
+        $exportedOrUploadedOn = $this->getDateExportedOrToday($absoluteReportPath);
+        
         $report = $account->sapReports()->create([
             'path' => $reportPath,
-            'uploaded_on' => now(),
+            'exported_or_uploaded_on' => $exportedOrUploadedOn,
         ]);
 
         if (!$report->exists) {
             throw new DatabaseException('Record not saved.');
+        }
+    }
+
+    /**
+     * Get the date the SAP report was exported or today if no information about
+     * the export date can be found.
+     * 
+     * @param string $reportPath
+     * the path to the SAP report file
+     * @return \Carbon\Traits\Creator|\Illuminate\Support\Carbon
+     */
+    private function getDateExportedOrToday(string $reportPath)
+    {
+        try {
+            $reportParser = new SapReportParser($reportPath);
+
+            return $reportParser->getDateExported();
+        } catch (FileNotFoundException|FileFormatException $e) {
+            return now();
         }
     }
 }

@@ -54,7 +54,7 @@ class ReportDetailTest extends TestCase
         $expectedName =
             $this->account->getSanitizedSapId()
             . '_' . trans('files.sap_report') . '_'
-            . Date::parse($this->report->uploaded_on)->format('d-m-Y')
+            . Date::parse($this->report->exported_or_uploaded_on)->format('d-m-Y')
             . '.txt';
         
         $response

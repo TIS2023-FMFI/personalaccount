@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('account_id');
             $table->foreign('account_id')->references('id')->on('accounts')->cascadeOnDelete();
             $table->string('path');
-            $table->date('uploaded_on');
+            $table->date('exported_or_uploaded_on');
         });
     }
 

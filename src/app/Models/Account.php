@@ -97,7 +97,7 @@ class Account extends Model
 
     /**
      * Get all SAP reports which are associated with this account and which were
-     * uploaded within a specified period.
+     * exported or uploaded within a specified period.
      * 
      * @param \Illuminate\Support\Carbon $from
      * the date determining the beginning of the period to consider (inclusive)
@@ -107,6 +107,6 @@ class Account extends Model
      */
     public function sapReportsBetween(Carbon $from, Carbon $to)
     {
-        return $this->sapReports()->whereBetween('uploaded_on', [$from, $to]);
+        return $this->sapReports()->whereBetween('exported_or_uploaded_on', [$from, $to]);
     }
 }
