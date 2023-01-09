@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\FinancialAccounts\DeleteAccountController;
-use App\Http\Controllers\UpdateAccountController;
+use App\Http\Controllers\FinancialAccounts\UpdateAccountController;
 use App\Http\Controllers\UserAccountManagement\ManageUserAccountController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -76,10 +76,10 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts', [FinancialAccountsOverviewController::class, 'createFinancialAccount']);
         
-        Route::get('/accounts/{account}', [UpdateAccountController::class, 'update'])
+        Route::put('/accounts/{account}', [UpdateAccountController::class, 'update'])
             ->middleware('can:update,account');
 
-        Route::get('/accounts/{account}', [DeleteAccountController::class, 'delete'])
+        Route::delete('/accounts/{account}', [DeleteAccountController::class, 'delete'])
             ->middleware('can:delete,account');
     });
 

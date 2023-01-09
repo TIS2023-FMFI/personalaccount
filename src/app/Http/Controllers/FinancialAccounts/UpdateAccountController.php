@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Exceptions\DatabaseException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\FinancialAccounts\CreateOrUpdateAccountRequest;
 use App\Models\Account;
 

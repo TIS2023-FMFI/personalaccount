@@ -4,6 +4,11 @@ namespace App\Http\Requests\FinancialOperations;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * A request to change the checked state of a financial operation.
+ * 
+ * Fields: checked.
+ */
 class CheckOrUncheckOperationRequest extends FormRequest
 {
     /**
