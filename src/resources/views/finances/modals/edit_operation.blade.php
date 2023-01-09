@@ -39,21 +39,21 @@
 
     <div class="input-box">
       <div class="field">
-        <input type="text" id="edit-operation-name" placeholder="...">
+        <input type="text" id="edit-operation-name">
         <label for="edit-operation-name">Názov</label>
       </div>
     </div>
 
     <div class="input-box">
       <div class="field">
-        <input type="text" id="edit-operation-subject" placeholder="...">
+        <input type="text" id="edit-operation-subject">
         <label for="edit-operation-subject">Subjekt</label>
       </div>
     </div>
 
     <div class="input-box">
       <div class="field">
-        <input type="text" id="edit-operation-sum" placeholder="...">
+        <input type="text" id="edit-operation-sum">
         <label for="edit-operation-sum">Suma</label>
       </div>
     </div>

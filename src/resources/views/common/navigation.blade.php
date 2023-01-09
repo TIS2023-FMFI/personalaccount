@@ -33,9 +33,15 @@
 
             @include('auth.modals.create_user')
             @include('auth.modals.change_password')
+
             @include('finances.modals.operation')
             @include('finances.modals.create_operation')
             @include('finances.modals.edit_operation')
             @include('finances.modals.check_operation')
             @include('finances.modals.delete_operation')
+
             @include('finances.modals.add_report')
+
+            @include('finances.modals.create_account')
+            @include('finances.modals.edit_account')
+            @include('finances.modals.delete_account')

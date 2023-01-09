@@ -21,7 +21,7 @@
                 <form id="forgot-pass-form">
                     <div class="input-box">
                         <div class="field">
-                            <input type="text" id="forgot-pass-email" placeholder="...">
+                            <input type="text" id="forgot-pass-email">
                             <label for="forgot-pass-email">E-mailová adresa</label>
                         </div>
                         <div class="error-box" id="forgot-pass-email-errors"></div>

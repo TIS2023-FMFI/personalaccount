@@ -23,10 +23,6 @@ return [
         'success' => 'The operation was succesfully deleted.',
         'failure' => 'An error occurred while deleting the operation.'
     ],
-    'check' => [
-        'success' => 'The operation was marked as checked.',
-        'failure' => 'An error occurred while marking the operation.',
-        'invalid' => 'A lending cannot be marked as checked.'
-    ],
+    'invalid_check' => 'A lending cannot be marked as checked.'
 
 ];

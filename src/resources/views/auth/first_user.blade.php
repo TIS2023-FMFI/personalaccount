@@ -23,7 +23,7 @@
                     
                 <div class="input-box">
                     <div class="field">
-                    <input type="email" id="first-user-email" placeholder="...">
+                    <input type="email" id="first-user-email">
                         <label for="first-user-email">E-mailová adresa</label>
                     </div>
                     <div class="error-box" id="first-user-email-errors"></div>

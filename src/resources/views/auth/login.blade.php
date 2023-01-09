@@ -24,7 +24,7 @@
                     <div class="input-box">
                         @if ($errors->has('email'))
                             <div class="field">
-                                <input type="text" name="email" id="login-email" placeholder="..." style="border-color: red;">
+                                <input type="text" name="email" id="login-email" style="border-color: red;">
                                 <label for="login-email">E-mailová adresa</label>
                             </div>
                             <div class="error-box">
@@ -32,7 +32,7 @@
                             </div>
                         @else
                             <div class="field">
-                                <input type="text" name="email" id="login-email" placeholder="...">
+                                <input type="text" name="email" id="login-email">
                                 <label for="login-email">E-mailová adresa</label>
                             </div>
                         @endif
@@ -41,7 +41,7 @@
                     <div class="input-box">
                         @if ($errors->has('password'))
                             <div class="field">
-                                <input type="password" name="password" placeholder="..." style="border-color: red;">
+                                <input type="password" name="password" style="border-color: red;">
                                 <label for="login-email">Prihlasovacie heslo</label>
                             </div>
                             <div class="error-box">
@@ -49,7 +49,7 @@
                             </div>
                         @else 
                             <div class="field">
-                                <input type="password" name="password" placeholder="...">
+                                <input type="password" name="password">
                                 <label for="login-email">Prihlasovacie heslo</label>
                             </div>
                         @endif
