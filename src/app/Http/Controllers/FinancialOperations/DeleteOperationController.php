@@ -37,6 +37,6 @@ class DeleteOperationController extends GeneralOperationController
             return response(trans('financial_operations.delete.failure'), 500);
         }
         DB::commit();
-        return response(trans('financial_operations.delete.success'), 200);
+        return response(trans('financial_operations.delete.success'));
     }
 }

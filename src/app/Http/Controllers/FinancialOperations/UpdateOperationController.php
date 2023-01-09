@@ -55,7 +55,7 @@ class UpdateOperationController extends GeneralOperationController
         }
 
         DB::commit();
-        return response(trans('financial_operations.update.success'), 200);
+        return response(trans('financial_operations.update.success'));
     }
 
     /**
@@ -121,7 +121,7 @@ class UpdateOperationController extends GeneralOperationController
             return response(trans('financial_operations.invalid_check'), 422);
 
         if ($operation->update(['checked' => $request->validated('checked')]))
-            return response(trans('financial_operations.edit.success'), 200);
+            return response(trans('financial_operations.edit.success'));
 
         return response(trans('financial_operations.edit.failure'), 500);
     }

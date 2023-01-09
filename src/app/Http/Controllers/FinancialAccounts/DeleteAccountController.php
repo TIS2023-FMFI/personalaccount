@@ -25,7 +25,7 @@ class DeleteAccountController extends Controller
     public function delete(Account $account)
     {
         if ($account->delete()) {
-            return response(trans('financial_accounts.delete.success'), 200);
+            return response(trans('financial_accounts.delete.success'));
         }
 
         return response(trans('financial_accounts.delete.failed'), 500);
