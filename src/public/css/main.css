@@ -81,17 +81,35 @@ nav div:first-child a {
     flex-wrap: wrap;
     justify-content: space-evenly;
 }
-.account {
+.account_box {
     width: 27%;
+    position: relative;
+    height: 300px;
+    margin-bottom: 50px;
+}
+.edit_account {
+    position: absolute;
+    top: 10px;
+    right: 35px;
+}
+.delete_account {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.edit_account:hover, .delete_account:hover {
+    cursor: pointer;
+}
+.account {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 300px;
+    height: 100%;
     justify-content: center;
     background-color: #f1f1f1;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     border-radius: 15px;
-    margin-bottom: 50px;
 }
 .account h2 {
     text-align: center;
@@ -349,6 +367,9 @@ footer {
     flex-direction: column;
     align-items: center;
     position: relative;
+}
+.modal p {
+    font-size: 18px;
 }
 .close-modal {
     color: #929292;
