@@ -13,7 +13,7 @@ use Tests\TestCase;
 class UploadReportTest extends TestCase
 {
     private $user, $account;
-    private $accountIdAttr, $sapReportAttr;
+    private $sapReportAttr;
 
     private $ajaxHeaders;
 
@@ -27,7 +27,6 @@ class UploadReportTest extends TestCase
             return;
         }
 
-        $this->accountIdAttr = 'account id';
         $this->sapReportAttr = trans('validation.attributes.sap_report');
 
         $this->user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
@@ -43,7 +42,10 @@ class UploadReportTest extends TestCase
 
     public function test_that_unauthenticated_user_cannot_upload_report()
     {
-        $response = $this->post('/sap-reports', [ 'account_id' => '', 'sap_report' => '' ]);
+        $response = $this->post(
+                            '/accounts/' . $this->account->id . '/sap-reports',
+                            [ 'sap_report' => '' ]
+                        );
 
         $response
             ->assertStatus(302);
@@ -53,63 +55,25 @@ class UploadReportTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->post(
-                                '/sap-reports',
-                                [ 'account_id' => '', 'sap_report' => '' ]
+                                '/accounts/' . $this->account->id . '/sap-reports',
+                                [ 'sap_report' => '' ]
                             );
 
         $response
             ->assertStatus(500);
     }
 
-    public function test_that_account_id_is_required()
+    public function test_that_user_cannot_associate_report_with_nonexisting_account()
     {
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
-                                '/sap-reports',
-                                [ 'account_id' => '', 'sap_report' => '' ]
+                                '/accounts/99999/sap-reports',
+                                [ 'sap_report' => '' ]
                             );
 
         $response
-            ->assertStatus(422)
-            ->assertJsonPath(
-                'errors.account_id.0',
-                trans('validation.required', [ 'attribute' => $this->accountIdAttr ])
-            );
-    }
-
-    public function test_that_account_id_must_be_numeric()
-    {
-        $response = $this->actingAs($this->user)
-                            ->withHeaders($this->ajaxHeaders)
-                            ->post(
-                                '/sap-reports',
-                                [ 'account_id' => 'abc', 'sap_report' => '' ]
-                            );
-
-        $response
-            ->assertStatus(422)
-            ->assertJsonPath(
-                'errors.account_id.0',
-                trans('validation.numeric', [ 'attribute' => $this->accountIdAttr ])
-            );
-    }
-
-    public function test_that_account_id_must_reference_an_existing_account()
-    {
-        $response = $this->actingAs($this->user)
-                            ->withHeaders($this->ajaxHeaders)
-                            ->post(
-                                '/sap-reports',
-                                [ 'account_id' => '99999', 'sap_report' => '' ]
-                            );
-
-        $response
-            ->assertStatus(422)
-            ->assertJsonPath(
-                'errors.account_id.0',
-                trans('validation.exists', [ 'attribute' => $this->accountIdAttr ])
-            );
+            ->assertStatus(404);
     }
 
     public function test_that_sap_report_is_required()
@@ -117,8 +81,8 @@ class UploadReportTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
-                                '/sap-reports',
-                                [ 'account_id' => '', 'sap_report' => '' ]
+                                '/accounts/' . $this->account->id . '/sap-reports',
+                                [ 'sap_report' => '' ]
                             );
 
         $response
@@ -136,13 +100,15 @@ class UploadReportTest extends TestCase
                             ->create('test', 0, 'application/pdf');
 
         $requestData = [
-            'account_id' => $this->account->id,
             'sap_report' => $uploadedReport,
         ];
         
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/sap-reports', $requestData);
+                            ->post(
+                                '/accounts/' . $this->account->id . '/sap-reports',
+                                $requestData
+                            );
 
         $response
             ->assertStatus(422)
@@ -159,13 +125,15 @@ class UploadReportTest extends TestCase
                             ->create('test', 0, 'text/plain');
 
         $requestData = [
-            'account_id' => $this->account->id,
             'sap_report' => $uploadedReport,
         ];
         
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/sap-reports', $requestData);
+                            ->post(
+                                '/accounts/' . $this->account->id . '/sap-reports',
+                                $requestData
+                            );
 
         $response
             ->assertStatus(201);
@@ -193,13 +161,15 @@ class UploadReportTest extends TestCase
                             ->mimeType('text/plain');
 
         $requestData = [
-            'account_id' => $this->account->id,
             'sap_report' => $uploadedReport,
         ];
         
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/sap-reports', $requestData);
+                            ->post(
+                                '/accounts/' . $this->account->id . '/sap-reports',
+                                $requestData
+                            );
 
         $response
             ->assertStatus(201);

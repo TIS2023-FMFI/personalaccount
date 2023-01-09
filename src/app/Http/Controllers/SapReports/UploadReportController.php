@@ -37,10 +37,8 @@ class UploadReportController extends Controller
      * a response containing the information about the result of this operation
      * presented as a plain-text message
      */
-    public function upload(UploadReportRequest $request)
+    public function upload(Account $account, UploadReportRequest $request)
     {
-        $account = Account::findOrFail($request->validated('account_id'));
-
         // $this->authorize('create', [SapReport::class, $account]);
 
         $report = $request->file('sap_report');
@@ -59,10 +57,10 @@ class UploadReportController extends Controller
      * 
      * @param \App\Models\Account $account
      * the account with which to associate the report
-     * @throws \Exception
-     * thrown if an error occurred
      * @param \Illuminate\Http\UploadedFile $report
      * the SAP report file to upload
+     * @throws \Exception
+     * thrown if an error occurred
      * @return void
      */
     private function uploadReportFile(Account $account, UploadedFile $report)

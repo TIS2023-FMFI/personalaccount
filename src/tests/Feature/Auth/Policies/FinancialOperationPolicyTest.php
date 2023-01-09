@@ -86,11 +86,14 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $newOperation = $this->operation->getAttributes();
         $newOperation['title'] = 'new title';
-        unset($newOperation['attachment']);
+        unset($newOperation['attachment'], $newOperation['account_id']);
 
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->post('/operations', $newOperation);
+                            ->post(
+                                '/accounts/' . $this->account->id . '/operations',
+                                $newOperation
+                            );
         
         $response
             ->assertStatus(403);
@@ -100,26 +103,9 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $updated = $this->operation->getAttributes();
         $updated['title'] = 'new title';
-        unset($updated['attachment']);
+        unset($updated['attachment'], $updated['account_id']);
 
         $response = $this->actingAs($this->otherUser)
-                            ->withHeaders($this->ajaxHeaders)
-                            ->put(
-                                '/operations/' . $this->operation->id,
-                                $updated
-                            );
-        
-        $response
-            ->assertStatus(403);
-    }
-
-    public function test_that_unauthorized_user_cannot_move_operation()
-    {
-        $updated = $this->operation->getAttributes();
-        $updated['account_id'] = $this->otherAccount->id;
-        unset($updated['attachment']);
-
-        $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->put(
                                 '/operations/' . $this->operation->id,

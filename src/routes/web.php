@@ -88,7 +88,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/operations/{operation}/attachment', [OperationDetailController::class, 'downloadAttachment']);
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/operations', [CreateOperationController::class, 'handleCreateOperationRequest']);
+        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'handleCreateOperationRequest']);
         Route::put('/operations/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
         Route::patch('/operations/{operation}', [AccountDetailController::class, 'markOperationAsChecked']);
         Route::delete('/operations/{operation}', [AccountDetailController::class, 'deleteOperation']);
@@ -104,7 +104,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/sap-reports/{report}', [ReportDetailController::class, 'download']);
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/sap-reports', [UploadReportController::class, 'upload']);
+        Route::post('/accounts/{account}/sap-reports', [UploadReportController::class, 'upload']);
         Route::delete('/sap-reports/{report}', [DeleteReportController::class, 'delete']);
     });
 });

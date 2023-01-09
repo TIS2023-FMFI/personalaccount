@@ -44,12 +44,10 @@ class EditOperationTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
                 'operation_type_id' => $this->type
             ]);
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'title',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -73,7 +71,6 @@ class EditOperationTest extends TestCase
     public function test_update_nonexisting_operation(){
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'title',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -91,12 +88,11 @@ class EditOperationTest extends TestCase
     public function test_update_type_to_lending_creates_lending_record(){
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'operation_type_id' => $this->type]);
+            ['operation_type_id' => $this->type]);
 
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->lendingType->id,
@@ -123,13 +119,12 @@ class EditOperationTest extends TestCase
     public function test_update_type_from_lending_deletes_lending_record(){
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'operation_type_id' => $this->lendingType]);
+            ['operation_type_id' => $this->lendingType]);
         Lending::factory()->create(['id' => $operation]);
 
         $this->assertDatabaseHas('lendings', ['id' => $operation->id]);
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -152,10 +147,9 @@ class EditOperationTest extends TestCase
         $file = UploadedFile::fake()->create('test.txt');
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => null]);
+            ['operation_type_id' => $this->type, 'attachment' => null]);
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -186,11 +180,10 @@ class EditOperationTest extends TestCase
         Storage::assertExists($oldPath);
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'operation_type_id' => $this->type, 'attachment' => $oldPath]);
+            ['operation_type_id' => $this->type, 'attachment' => $oldPath]);
 
         $newFile = UploadedFile::fake()->create('test.txt');
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -207,9 +200,6 @@ class EditOperationTest extends TestCase
         $newPath = $operation->attachment;
         Storage::disk('local')->assertExists($newPath);
         Storage::disk('local')->assertMissing($oldPath);
-
-        //Storage::fake('local');
-
     }
 
 }

@@ -8,7 +8,7 @@ use Illuminate\Validation\Rules\File;
 /**
  * A request upload a new SAP report.
  * 
- * Fields: account_id, sap_report.
+ * Fields: sap_report.
  */
 class UploadReportRequest extends FormRequest
 {
@@ -30,7 +30,6 @@ class UploadReportRequest extends FormRequest
     public function rules()
     {
         return [
-            'account_id' => ['required', 'numeric', 'exists:accounts,id'],
             'sap_report' => ['required', File::types(['txt'])],
         ];
     }
