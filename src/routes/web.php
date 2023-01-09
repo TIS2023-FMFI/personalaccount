@@ -2,14 +2,15 @@
 
 use App\Http\Controllers\FinancialAccounts\DeleteAccountController;
 use App\Http\Controllers\FinancialAccounts\UpdateAccountController;
+use App\Http\Controllers\FinancialOperations\DeleteOperationController;
 use App\Http\Controllers\UserAccountManagement\ManageUserAccountController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\FinancialAccounts\AccountDetailController;
-use App\Http\Controllers\FinancialAccounts\FinancialAccountsOverviewController;
+use App\Http\Controllers\FinancialOperations\OperationsOverviewController;
+use App\Http\Controllers\FinancialAccounts\AccountsOverviewController;
 use App\Http\Controllers\FinancialOperations\CreateOperationController;
-use App\Http\Controllers\FinancialOperations\EditOperationController;
+use App\Http\Controllers\FinancialOperations\UpdateOperationController;
 use App\Http\Controllers\FinancialOperations\OperationDetailController;
 use App\Http\Controllers\SapReports\DeleteReportController;
 use App\Http\Controllers\SapReports\ReportDetailController;
@@ -70,11 +71,11 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      * Financial Accounts
      */
 
-    Route::get('/', [FinancialAccountsOverviewController::class, 'show'])
+    Route::get('/', [AccountsOverviewController::class, 'show'])
         ->name('accounts_overview');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/accounts', [FinancialAccountsOverviewController::class, 'createFinancialAccount']);
+        Route::post('/accounts', [AccountsOverviewController::class, 'createFinancialAccount']);
         
         Route::put('/accounts/{account}', [UpdateAccountController::class, 'update'])
             ->middleware('can:update,account');
@@ -89,8 +90,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      */
 
     Route::middleware('can:view,account')->group(function () {
-        Route::get('/accounts/{account}/operations', [AccountDetailController::class, 'show']);
-        Route::get('/accounts/{account}/operations/export', [AccountDetailController::class, 'downloadExport']);
+        Route::get('/accounts/{account}/operations', [OperationsOverviewController::class, 'show']);
+        Route::get('/accounts/{account}/operations/export', [OperationsOverviewController::class, 'downloadExport']);
     });
 
     Route::middleware('can:view,operation')->group(function () {
@@ -103,11 +104,11 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
             ->middleware('can:create,App\Models\FinancialOperation,account');
 
         Route::middleware('can:update,operation')->group(function () {
-            Route::put('/operations/{operation}', [EditOperationController::class, 'handleEditOperationRequest']);
-            Route::patch('/operations/{operation}', [AccountDetailController::class, 'checkOrUncheckOperation']);
+            Route::put('/operations/{operation}', [UpdateOperationController::class, 'handleEditOperationRequest']);
+            Route::patch('/operations/{operation}', [UpdateOperationController::class, 'checkOrUncheckOperation']);
         });
         
-        Route::delete('/operations/{operation}', [AccountDetailController::class, 'deleteOperation'])
+        Route::delete('/operations/{operation}', [DeleteOperationController::class, 'delete'])
             ->middleware('can:delete,operation');
     });
 

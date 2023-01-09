@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
+use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -12,12 +13,11 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use function PHPUnit\Framework\throwException;
 
 /**
  * Manages functionality of the 'edit operation' modal.
  */
-class EditOperationController extends GeneralOperationController
+class UpdateOperationController extends GeneralOperationController
 {
     /**
      * Handles the request to edit a financial operation. Manages updating the operation itself, its related
@@ -74,7 +74,7 @@ class EditOperationController extends GeneralOperationController
             'subject' => $request->validated('subject'),
             'sum' => $request->validated('sum'),
             'attachment' => ($attachment) ? $attachment : $operation->attachment,
-        ])) throwException(new Exception('The operation wasn\'t updated.'));
+        ])) throw new Exception('The operation wasn\'t updated.');
     }
 
     /**
@@ -105,7 +105,24 @@ class EditOperationController extends GeneralOperationController
     private function deleteLending($operation)
     {
         if (! Lending::destroy($operation->lending->id))
-            throwException(new Exception('The lending wasn\'t deleted.'));
+            throw new Exception('The lending wasn\'t deleted.');
     }
 
+    /**
+     * Handles the request to mark/unmark a financial operation as checked by the user.
+     *
+     * @param FinancialOperation $operation - route parameter
+     * @param CheckOrUncheckOperationRequest $request
+     * @return Application|ResponseFactory|Response
+     */
+    public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
+    {
+        if ($operation->isLending())
+            return response(trans('financial_operations.invalid_check'), 422);
+
+        if ($operation->update(['checked' => $request->validated('checked')]))
+            return response(trans('financial_operations.edit.success'), 200);
+
+        return response(trans('financial_operations.edit.failure'), 500);
+    }
 }

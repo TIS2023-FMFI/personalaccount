@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\FinancialAccount;
 
-use App\Http\Controllers\FinancialAccounts\AccountDetailController;
+use App\Http\Controllers\FinancialOperations\OperationsOverviewController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -29,7 +29,7 @@ class FinancialAccountDetailTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = AccountDetailController::$perPage;
+        $this->perPage = OperationsOverviewController::$perPage;
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
         $this->type = OperationType::firstOrCreate(['name' => 'type']);

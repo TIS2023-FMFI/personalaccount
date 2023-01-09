@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\FinancialAccounts;
+namespace App\Http\Controllers\FinancialOperations;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Base\DateRequest;
-use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use Exception;
@@ -17,12 +16,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use function PHPUnit\Framework\throwException;
 
 /**
  * Manages the 'account detail' screen and all functionality available directly from that screen.
  */
-class AccountDetailController extends Controller
+class OperationsOverviewController extends Controller
 {
     /**
      * @var int - number of operations to be shown on one page
@@ -36,7 +34,7 @@ class AccountDetailController extends Controller
      */
     public function perPage()
     {
-        return AccountDetailController::$perPage;
+        return OperationsOverviewController::$perPage;
     }
 
     /**
@@ -160,49 +158,5 @@ class AccountDetailController extends Controller
 
         fclose($stream);
         return $stream;
-    }
-
-    /**
-     * Handles the request to delete a financial operation.
-     *
-     * @param FinancialOperation $operation - route parameter
-     * @return Application|ResponseFactory|Response
-     */
-    public function deleteOperation(FinancialOperation $operation)
-    {
-        $attachment = $operation->attachment;
-
-        DB::beginTransaction();
-        try
-        {
-            if (!$operation->delete()) throwException(new Exception('The operation wasn\'t deleted.'));
-            if ($attachment) $this->deleteFileIfExists($attachment);
-        }
-        catch (Exception $e)
-        {
-            DB::rollBack();
-            //return response($e->getMessage(), 500); //for debugging purposes
-            return response(trans('financial_operations.delete.failure'), 500);
-        }
-        DB::commit();
-        return response(trans('financial_operations.delete.success'), 200);
-    }
-
-    /**
-     * Handles the request to mark/unmark a financial operation as checked by the user.
-     *
-     * @param FinancialOperation $operation - route parameter
-     * @param CheckOrUncheckOperationRequest $request
-     * @return Application|ResponseFactory|Response
-     */
-    public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
-    {
-        if ($operation->isLending())
-            return response(trans('financial_operations.invalid_check'), 422);
-
-        if ($operation->update(['checked' => $request->validated('checked')]))
-            return response(trans('financial_operations.edit.success'), 200);
-
-        return response(trans('financial_operations.edit.failure'), 500);
     }
 }

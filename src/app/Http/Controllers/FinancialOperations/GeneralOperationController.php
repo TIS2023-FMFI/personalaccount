@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Lending;
 use Exception;
 use Illuminate\Support\Facades\Storage;
-use function PHPUnit\Framework\throwException;
 
 
 /**
@@ -56,6 +55,6 @@ class GeneralOperationController extends Controller
                 'previous_lending_id' => $request->validated('previous_lending_id'),
             ]
         );
-        if (!$lending->exists) throwException(new Exception('The lending wasn\'t created.'));
+        if (!$lending->exists) throw new Exception('The lending wasn\'t created.');
     }
 }

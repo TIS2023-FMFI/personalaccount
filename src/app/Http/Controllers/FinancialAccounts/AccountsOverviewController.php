@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Manages the 'financial accounts' screen and all the functionality available directly from that screen.
  */
-class FinancialAccountsOverviewController extends Controller
+class AccountsOverviewController extends Controller
 {
     /**
      * Returns the 'index' view filled with a list of accounts belonging to the current user

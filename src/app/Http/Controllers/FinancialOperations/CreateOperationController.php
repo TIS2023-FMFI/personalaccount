@@ -10,7 +10,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use function PHPUnit\Framework\throwException;
 
 /**
  * Manages the functionality of the 'create operation' modal.
@@ -68,7 +67,7 @@ class CreateOperationController extends GeneralOperationController
             'sum' => $request->validated('sum'),
             'attachment' => $attachment,
         ]);
-        if (!$operation->exists) throwException(new Exception('The operation wasn\'t created.'));
+        if (!$operation->exists) throw new Exception('The operation wasn\'t created.');
         return $operation;
     }
 }
