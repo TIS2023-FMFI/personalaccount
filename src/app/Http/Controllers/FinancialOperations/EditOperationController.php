@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
-use App\Http\Requests\FinancialOperations\UploadOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -24,10 +24,10 @@ class EditOperationController extends GeneralOperationController
      * lending record and its attachment file if there are any.
      *
      * @param FinancialOperation $operation - route parameter
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleEditOperationRequest(FinancialOperation $operation, UploadOperationRequest $request)
+    public function handleEditOperationRequest(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
         $old_attachment = $operation->attachment;
         $new_attachment = null;
@@ -61,11 +61,11 @@ class EditOperationController extends GeneralOperationController
     /**
      * Changes the data in the DB record for the given operation according to the request.
      *
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @param $operation
      * @param $attachment - updated path to the operation's attachment file
      */
-    private function updateOperation(UploadOperationRequest $request, $operation, $attachment)
+    private function updateOperation(CreateOrUpdateOperationRequest $request, $operation, $attachment)
     {
         if (! $operation->update([
             'title' => $request->validated('title'),
@@ -81,11 +81,11 @@ class EditOperationController extends GeneralOperationController
      * Returns 'true' if the given operation was a lending originally, but it's requested to change
      * into a non-lending type. Otherwise, returns 'false'.
      *
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @param $operation
      * @return bool
      */
-    private function typeChangedFromLending(UploadOperationRequest $request, $operation)
+    private function typeChangedFromLending(CreateOrUpdateOperationRequest $request, $operation)
     {
         $newTypeId = $request->validated('operation_type_id');
 

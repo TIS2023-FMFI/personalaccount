@@ -5,7 +5,7 @@ namespace App\Http\Requests\FinancialOperations;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
-class UploadOperationRequest extends FormRequest
+class CreateOrUpdateOperationRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

@@ -205,5 +205,4 @@ class AccountDetailController extends Controller
 
         return response(trans('financial_operations.edit.failure'), 500);
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
-use App\Http\Requests\FinancialOperations\UploadOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use Exception;
@@ -22,10 +22,10 @@ class CreateOperationController extends GeneralOperationController
      * Handles the request to create a new financial operation.
      *
      * @param Account $account - route parameter
-     * @param UploadOperationRequest $request
+     * @param CreateOrUpdateOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleCreateOperationRequest(Account $account, UploadOperationRequest $request)
+    public function handleCreateOperationRequest(Account $account, CreateOrUpdateOperationRequest $request)
     {
         $attachmentPath = null;
         $file = $request->file('attachment');
