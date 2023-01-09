@@ -22,14 +22,14 @@ class LoginLink extends Mailable
      * 
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * The date and time until which the link is valid.
      * 
      * @var DateTimeInterface
      */
-    private $validUntil;
+    private DateTimeInterface $validUntil;
 
     /**
      * Create a new message instance.

@@ -81,7 +81,7 @@ return [
         'string' => ':attribute nemôže obsahovať viac ako :max znakov.',
     ],
     'max_digits' => ':attribute nemôže obsahovať viac ako :max číslic.',
-    'mimes' => ':attribute musí byť súbor s jednou z nasledovných koncoviek: :values.',
+    'mimes' => ':attribute musí byť súbor jedného z nasledovných typov: :values.',
     'mimetypes' => ':attribute musí byť súbor jedného z nasledovných typov: :values.',
     'min' => [
         'array'   => ':attribute musí obsahovať aspoň :min prvkov.',
@@ -143,6 +143,10 @@ return [
         'password' => 'Heslo',
         'old_password' => 'Staré heslo',
         'new_password' => 'Nové heslo',
+
+        'title' => 'Názov',
+        'sap_id' => 'SAP ID',
+        'sap_report' => 'SAP výkaz',
     ],
 
 ];

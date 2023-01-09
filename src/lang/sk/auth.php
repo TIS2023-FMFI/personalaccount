@@ -18,7 +18,7 @@ return [
     ],
     'register' => [
         'success' => 'Nový používateľ bol úspešne zaregistrovaný.',
-        'failed' => 'Nepodarilo sa nám zaregistrovať nového používateľa, prosím, skúste to neskôr.',
+        'failed' => 'Nového používateľa sa nám nepodarilo zaregistrovať, prosím, skúste to neskôr.',
     ],
 
 ];

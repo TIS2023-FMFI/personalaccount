@@ -44,7 +44,7 @@ class FinancialAccountDetailTest extends TestCase
     public function test_correct_view()
     {
         $account = Account::factory()->create(['user_id' => $this->user]);
-        $response = $this->actingAs($this->user)->get("/account/$account->id");
+        $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -56,7 +56,7 @@ class FinancialAccountDetailTest extends TestCase
         $account = Account::factory()->has(FinancialOperation::factory()->count(5))
             ->create(['user_id' => $this->user]);
 
-        $response = $this->actingAs($this->user)->get("/account/$account->id");
+        $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -73,7 +73,7 @@ class FinancialAccountDetailTest extends TestCase
         $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
             ->create(['user_id' => $this->user]);
 
-        $response = $this->actingAs($this->user)->get("/account/$account->id");
+        $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -95,7 +95,7 @@ class FinancialAccountDetailTest extends TestCase
         $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
             ->create(['user_id' => $this->user]);
 
-        $response = $this->actingAs($this->user)->get("/account/$account->id?page=2");
+        $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations?page=2");
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -113,7 +113,7 @@ class FinancialAccountDetailTest extends TestCase
             ->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->delete("/operation/$operation->id");
+            ->delete("/operations/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('financial_operations', [
@@ -129,7 +129,7 @@ class FinancialAccountDetailTest extends TestCase
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->delete("/operation/$operation->id");
+            ->delete("/operations/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('financial_operations', [
@@ -151,7 +151,7 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'attachment' => $file, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->delete("/operation/$operation->id");
+            ->delete("/operations/$operation->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('financial_operations', [
@@ -168,7 +168,7 @@ class FinancialAccountDetailTest extends TestCase
             ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->patch("/operation/$operation->id", ['checked' => true]);
+            ->patch("/operations/$operation->id", ['checked' => true]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
@@ -201,7 +201,7 @@ class FinancialAccountDetailTest extends TestCase
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->patch("/operation/$operation->id", ['checked' => true]);
+            ->patch("/operations/$operation->id", ['checked' => true]);
 
         $response->assertStatus(422);
 

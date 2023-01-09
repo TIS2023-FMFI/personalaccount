@@ -1,10 +1,16 @@
 <?php
 
-namespace App\Http\Requests\FinancialAccounts;
+namespace App\Http\Requests\SapReports;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
-class CreateFinancialAccountRequest extends FormRequest
+/**
+ * A request upload a new SAP report.
+ * 
+ * Fields: sap_report.
+ */
+class UploadReportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +30,7 @@ class CreateFinancialAccountRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => ['required', 'max:255'],
-            'sap_id' => [
-                'required',
-                'max:255',
-                'regex:/^[A-Z0-9]+([\-\/][A-Z0-9]+)*$/',
-            ]
+            'sap_report' => ['required', File::types(['txt'])],
         ];
     }
 }

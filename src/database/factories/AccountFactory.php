@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account>
@@ -22,7 +23,7 @@ class AccountFactory extends Factory
         return [
             'user_id' => $user->id,
             'title' => fake()->text(20),
-            'sap_id' => fake()->uuid()
+            'sap_id' => Str::upper(fake()->uuid())
         ];
     }
 }

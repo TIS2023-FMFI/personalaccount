@@ -15,6 +15,6 @@ return [
             S pozdravom
             Váš :appName tím
             HERE,
-    ]
+    ],
 
 ];

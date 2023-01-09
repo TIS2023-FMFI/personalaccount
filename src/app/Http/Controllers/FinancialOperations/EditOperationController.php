@@ -29,7 +29,7 @@ class EditOperationController extends GeneralOperationController
      */
     public function handleEditOperationRequest(FinancialOperation $operation, UploadOperationRequest $request)
     {
-        $account = Account::findOrFail($request->validated('account_id'));
+        $account = $operation->account;
 
         $this->authorize('updateAndMove', [$operation, $account]);
 
@@ -37,7 +37,7 @@ class EditOperationController extends GeneralOperationController
         $new_attachment = null;
 
         $file = $request->file('attachment');
-        if ($file) $new_attachment = $this->saveAttachment($account->user_id, $file);
+        if ($file) $new_attachment = $this->saveAttachment($operation->account->user_id, $file);
 
         DB::beginTransaction();
         try
@@ -55,11 +55,11 @@ class EditOperationController extends GeneralOperationController
             $this->deleteFileIfExists($new_attachment);
             DB::rollBack();
             //return response($e->getMessage(), 500); //for debugging purposes
-            return response(trans('finance_operations.edit.failure'), 500);
+            return response(trans('financial_operations.edit.failure'), 500);
         }
 
         DB::commit();
-        return response(trans('finance_operations.edit.success'), 200);
+        return response(trans('financial_operations.edit.success'), 200);
     }
 
     /**
@@ -72,7 +72,6 @@ class EditOperationController extends GeneralOperationController
     private function updateOperation(UploadOperationRequest $request, $operation, $attachment)
     {
         if (! $operation->update([
-            'account_id' => $request->validated('account_id'),
             'title' => $request->validated('title'),
             'date' => $request->validated('date'),
             'operation_type_id' => $request->validated('operation_type_id'),

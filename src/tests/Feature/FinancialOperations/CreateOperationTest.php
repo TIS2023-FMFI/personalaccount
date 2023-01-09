@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Operations;
+namespace Tests\Feature\FinancialOperations;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -39,7 +40,6 @@ class CreateOperationTest extends TestCase
     public function test_create_operation(){
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -49,7 +49,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', $operationData);
+            ->post('/accounts/' . $this->account->id . '/operations', $operationData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -59,7 +59,6 @@ class CreateOperationTest extends TestCase
     public function test_create_operation_invalid_sum(){
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -69,7 +68,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', $operationData);
+            ->post('/accounts/' . $this->account->id . '/operations', $operationData);
 
         $response->assertStatus(422);
 
@@ -78,7 +77,6 @@ class CreateOperationTest extends TestCase
     public function test_create_operation_with_lending(){
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->lendingType->id,
@@ -93,7 +91,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', array_merge($operationData, $lendingData));
+            ->post('/accounts/' . $this->account->id . '/operations', array_merge($operationData, $lendingData));
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -107,7 +105,6 @@ class CreateOperationTest extends TestCase
         $previousLending = Lending::factory()->create(['id' => $previousLendingOperation]);
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->lendingType->id,
@@ -122,7 +119,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', array_merge($operationData, $lendingData));
+            ->post('/accounts/' . $this->account->id . '/operations', array_merge($operationData, $lendingData));
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('financial_operations', $operationData);
@@ -135,7 +132,6 @@ class CreateOperationTest extends TestCase
         $previousOperation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test',
             'date' => '2022-12-24',
             'operation_type_id' => $this->lendingType->id,
@@ -150,7 +146,7 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', array_merge($operationData, $lendingData));
+            ->post('/accounts/' . $this->account->id . '/operations', array_merge($operationData, $lendingData));
 
         $response->assertStatus(422);
 
@@ -161,7 +157,6 @@ class CreateOperationTest extends TestCase
         Storage::fake('local');
 
         $operationData = [
-            'account_id' => $this->account->id,
             'title' => 'test_with_file',
             'date' => '2022-12-24',
             'operation_type_id' => $this->type->id,
@@ -171,14 +166,10 @@ class CreateOperationTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->post('/operation', $operationData);
+            ->post('/accounts/' . $this->account->id . '/operations', $operationData);
 
         $response->assertStatus(201);
         $path = FinancialOperation::firstWhere('title', 'test_with_file')->attachment;
         Storage::disk('local')->assertExists($path);
-
-        Storage::fake('local');
-
     }
-
 }

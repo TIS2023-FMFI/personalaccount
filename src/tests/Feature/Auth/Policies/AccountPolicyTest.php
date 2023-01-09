@@ -31,10 +31,10 @@ class AccountPolicyTest extends TestCase
         $this->setupDone = true;
     }
 
-    public function test_that_unauthorized_user_cannot_view_account()
+    public function test_that_unauthorized_user_cannot_view_account_operations()
     {
         $response = $this->actingAs($this->otherUser)
-                            ->get("/account/" . $this->account->id);
+                            ->get('/accounts/' . $this->account->id . '/operations');
         
         $response
             ->assertStatus(403);
@@ -43,7 +43,7 @@ class AccountPolicyTest extends TestCase
     public function test_that_unauthorized_user_cannot_download_operations_export()
     {
         $response = $this->actingAs($this->otherUser)
-                            ->get("/export/" . $this->account->id);
+                            ->get('/accounts/' . $this->account->id . '/operations/export');
         
         $response
             ->assertStatus(403);

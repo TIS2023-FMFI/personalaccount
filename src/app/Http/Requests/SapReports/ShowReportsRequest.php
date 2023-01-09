@@ -1,10 +1,15 @@
 <?php
 
-namespace App\Http\Requests\FinancialAccounts;
+namespace App\Http\Requests\SapReports;
 
 use App\Http\Requests\Base\DateRequest;
 
-class ShowOrExportOperationsRequest extends DateRequest
+/**
+ * A request to show SAP reports filtered by the date they were uploaded.
+ * 
+ * Fields: from, to.
+ */
+class ShowReportsRequest extends DateRequest
 {
     /**
      * Determine if the user is authorized to make this request.

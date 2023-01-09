@@ -52,7 +52,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => null
         ]);
 
-        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
+        $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -81,7 +81,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => null
         ]);
 
-        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
+        $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -110,7 +110,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => '99'
         ]);
 
-        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
+        $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -139,7 +139,7 @@ class OperationsExportTest extends TestCase
             'sap_id' => null
         ]);
 
-        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
+        $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -159,7 +159,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
-        $response = $this->actingAs($this->user)->get("/export/{$this->account->id}");
+        $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -176,7 +176,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[2]}");
+            ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[1]}&to={$this->dates[2]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -191,7 +191,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from={$this->dates[2]}&to={$this->dates[3]}");
+            ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[2]}&to={$this->dates[3]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -207,7 +207,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[1]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -223,7 +223,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations/export?to={$this->dates[1]}");
 
         $response->assertStatus(200);
         $content = $response->streamedContent();
@@ -238,7 +238,7 @@ class OperationsExportTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[0]}");
+            ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[1]}&to={$this->dates[0]}");
 
         $response->assertStatus(302);
     }
@@ -247,7 +247,7 @@ class OperationsExportTest extends TestCase
     {
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from=invalid");
+            ->get("/accounts/{$this->account->id}/operations/export?from=invalid");
 
         $response->assertStatus(302);
     }
@@ -255,7 +255,7 @@ class OperationsExportTest extends TestCase
     public function test_export_filename(){
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}");
+            ->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
         $expected = 'attachment; filename=export_account.csv';
@@ -265,7 +265,7 @@ class OperationsExportTest extends TestCase
     public function test_export_filename_filtered(){
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $response->assertStatus(200);
         $expected = 'attachment; filename=export_account_from_01-01-2000_to_01-01-2001.csv';
@@ -275,7 +275,7 @@ class OperationsExportTest extends TestCase
     public function test_export_filename_unbound_from_right(){
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?from={$this->dates[0]}");
+            ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[0]}");
 
         $response->assertStatus(200);
         $expected = 'attachment; filename=export_account_from_01-01-2000.csv';
@@ -285,7 +285,7 @@ class OperationsExportTest extends TestCase
     public function test_export_filename_unbound_from_left(){
 
         $response = $this->actingAs($this->user)
-            ->get("/export/{$this->account->id}?to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations/export?to={$this->dates[1]}");
 
         $response->assertStatus(200);
         $expected = 'attachment; filename=export_account_to_01-01-2001.csv';

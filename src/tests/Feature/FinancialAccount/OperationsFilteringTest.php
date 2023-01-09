@@ -63,7 +63,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -79,7 +79,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[2]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[1]}&to={$this->dates[2]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -93,7 +93,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[2]}&to={$this->dates[3]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[2]}&to={$this->dates[3]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -108,7 +108,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -123,7 +123,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations?to={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -134,7 +134,7 @@ class OperationsFilteringTest extends TestCase
     public function test_filtering_invalid_interval_causes_redirect()
     {
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[1]}&to={$this->dates[0]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[1]}&to={$this->dates[0]}");
 
         $response->assertStatus(302);
     }
@@ -143,7 +143,7 @@ class OperationsFilteringTest extends TestCase
     {
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from=invalid");
+            ->get("/accounts/{$this->account->id}/operations?from=invalid");
 
         $response->assertStatus(302);
     }
@@ -157,7 +157,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $response->assertStatus(200)
             ->assertViewIs('finances.account');
@@ -178,7 +178,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
-            ->get("/account/{$this->account->id}?from={$this->dates[0]}&to={$this->dates[1]}");
+            ->get("/accounts/{$this->account->id}/operations?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $url = $response->viewData('operations')->url(2);
         $response = $this->actingAs($this->user)->get($url);

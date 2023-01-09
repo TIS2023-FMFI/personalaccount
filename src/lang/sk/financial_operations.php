@@ -2,16 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Accounts Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used during financial accounts management.
-    |
-    */
-
-
     'create' => [
             'success' => 'Nová operácia bola úspešne vytvorená.',
             'failure' => 'Pri vytváraní operácie došlo k chybe.'

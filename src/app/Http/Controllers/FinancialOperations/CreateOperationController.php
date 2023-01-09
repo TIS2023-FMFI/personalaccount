@@ -21,13 +21,12 @@ class CreateOperationController extends GeneralOperationController
     /**
      * Handles the request to create a new financial operation.
      *
+     * @param Account $account - route parameter
      * @param UploadOperationRequest $request
      * @return Application|ResponseFactory|Response
      */
-    public function handleCreateOperationRequest(UploadOperationRequest $request)
+    public function handleCreateOperationRequest(Account $account, UploadOperationRequest $request)
     {
-        $account = Account::findOrFail($request->validated('account_id'));
-
         $this->authorize('create', [FinancialOperation::class, $account]);
 
         $attachmentPath = null;
@@ -45,10 +44,10 @@ class CreateOperationController extends GeneralOperationController
             $this->deleteFileIfExists($attachmentPath);
             DB::rollBack();
             // return \response($e->getMessage(), 500); //for debugging purposes
-            return response('finance_operations.create.failure', 500);
+            return response('financial_operations.create.failure', 500);
         }
         DB::commit();
-        return response(trans('finance_operations.create.success'), 201);
+        return response(trans('financial_operations.create.success'), 201);
     }
 
 

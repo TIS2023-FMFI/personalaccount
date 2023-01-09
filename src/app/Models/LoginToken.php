@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 
 /**
@@ -51,6 +52,7 @@ class LoginToken extends Model
      * Determine if the token is valid, i.e. valid_until > now.
      * 
      * @return bool
+     * true if the token is valid, false otherwise
      */
     public function isValid()
     {
@@ -78,6 +80,31 @@ class LoginToken extends Model
      * the generated token
      */
     public static function generate(User $user)
+    {
+        $token = null;
+
+        while (true) {
+            try {
+                $token = LoginToken::generateOrFail($user);
+                break;
+            } catch (QueryException $e) {}
+        }
+
+        return $token;
+    }
+
+    /**
+     * Generate a new login token for a user or fail if the generated token
+     * is not unique.
+     * 
+     * @param User $user
+     * the user for whom to generate the token
+     * @throws \Illuminate\Database\QueryException
+     * thrown if the generated token was not unique
+     * @return LoginToken
+     * the generated token
+     */
+    private static function generateOrFail(User $user)
     {
         return LoginToken::create([
             'token' => Str::random(32),
