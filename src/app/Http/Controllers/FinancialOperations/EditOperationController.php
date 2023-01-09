@@ -29,10 +29,6 @@ class EditOperationController extends GeneralOperationController
      */
     public function handleEditOperationRequest(FinancialOperation $operation, UploadOperationRequest $request)
     {
-        $account = $operation->account;
-
-        $this->authorize('updateAndMove', [$operation, $account]);
-
         $old_attachment = $operation->attachment;
         $new_attachment = null;
 

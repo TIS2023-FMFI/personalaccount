@@ -40,6 +40,15 @@ class AccountPolicyTest extends TestCase
             ->assertStatus(403);
     }
 
+    public function test_that_unauthorized_user_cannot_view_account_sap_reports()
+    {
+        $response = $this->actingAs($this->otherUser)
+                            ->get('/accounts/' . $this->account->id . '/sap-reports');
+        
+        $response
+            ->assertStatus(403);
+    }
+
     public function test_that_unauthorized_user_cannot_download_operations_export()
     {
         $response = $this->actingAs($this->otherUser)

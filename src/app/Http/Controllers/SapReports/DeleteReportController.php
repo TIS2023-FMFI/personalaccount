@@ -29,8 +29,6 @@ class DeleteReportController extends Controller
      */
     public function delete(SapReport $report)
     {
-        // $this->authorize('delete', $report);
-
         try {
             $this->deleteWithinTransaction($report);
         } catch (Exception $e) {
@@ -43,7 +41,7 @@ class DeleteReportController extends Controller
     /**
      * Delete a SAP report within a database transaction.
      * 
-     * @param SapReport $report
+     * @param \App\Models\SapReport $report
      * the SAP report to delete
      * @throws \Exception
      * thrown if an error occurred
@@ -63,11 +61,11 @@ class DeleteReportController extends Controller
      * performed in this order, so that a call to this method can be wrapped in
      * a database transaction.
      * 
-     * @param SapReport $report
+     * @param \App\Models\SapReport $report
      * the SAP report to delete
-     * @throws DatabaseException
+     * @throws \App\Exceptions\DatabaseException
      * thrown if the SAP Report model could not be deleted
-     * @throws StorageException
+     * @throws \App\Exceptions\StorageException
      * thrown if the SAP report file could not be deleted
      * @return void
      */

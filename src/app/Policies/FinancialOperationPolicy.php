@@ -31,7 +31,7 @@ class FinancialOperationPolicy
      *
      * @param  \App\Models\User  $user
      * the user whose request to authorize
-     * @param  \App\Models\Account  $user
+     * @param  \App\Models\Account  $account
      * the account under which the user is attempting to create the operation
      * @return bool
      * true if the user is allowed to perform this operation, false otherwise
@@ -54,24 +54,6 @@ class FinancialOperationPolicy
     public function update(User $user, FinancialOperation $financialOperation)
     {
         return $user->id === $financialOperation->account->user_id;
-    }
-
-    /**
-     * Determine whether a user can update and potentially move a financial operation.
-     *
-     * @param  \App\Models\User  $user
-     * the user whose request to authorize
-     * @param  \App\Models\FinancialOperation  $financialOperation
-     * the financial operation the user is attempting to update
-     * @param  \App\Models\Account $destination
-     * the account to which the user may be attempting to move the operation
-     * @return bool
-     * true if the user is allowed to perform this operation, false otherwise
-     */
-    public function updateAndMove(User $user, FinancialOperation $financialOperation, Account $destination)
-    {
-        return $user->id === $financialOperation->account->user_id
-                && $user->id === $destination->user_id;
     }
 
     /**

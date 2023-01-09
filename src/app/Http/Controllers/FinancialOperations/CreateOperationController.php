@@ -27,8 +27,6 @@ class CreateOperationController extends GeneralOperationController
      */
     public function handleCreateOperationRequest(Account $account, UploadOperationRequest $request)
     {
-        $this->authorize('create', [FinancialOperation::class, $account]);
-
         $attachmentPath = null;
         $file = $request->file('attachment');
         if ($file) $attachmentPath = $this->saveAttachment($account->user_id, $file);

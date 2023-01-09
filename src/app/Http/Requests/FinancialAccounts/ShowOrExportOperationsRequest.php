@@ -13,6 +13,8 @@ class ShowOrExportOperationsRequest extends DateRequest
      */
     public function authorize()
     {
-        return true;
+        $account = $this->route('account');
+
+        return $this->user()->can('view', $account);
     }
 }

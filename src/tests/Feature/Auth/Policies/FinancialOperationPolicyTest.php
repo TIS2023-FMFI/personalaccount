@@ -15,10 +15,8 @@ use Tests\TestCase;
 
 class FinancialOperationPolicyTest extends TestCase
 {
-    private $user;
     private $otherUser;
     private $account;
-    private $otherAccount;
     private $operation;
 
     private $ajaxHeaders;
@@ -33,19 +31,16 @@ class FinancialOperationPolicyTest extends TestCase
             return;
         }
 
-        $this->user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
-        $this->account = Account::factory()->create([ 'user_id' => $this->user ]);
+        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
+        $this->account = Account::factory()->for($user)->create();
         
         $this->otherUser = User::firstOrCreate([ 'email' => 'new@b.c' ]);
-        $this->otherAccount = Account::factory()->create([ 'user_id' => $this->otherUser ]);
 
-        Storage::fake('local');
-
-        $file = UploadedFile::fake()->create('test.txt');
+        Storage::fake();
+        $file = UploadedFile::fake()
+                    ->create('test', 0, 'text/plain');;
         $path = (new GeneralOperationController())
-                    ->saveAttachment($this->user->id, $file);
-
-        Storage::assertExists($path);
+                    ->saveAttachment($user->id, $file);
 
         $type = OperationType::firstOrCreate([ 'name' => 'type' ]);
         $this->operation = FinancialOperation::factory()
@@ -66,6 +61,8 @@ class FinancialOperationPolicyTest extends TestCase
 
     public function test_that_unauthorized_user_cannot_view_operation()
     {
+        //dd($this->operation, $this->otherUser->accounts);
+
         $response = $this->actingAs($this->otherUser)
                             ->get('/operations/' . $this->operation->id);
         
@@ -120,7 +117,10 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->patch('/operations/' . $this->operation->id);
+                            ->patch(
+                                '/operations/' . $this->operation->id,
+                                [ 'checked' => true ],
+                            );
         
         $response
             ->assertStatus(403);

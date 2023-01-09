@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\SapReports;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SapReports\ShowReportsRequest;
+use App\Http\Requests\Base\DateRequest;
 use App\Models\Account;
-use App\Models\SapReport;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * A controller responsible for presenting existing SAP reports to a user.
@@ -28,31 +26,27 @@ class ReportsOverviewController extends Controller
      * Show the SAP Reports view for an account with reports filtered based on
      * the date they were exported or uploaded. The filtered reports are paginated.
      * 
-     * @param ShowReportsRequest $request
+     * @param \App\Http\Requests\Base\DateRequest $request
      * the request containing the date interval used for filtering
-     * @param Account $account
+     * @param \App\Models\Account $account
      * the account for which to show the SAP reports
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      * the view that will be shown
      */
-    public function show(ShowReportsRequest $request, Account $account)
+    public function show(DateRequest $request, Account $account)
     {
-        $this->authorize('view', $account);
-        
         $from = $request->getValidatedFromDateOrMin();
         $to = $request->getValidatedToDateOrMax();
         $reports = $this->retrieveSapReports($account, $from, $to);
 
-        return view('finances.sap_reports', [
-            'reports' => $reports,
-        ]);
+        return view('finances.sap_reports', [ 'reports' => $reports ]);
     }
 
     /**
      * Retrieve the paginated SAP Reports for an account which were exported or
      * uploaded within a specified period.
      * 
-     * @param Account $account
+     * @param \App\Models\Account $account
      * the account for which to show the SAP reports
      * @param \Illuminate\Support\Carbon $from
      * the date determining the beginning of the period to consider (inclusive)
