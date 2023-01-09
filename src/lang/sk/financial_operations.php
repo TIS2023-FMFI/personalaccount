@@ -3,16 +3,16 @@
 return [
 
     'create' => [
-            'success' => 'Nová operácia bola úspešne vytvorená.',
-            'failure' => 'Pri vytváraní operácie došlo k chybe.'
+        'success' => 'Operácia bola úspešne vytvorená.',
+        'failure' => 'Operáciu sa nám neporadilo vytvoriť, prosím, skúste to neskôr.'
     ],
-    'edit' => [
-            'success' => 'Operácia bola úspešne upravená.',
-            'failure' => 'Pri úprave operácie došlo k chybe.'
+    'update' => [
+        'success' => 'Operácia bola úspešne upravená.',
+        'failure' => 'Operáciu sa nám neporadilo upraviť, prosím, skúste to neskôr.'
     ],
     'delete' => [
-            'success' => 'Operácia bola úspešne odstránená.',
-            'failure' => 'Pri odstraňovaní operácie došlo k chybe.'
+        'success' => 'Operácia bola úspešne odstránená.',
+        'failure' => 'Operáciu sa nám neporadilo odstrániť, prosím, skúste to neskôr.'
     ],
     'invalid_check' => 'Pôžička nemôže byť označená ako skontrolovaná.'
 

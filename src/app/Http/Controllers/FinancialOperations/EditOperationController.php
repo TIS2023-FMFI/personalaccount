@@ -51,11 +51,11 @@ class EditOperationController extends GeneralOperationController
             $this->deleteFileIfExists($new_attachment);
             DB::rollBack();
             //return response($e->getMessage(), 500); //for debugging purposes
-            return response(trans('financial_operations.edit.failure'), 500);
+            return response(trans('financial_operations.update.failure'), 500);
         }
 
         DB::commit();
-        return response(trans('financial_operations.edit.success'), 200);
+        return response(trans('financial_operations.update.success'), 200);
     }
 
     /**

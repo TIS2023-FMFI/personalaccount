@@ -45,7 +45,7 @@ class FinancialAccountsOverviewController extends Controller
             'sap_id' => $sap_id
         ]);
 
-        if ($account->exists) return response(trans('financial_accounts.new.success'), 201);
-        return response(trans('financial_accounts.new.failed'), 500);
+        if ($account->exists) return response(trans('financial_accounts.create.success'), 201);
+        return response(trans('financial_accounts.create.failed'), 500);
     }
 }

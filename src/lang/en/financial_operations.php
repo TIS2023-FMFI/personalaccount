@@ -13,15 +13,15 @@ return [
 
     'create' => [
         'success' => 'The operation was successfully created.',
-        'failure' => 'An error occurred while creating the operation.'
+        'failure' => 'We were unable to create the operation, please, try again later.'
     ],
     'edit' => [
         'success' => 'The operation was succesfully updated.',
-        'failure' => 'An error occurred while updating the operation.'
+        'failure' => 'We were unable to updated the operation, please, try again later.'
     ],
     'delete' => [
         'success' => 'The operation was succesfully deleted.',
-        'failure' => 'An error occurred while deleting the operation.'
+        'failure' => 'We were unable to delete the operation, please, try again later.'
     ],
     'invalid_check' => 'A lending cannot be marked as checked.'
 
