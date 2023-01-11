@@ -22,7 +22,7 @@ class OperationsOverviewController extends Controller
      * @var int
      * number of operations to be shown on one page
      */
-    public static int $resultsPerPage = 15;
+    private static int $resultsPerPage = 15;
 
     /**
      * Fills the 'operations overview' view with financial operations belonging to a financial account.

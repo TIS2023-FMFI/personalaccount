@@ -36,9 +36,10 @@ class UpdateOperationController extends GeneralOperationController
             $newAttachment = $this->saveAttachmentFileFromRequest($operation->account, $request);
             $oldAttachment = $operation->attachment;
 
-            $this->runUpdateOperationTransaction($operation, $request,  $oldAttachment, $newAttachment);
+            $this->runUpdateOperationTransaction($operation, $request, $oldAttachment, $newAttachment);
         }
         catch (Exception $e) {
+            //return response($e->getMessage(), 500);
             return response(trans('financial_operations.update.failure'), 500);
         }
         return response(trans('financial_operations.update.success'));
@@ -51,14 +52,14 @@ class UpdateOperationController extends GeneralOperationController
      * the operation to be updated
      * @param CreateOrUpdateOperationRequest $request
      * the HTTP request to update the operation
-     * @param string $oldAttachment
+     * @param string|null $oldAttachment
      * path to the operation's original attachment file (if there was one)
      * @param string $newAttachment
      * path to the operation's updated attachment file (if there is one)
      * @throws Exception
      */
     private function runUpdateOperationTransaction(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
-                                                   string $oldAttachment, string $newAttachment)
+                                                   string|null $oldAttachment, string $newAttachment)
     {
         $updateOperationTransaction = new DBTransaction(
             fn () => $this->updateOperation($operation, $request, $oldAttachment, $newAttachment),
@@ -75,7 +76,7 @@ class UpdateOperationController extends GeneralOperationController
      * the operation to be updated
      * @param CreateOrUpdateOperationRequest $request
      * the HTTP request to update the operation
-     * @param string $oldAttachment
+     * @param string|null $oldAttachment
      * path to the operation's original attachment file (if there was one)
      * @param string $newAttachment
      * path to the operation's updated attachment file (if there is one)
@@ -83,7 +84,7 @@ class UpdateOperationController extends GeneralOperationController
      * @throws StorageException
      */
     private function updateOperation(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
-                                     string $oldAttachment, string $newAttachment)
+                                     string|null $oldAttachment, string $newAttachment)
     {
         if ($this->typeChangedFromLending($operation, $request))
             $operation->deleteLending();
@@ -95,8 +96,10 @@ class UpdateOperationController extends GeneralOperationController
         if ($operation->isLending())
             $this->upsertLending($operation->id, $request);
 
-        if ($newAttachment)
-            Storage::delete($oldAttachment);
+        if ($oldAttachment != null && $newAttachment) {
+            if (! Storage::delete($oldAttachment))
+                throw new StorageException('The file wasn\'t deleted.');
+        }
     }
 
     /**

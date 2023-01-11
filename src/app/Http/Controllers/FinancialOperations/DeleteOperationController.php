@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\DatabaseException;
+use App\Exceptions\StorageException;
 use App\Http\Helpers\DBTransaction;
 use App\Models\FinancialOperation;
 use Exception;
@@ -56,13 +57,16 @@ class DeleteOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation
      * the operation to be deleted
-     * @throws DatabaseException
+     * @throws DatabaseException|StorageException
      */
     private function deleteOperation(FinancialOperation $operation)
     {
         $attachment = $operation->attachment;
         if (! $operation->delete())
             throw new DatabaseException('The operation wasn\'t deleted.');
-        Storage::delete($attachment);
+        if ($attachment == null)
+            return;
+        if (! Storage::delete($attachment))
+            throw new StorageException('The file wasn\'t deleted.');
     }
 }

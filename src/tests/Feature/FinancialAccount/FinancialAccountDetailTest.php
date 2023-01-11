@@ -2,17 +2,14 @@
 
 namespace Tests\Feature\FinancialAccount;
 
-use App\Http\Controllers\FinancialOperations\OperationsOverviewController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
-use App\Models\Lending;
 use App\Models\OperationType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use Tests\Util\HiddenMembersAccessor;
 
 /**
  * These tests must be run on a seeded database, as they generate plenty of models with foreign keys.
@@ -21,7 +18,7 @@ class FinancialAccountDetailTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private int $perPage;
+    private int $operationsPerPage;
     private Model $user, $account, $type, $lendingType;
     private array $headers;
 
@@ -29,7 +26,11 @@ class FinancialAccountDetailTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = OperationsOverviewController::$resultsPerPage;
+        $this->operationsPerPage = HiddenMembersAccessor::getHiddenStaticProperty(
+            '\App\Http\Controllers\FinancialOperations\OperationsOverviewController',
+            'resultsPerPage'
+        );
+
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
         $this->type = OperationType::firstOrCreate(['name' => 'type']);
@@ -69,7 +70,7 @@ class FinancialAccountDetailTest extends TestCase
     public function test_pagination_is_used()
     {
 
-        $count = $this->perPage;
+        $count = $this->operationsPerPage;
         $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
             ->create(['user_id' => $this->user]);
 
@@ -91,7 +92,7 @@ class FinancialAccountDetailTest extends TestCase
     public function test_paging_second_page()
     {
 
-        $count = $this->perPage;
+        $count = $this->operationsPerPage;
         $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
             ->create(['user_id' => $this->user]);
 

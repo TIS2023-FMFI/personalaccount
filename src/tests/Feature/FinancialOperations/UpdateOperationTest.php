@@ -157,7 +157,7 @@ class UpdateOperationTest extends TestCase
             [
                 'account_id' => $this->account,
                 'operation_type_id' => $this->type,
-                'attachment' => ''
+                'attachment' => null
             ]);
 
         $operationData = [
