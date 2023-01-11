@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,7 +39,7 @@ class Account extends Model
     }
 
     /**
-     * Returns a list of operations belonging to this account.
+     * Gets all operations belonging to this account.
      *
      * @return HasMany
      */
@@ -49,7 +50,7 @@ class Account extends Model
 
     /**
      * Get all SAP reports associated with this account.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function sapReports()
@@ -60,7 +61,19 @@ class Account extends Model
     /**
      * Get the account's SAP identifier in the form of a string consisting
      * only of alphanumeric characters and dash ('-') symbols.
-     *  
+     *
+     * @return string
+     * the transformed title
+     */
+    public function getSanitizedTitle()
+    {
+        return FileHelper::sanitizeString($this->title);
+    }
+
+    /**
+     * Get the account's SAP identifier in the form of a string consisting
+     * only of alphanumeric characters and dash ('-') symbols.
+     *
      * @return string
      * the transformed SAP identifier
      */
@@ -82,15 +95,17 @@ class Account extends Model
         return round($incomes - $expenses, 3);
     }
 
-
     /**
-     * Returns a query for financial operations which belong to this account and their date is in the specified interval.
+     * Builds a query requesting financial operations which belong to this account
+     * and whose date is in the specified interval.
      *
-     * @param $dateFrom - first date in the interval
-     * @param $dateTo - last date in the interval
-     * @return HasMany
+     * @param Carbon $dateFrom
+     * earliest date in the interval
+     * @param Carbon $dateTo
+     * latest date in the interval
+     * @return HasMany the result query
      */
-    public function operationsBetween($dateFrom, $dateTo)
+    public function operationsBetween(Carbon $dateFrom, Carbon $dateTo)
     {
         return $this->financialOperations()->whereBetween('date', [$dateFrom, $dateTo]);
     }
@@ -98,7 +113,7 @@ class Account extends Model
     /**
      * Get all SAP reports which are associated with this account and which were
      * exported or uploaded within a specified period.
-     * 
+     *
      * @param \Illuminate\Support\Carbon $from
      * the date determining the beginning of the period to consider (inclusive)
      * @param \Illuminate\Support\Carbon $to

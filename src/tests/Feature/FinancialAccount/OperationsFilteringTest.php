@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Date;
 use Tests\TestCase;
 
 
@@ -27,7 +28,9 @@ class OperationsFilteringTest extends TestCase
         parent::setUp();
 
         $this->perPage = OperationsOverviewController::$perPage;
-        $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
+        for ($i = 0; $i < 6; $i++){
+            $this->dates[$i] = Date::create(2000+$i);
+        }
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
 

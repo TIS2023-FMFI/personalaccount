@@ -2,118 +2,161 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
+use App\Exceptions\DatabaseException;
+use App\Exceptions\StorageException;
+use App\Http\Helpers\DBTransaction;
+use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
-use App\Models\Account;
 use App\Models\FinancialOperation;
-use App\Models\Lending;
 use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
 /**
- * Manages functionality of the 'edit operation' modal.
+ * Manages updates of financial operations, including checking and unchecking.
  */
 class UpdateOperationController extends GeneralOperationController
 {
+
     /**
-     * Handles the request to edit a financial operation. Manages updating the operation itself, its related
-     * lending record and its attachment file if there are any.
+     * Handles the request to update a financial operation.
      *
-     * @param FinancialOperation $operation - route parameter
+     * @param FinancialOperation $operation
+     * the operation to be updated
      * @param CreateOrUpdateOperationRequest $request
+     * the HTTP request to update the operation
      * @return Application|ResponseFactory|Response
      */
-    public function handleEditOperationRequest(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
+    public function handleUpdateOperationRequest(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
-        $old_attachment = $operation->attachment;
-        $new_attachment = null;
-
-        $file = $request->file('attachment');
-        if ($file) $new_attachment = $this->saveAttachment($operation->account->user_id, $file);
-
-        DB::beginTransaction();
         try
         {
-            if ($this->typeChangedFromLending($request, $operation)) $this->deleteLending($operation);
-            $this->updateOperation($request, $operation, $new_attachment);
+            $newAttachment = $this->saveAttachmentFileFromRequest($operation->account, $request);
+            $oldAttachment = $operation->attachment;
 
-            $operation->refresh();
-            if ($operation->isLending()) $this->upsertLending($request, $operation->id);
-
-            if ($file) $this->deleteFileIfExists($old_attachment);
+            $this->runUpdateOperationTransaction($operation, $request,  $oldAttachment, $newAttachment);
         }
         catch (Exception $e)
         {
-            $this->deleteFileIfExists($new_attachment);
-            DB::rollBack();
-            //return response($e->getMessage(), 500); //for debugging purposes
             return response(trans('financial_operations.update.failure'), 500);
         }
-
-        DB::commit();
         return response(trans('financial_operations.update.success'));
     }
 
     /**
-     * Changes the data in the DB record for the given operation according to the request.
+     * Runs a database transaction in which a financial operation is updated.
      *
+     * @param FinancialOperation $operation
+     * the operation to be updated
      * @param CreateOrUpdateOperationRequest $request
-     * @param $operation
-     * @param $attachment - updated path to the operation's attachment file
+     * the HTTP request to update the operation
+     * @param string $oldAttachment
+     * path to the operation's original attachment file (if there was one)
+     * @param string $newAttachment
+     * path to the operation's updated attachment file (if there is one)
+     * @throws Exception
      */
-    private function updateOperation(CreateOrUpdateOperationRequest $request, $operation, $attachment)
+    private function runUpdateOperationTransaction(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
+                                                   string $oldAttachment, string $newAttachment)
     {
-        if (! $operation->update([
-            'title' => $request->validated('title'),
-            'date' => $request->validated('date'),
-            'operation_type_id' => $request->validated('operation_type_id'),
-            'subject' => $request->validated('subject'),
-            'sum' => $request->validated('sum'),
-            'attachment' => ($attachment) ? $attachment : $operation->attachment,
-        ])) throw new Exception('The operation wasn\'t updated.');
+        $updateOperationTransaction = new DBTransaction(
+            fn () => $this->updateOperation($operation, $request, $oldAttachment, $newAttachment),
+            fn () => FileHelper::deleteFileIfExists($newAttachment)
+        );
+
+        $updateOperationTransaction->run();
     }
 
     /**
-     * Returns 'true' if the given operation was a lending originally, but it's requested to change
-     * into a non-lending type. Otherwise, returns 'false'.
+     * Updates the operation, creating or deleting attachment files and associated lending records if needed.
      *
+     * @param FinancialOperation $operation
+     * the operation to be updated
      * @param CreateOrUpdateOperationRequest $request
-     * @param $operation
+     * the HTTP request to update the operation
+     * @param string $oldAttachment
+     * path to the operation's original attachment file (if there was one)
+     * @param string $newAttachment
+     * path to the operation's updated attachment file (if there is one)
+     * @throws DatabaseException
+     * @throws StorageException
+     */
+    private function updateOperation(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
+                                     string $oldAttachment, string $newAttachment)
+    {
+        if ($this->typeChangedFromLending($operation, $request))
+            $operation->deleteLending();
+
+        $this->updateOperationRecord($operation, $request, $newAttachment);
+
+        $operation->refresh();
+
+        if ($operation->isLending())
+            $this->upsertLending($operation->id, $request);
+
+        if ($newAttachment)
+            FileHelper::deleteFileIfExists($oldAttachment);
+    }
+
+    /**
+     * Updates the financial operation's record in the database
+     *
+     * @param FinancialOperation $operation the operation to be updated
+     * @param CreateOrUpdateOperationRequest $request the HTTP request to update the operation
+     * @param string $newAttachment path to the operation's updated attachment file (if there is one)
+     * @throws DatabaseException
+     */
+    private function updateOperationRecord(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
+                                           string $newAttachment)
+    {
+        $validatedData = $request->validated();
+
+        if (! $operation->update([
+            'title' => $validatedData['title'],
+            'date' => $validatedData['date'],
+            'operation_type_id' => $validatedData['operation_type_id'],
+            'subject' => $validatedData['subject'],
+            'sum' => $validatedData['sum'],
+            'attachment' => ($newAttachment) ? $newAttachment : $operation->attachment
+        ]))
+            throw new DatabaseException('The operation wasn\'t updated.');
+    }
+
+    /**
+     * Finds out whether the finacnial operation was a lending originally, but it's requested to change
+     * into a non-lending type.
+     *
+     * @param FinancialOperation $operation
+     * the operation to be updated
+     * @param CreateOrUpdateOperationRequest $request
+     * the HTTP request to update the operation
      * @return bool
      */
-    private function typeChangedFromLending(CreateOrUpdateOperationRequest $request, $operation)
+    private function typeChangedFromLending(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
         $newTypeId = $request->validated('operation_type_id');
 
         $oldType = $operation->operationType;
-        if ($newTypeId == $oldType->id) return false;
+        if ($newTypeId == $oldType->id)
+            return false;
 
         $newType = OperationType::findOrFail($newTypeId);
-        return $oldType->lending && ! $newType->lending;
-    }
 
-    /**
-     * Deletes the lending record related to the given operation, if there is any.
-     *
-     * @param $operation
-     * @return void
-     */
-    private function deleteLending($operation)
-    {
-        if (! Lending::destroy($operation->lending->id))
-            throw new Exception('The lending wasn\'t deleted.');
+        return $oldType->lending && ! $newType->lending;
     }
 
     /**
      * Handles the request to mark/unmark a financial operation as checked by the user.
      *
-     * @param FinancialOperation $operation - route parameter
+     * @param FinancialOperation $operation
+     * the operation to be (un)checked
      * @param CheckOrUncheckOperationRequest $request
+     * $request the request to (un)check the operation
      * @return Application|ResponseFactory|Response
+     * a response containing information about this operation's result
      */
     public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
     {

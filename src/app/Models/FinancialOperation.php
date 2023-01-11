@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\DatabaseException;
+use App\Http\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -114,9 +116,35 @@ class FinancialOperation extends Model
     }
 
     /**
-     * Returns an array of data needed for the CSV export.
+     * Deletes the lending record related to this operation, if there is one.
+     *
+     * @throws DatabaseException
+     */
+    public function deleteLending()
+    {
+        if (! $this->isLending())
+            return;
+        if (! Lending::destroy($this->id))
+            throw new DatabaseException('The lending wasn\'t deleted.');
+    }
+
+    /**
+     * Generates the name of the directory where attachments for a user should be stored.
+     *
+     * @param $user
+     * @return string
+     * the generated name
+     */
+    public static function getAttachmentsDirectoryPath($user)
+    {
+        return "attachments/user_{$user->id}";
+    }
+
+    /**
+     * Gets this operation's data in the order and format needed for a CSV export.
      *
      * @return array
+     * an array filled with this operation's data
      */
     public function getExportData()
     {
@@ -135,9 +163,10 @@ class FinancialOperation extends Model
     }
 
     /**
-     * Returns a string containing this operation's sum, with '-' after the number if it's an expense.
+     * Generates a string containing this operation's sum, with '-' after the number if it's an expense.
      *
      * @return string
+     * the generated string
      */
     public function getSumString()
     {
@@ -147,15 +176,42 @@ class FinancialOperation extends Model
     }
 
     /**
-     * Returns whether this operation is checked, in form of an all-caps string,
+     * Generates an all-caps string describing whether this operation is checked,
      * or an empty string if this is a lending.
      *
      * @return string
+     * the generated string
      */
     public function getCheckedString()
     {
         if ($this->isLending()) return '';
         return $this->checked ? 'TRUE' : 'FALSE';
+    }
+
+    /**
+     * Creates a string containing this operation's title with only alphanumeric characters and dashes.
+     *
+     * @return string
+     * the transformed title
+     */
+    public function getSanitizedTitle()
+    {
+        return FileHelper::sanitizeString($this->title);
+    }
+
+    /**
+     * Generates a human-readable filename for this operation's attachment.
+     *
+     * @return string
+     * the generated filename
+     */
+    public function generateAttachmentFileName()
+    {
+        $title = $this->getSanitizedTitle();
+        $contentClause = trans('files.attachment');
+        $fileName = "{$title}_$contentClause";
+
+        return FileHelper::appendFileExtension($this->attachment, $fileName);
     }
 
 }

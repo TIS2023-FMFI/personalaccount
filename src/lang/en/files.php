@@ -11,6 +11,9 @@ return [
     |
     */
 
+    'attachment' => 'attachment',
+    'from' => 'from',
+    'to' => 'to',
     'sap_report' => 'sap-report',
 
 ];

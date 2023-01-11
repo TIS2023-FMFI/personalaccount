@@ -22,6 +22,7 @@ class OperationsExportTest extends TestCase
     private int $perPage, $extraRows;
     private array $dates;
     private Model $user, $account, $incomeType, $expenseType, $lendingType;
+    private string $fromClause, $toClause;
 
     public function setUp(): void
     {
@@ -35,6 +36,8 @@ class OperationsExportTest extends TestCase
         $this->incomeType = OperationType::firstOrCreate(['name' => 'income', 'expense' => false, 'lending' => false]);
         $this->expenseType = OperationType::firstOrCreate(['name' => 'expense', 'expense' => true, 'lending' => false]);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'expense' => false, 'lending' => true]);
+        $this->fromClause = trans('files.from');
+        $this->toClause = trans('files.to');
 
     }
 
@@ -258,7 +261,7 @@ class OperationsExportTest extends TestCase
             ->get("/accounts/{$this->account->id}/operations/export");
 
         $response->assertStatus(200);
-        $expected = 'attachment; filename=export_account.csv';
+        $expected = 'attachment; filename=account_export.csv';
         $this->assertEquals($expected, $response->headers->get('content-disposition'));
     }
 
@@ -268,7 +271,7 @@ class OperationsExportTest extends TestCase
             ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[0]}&to={$this->dates[1]}");
 
         $response->assertStatus(200);
-        $expected = 'attachment; filename=export_account_from_01-01-2000_to_01-01-2001.csv';
+        $expected = "attachment; filename=account_export_{$this->fromClause}_01-01-2000_{$this->toClause}_01-01-2001.csv";
         $this->assertEquals($expected, $response->headers->get('content-disposition'));
     }
 
@@ -278,7 +281,7 @@ class OperationsExportTest extends TestCase
             ->get("/accounts/{$this->account->id}/operations/export?from={$this->dates[0]}");
 
         $response->assertStatus(200);
-        $expected = 'attachment; filename=export_account_from_01-01-2000.csv';
+        $expected = "attachment; filename=account_export_{$this->fromClause}_01-01-2000.csv";
         $this->assertEquals($expected, $response->headers->get('content-disposition'));
     }
 
@@ -288,7 +291,7 @@ class OperationsExportTest extends TestCase
             ->get("/accounts/{$this->account->id}/operations/export?to={$this->dates[1]}");
 
         $response->assertStatus(200);
-        $expected = 'attachment; filename=export_account_to_01-01-2001.csv';
+        $expected = "attachment; filename=account_export_{$this->toClause}_01-01-2001.csv";
         $this->assertEquals($expected, $response->headers->get('content-disposition'));
     }
 
