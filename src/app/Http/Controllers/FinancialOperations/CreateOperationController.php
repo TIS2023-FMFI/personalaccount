@@ -29,7 +29,7 @@ class CreateOperationController extends GeneralOperationController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    public function handleCreateOperationRequest(Account $account, CreateOrUpdateOperationRequest $request)
+    public function create(Account $account, CreateOrUpdateOperationRequest $request)
     {
         try {
             $attachment = $this->saveAttachmentFileFromRequest($account, $request);

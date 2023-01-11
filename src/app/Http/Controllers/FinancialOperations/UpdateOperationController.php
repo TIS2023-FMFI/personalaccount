@@ -30,7 +30,7 @@ class UpdateOperationController extends GeneralOperationController
      * the HTTP request to update the operation
      * @return Application|ResponseFactory|Response
      */
-    public function handleUpdateOperationRequest(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
+    public function update(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
         try {
             $newAttachment = $this->saveAttachmentFileFromRequest($operation->account, $request);
@@ -156,7 +156,7 @@ class UpdateOperationController extends GeneralOperationController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    public function checkOrUncheckOperation(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
+    public function checkOrUncheck(FinancialOperation $operation, CheckOrUncheckOperationRequest $request)
     {
         if ($operation->isLending())
             return response(trans('financial_operations.invalid_check'), 422);

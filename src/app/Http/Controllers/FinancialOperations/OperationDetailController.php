@@ -21,7 +21,7 @@ class OperationDetailController extends Controller
      * @return array
      * an array containing the operation's model
      */
-    public function getOperationData(FinancialOperation $operation)
+    public function getData(FinancialOperation $operation)
     {
         return ['operation' => $operation];
     }

@@ -24,7 +24,7 @@ class DeleteOperationController extends GeneralOperationController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    public function handleDeleteOperationRequest(FinancialOperation $operation)
+    public function delete(FinancialOperation $operation)
     {
         try {
             $this->runDeleteOperationTransaction($operation);
@@ -58,7 +58,7 @@ class DeleteOperationController extends GeneralOperationController
      * the operation to be deleted
      * @throws DatabaseException
      */
-    public function deleteOperation(FinancialOperation $operation)
+    private function deleteOperation(FinancialOperation $operation)
     {
         $attachment = $operation->attachment;
         if (! $operation->delete())

@@ -95,20 +95,20 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     });
 
     Route::middleware('can:view,operation')->group(function () {
-        Route::get('/operations/{operation}', [OperationDetailController::class, 'getOperationData']);
+        Route::get('/operations/{operation}', [OperationDetailController::class, 'getData']);
         Route::get('/operations/{operation}/attachment', [OperationDetailController::class, 'downloadAttachment']);
     });
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'handleCreateOperationRequest'])
+        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'create'])
             ->middleware('can:create,App\Models\FinancialOperation,account');
 
         Route::middleware('can:update,operation')->group(function () {
-            Route::put('/operations/{operation}', [UpdateOperationController::class, 'handleUpdateOperationRequest']);
-            Route::patch('/operations/{operation}', [UpdateOperationController::class, 'checkOrUncheckOperation']);
+            Route::put('/operations/{operation}', [UpdateOperationController::class, 'update']);
+            Route::patch('/operations/{operation}', [UpdateOperationController::class, 'checkOrUncheck']);
         });
 
-        Route::delete('/operations/{operation}', [DeleteOperationController::class, 'deleteOperation'])
+        Route::delete('/operations/{operation}', [DeleteOperationController::class, 'delete'])
             ->middleware('can:delete,operation');
     });
 
