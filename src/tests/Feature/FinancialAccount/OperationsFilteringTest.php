@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Date;
 use Tests\TestCase;
+use Tests\Util\HiddenMembersAccessor;
 
 
 /**
@@ -18,7 +19,7 @@ class OperationsFilteringTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private int $perPage;
+    private int $operationsPerPage;
     private array $dates;
     private $user;
     private $account;
@@ -27,7 +28,10 @@ class OperationsFilteringTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = OperationsOverviewController::$resultsPerPage;
+        $this->operationsPerPage = HiddenMembersAccessor::getHiddenStaticProperty(
+            '\App\Http\Controllers\FinancialOperations\OperationsOverviewController',
+            'resultsPerPage'
+        );
         for ($i = 0; $i < 6; $i++){
             $this->dates[$i] = Date::create(2000+$i);
         }
@@ -154,7 +158,7 @@ class OperationsFilteringTest extends TestCase
     public function test_pagination_is_used_with_filtered_data()
     {
 
-        $count = $this->perPage;
+        $count = $this->operationsPerPage;
         FinancialOperation::factory()->count($count)->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
@@ -175,7 +179,7 @@ class OperationsFilteringTest extends TestCase
     public function test_second_page_with_filtered_data()
     {
 
-        $count = $this->perPage;
+        $count = $this->operationsPerPage;
         FinancialOperation::factory()->count($count)->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);

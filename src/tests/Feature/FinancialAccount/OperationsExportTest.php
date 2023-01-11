@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
+use Tests\Util\HiddenMembersAccessor;
 
 
 /**
@@ -19,7 +20,7 @@ class OperationsExportTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private int $perPage, $extraRows;
+    private int $operationsPerPage, $extraRows;
     private array $dates;
     private Model $user, $account, $incomeType, $expenseType, $lendingType;
     private string $fromClause, $toClause;
@@ -28,7 +29,10 @@ class OperationsExportTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = OperationsOverviewController::$resultsPerPage;
+        $this->operationsPerPage = HiddenMembersAccessor::getHiddenStaticProperty(
+            '\App\Http\Controllers\FinancialOperations\OperationsOverviewController',
+            'resultsPerPage'
+        );
         $this->extraRows = 2; // header + extra '\n' symbol in a csv file
         $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
