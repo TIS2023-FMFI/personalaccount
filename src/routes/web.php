@@ -76,7 +76,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts', [AccountsOverviewController::class, 'createFinancialAccount']);
-        
+
         Route::put('/accounts/{account}', [UpdateAccountController::class, 'update'])
             ->middleware('can:update,account');
 
@@ -95,19 +95,19 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     });
 
     Route::middleware('can:view,operation')->group(function () {
-        Route::get('/operations/{operation}', [OperationDetailController::class, 'getOperationData']);
+        Route::get('/operations/{operation}', [OperationDetailController::class, 'getData']);
         Route::get('/operations/{operation}/attachment', [OperationDetailController::class, 'downloadAttachment']);
     });
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
-        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'handleCreateOperationRequest'])
+        Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'create'])
             ->middleware('can:create,App\Models\FinancialOperation,account');
 
         Route::middleware('can:update,operation')->group(function () {
-            Route::put('/operations/{operation}', [UpdateOperationController::class, 'handleEditOperationRequest']);
-            Route::patch('/operations/{operation}', [UpdateOperationController::class, 'checkOrUncheckOperation']);
+            Route::put('/operations/{operation}', [UpdateOperationController::class, 'update']);
+            Route::patch('/operations/{operation}', [UpdateOperationController::class, 'checkOrUncheck']);
         });
-        
+
         Route::delete('/operations/{operation}', [DeleteOperationController::class, 'delete'])
             ->middleware('can:delete,operation');
     });
@@ -126,7 +126,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts/{account}/sap-reports', [UploadReportController::class, 'upload'])
             ->middleware('can:create,App\Models\SapReport,account');
-        
+
         Route::delete('/sap-reports/{report}', [DeleteReportController::class, 'delete'])
             ->middleware('can:delete,report');
     });

@@ -59,8 +59,7 @@ class User extends Authenticatable
 
 
     /**
-     * Returns all the accounts belonging to this user.
-     *
+     * Gets all the accounts which belong to this user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

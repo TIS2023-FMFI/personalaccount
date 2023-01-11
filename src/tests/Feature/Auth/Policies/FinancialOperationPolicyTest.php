@@ -33,14 +33,14 @@ class FinancialOperationPolicyTest extends TestCase
 
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
         $this->account = Account::factory()->for($user)->create();
-        
+
         $this->otherUser = User::firstOrCreate([ 'email' => 'new@b.c' ]);
 
         Storage::fake();
         $file = UploadedFile::fake()
-                    ->create('test', 0, 'text/plain');;
-        $path = (new GeneralOperationController())
-                    ->saveAttachment($user->id, $file);
+                    ->create('test', 0, 'text/plain');
+        $dir = FinancialOperation::getAttachmentsDirectoryPath($user);
+        $path = Storage::putFile($dir, $file);
 
         $type = OperationType::firstOrCreate([ 'name' => 'type' ]);
         $this->operation = FinancialOperation::factory()
@@ -65,7 +65,7 @@ class FinancialOperationPolicyTest extends TestCase
 
         $response = $this->actingAs($this->otherUser)
                             ->get('/operations/' . $this->operation->id);
-        
+
         $response
             ->assertStatus(403);
     }
@@ -74,7 +74,7 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $response = $this->actingAs($this->otherUser)
                             ->get('/operations/' . $this->operation->id . '/attachment');
-        
+
         $response
             ->assertStatus(403);
     }
@@ -91,11 +91,11 @@ class FinancialOperationPolicyTest extends TestCase
                                 '/accounts/' . $this->account->id . '/operations',
                                 $newOperation
                             );
-        
+
         $response
             ->assertStatus(403);
     }
-    
+
     public function test_that_unauthorized_user_cannot_update_operation()
     {
         $updated = $this->operation->getAttributes();
@@ -108,7 +108,7 @@ class FinancialOperationPolicyTest extends TestCase
                                 '/operations/' . $this->operation->id,
                                 $updated
                             );
-        
+
         $response
             ->assertStatus(403);
     }
@@ -121,7 +121,7 @@ class FinancialOperationPolicyTest extends TestCase
                                 '/operations/' . $this->operation->id,
                                 [ 'checked' => true ],
                             );
-        
+
         $response
             ->assertStatus(403);
     }
@@ -131,7 +131,7 @@ class FinancialOperationPolicyTest extends TestCase
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
                             ->delete('/operations/' . $this->operation->id);
-        
+
         $response
             ->assertStatus(403);
     }

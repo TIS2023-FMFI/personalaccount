@@ -102,7 +102,7 @@ class UploadReportTest extends TestCase
         $requestData = [
             'sap_report' => $uploadedReport,
         ];
-        
+
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
@@ -127,7 +127,7 @@ class UploadReportTest extends TestCase
         $requestData = [
             'sap_report' => $uploadedReport,
         ];
-        
+
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
@@ -148,13 +148,14 @@ class UploadReportTest extends TestCase
         Storage::assertExists($report->path);
 
         $report->delete();
+        Storage::fake();
     }
 
     public function test_that_sap_report_is_uploaded_with_date_exported()
     {
         $exported = '4.5.2020';
         $reportContent = $exported . ' test';
-        
+
         Storage::fake();
         $uploadedReport = UploadedFile::fake()
                             ->createWithContent('test', $reportContent)
@@ -163,7 +164,7 @@ class UploadReportTest extends TestCase
         $requestData = [
             'sap_report' => $uploadedReport,
         ];
-        
+
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->post(
@@ -184,5 +185,6 @@ class UploadReportTest extends TestCase
         Storage::assertExists($report->path);
 
         $report->delete();
+        Storage::fake();
     }
 }

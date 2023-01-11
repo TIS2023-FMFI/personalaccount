@@ -12,14 +12,15 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Manages the 'financial accounts' screen and all the functionality available directly from that screen.
+ * Manages the 'financial accounts' view and creation of new financial accounts.
  */
 class AccountsOverviewController extends Controller
 {
     /**
-     * Returns the 'index' view filled with a list of accounts belonging to the current user
+     * Fills the 'accounts overview' view with a list of accounts belonging to the current user
      *
      * @return Application|Factory|View
+     * the view filled with data
      */
     public function show()
     {
@@ -32,20 +33,21 @@ class AccountsOverviewController extends Controller
      * Handles the request to add a new financial account for the current user
      *
      * @param CreateOrUpdateAccountRequest $request
+     * the HTTP request to create an operation
      * @return Application|ResponseFactory|Response
+     * a response containing information about this operation's result
      */
     public function createFinancialAccount(CreateOrUpdateAccountRequest $request)
     {
         $user = Auth::user();
-        $title = $request->validated('title');
-        $sap_id = $request->validated('sap_id');
 
         $account = $user->accounts()->create([
-            'title' => $title,
-            'sap_id' => $sap_id
+            'title' => $request->validated('title'),
+            'sap_id' => $request->validated('sap_id')
         ]);
 
-        if ($account->exists) return response(trans('financial_accounts.create.success'), 201);
-        return response(trans('financial_accounts.create.failed'), 500);
+        if (! $account->exists)
+            return response(trans('financial_accounts.create.failed'), 500);
+        return response(trans('financial_accounts.create.success'), 201);
     }
 }

@@ -45,7 +45,7 @@ class CreateOperationTest extends TestCase
             'operation_type_id' => $this->type->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => null
+            'attachment' => ''
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
@@ -82,7 +82,7 @@ class CreateOperationTest extends TestCase
             'operation_type_id' => $this->lendingType->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => null
+            'attachment' => ''
         ];
 
         $lendingData = [
@@ -110,7 +110,7 @@ class CreateOperationTest extends TestCase
             'operation_type_id' => $this->lendingType->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => null
+            'attachment' => ''
         ];
 
         $lendingData = [

@@ -5,7 +5,6 @@ namespace Tests\Feature\FinancialOperations;
 use App\Http\Controllers\FinancialOperations\GeneralOperationController;
 use App\Models\Account;
 use App\Models\FinancialOperation;
-use App\Models\Lending;
 use App\Models\OperationType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -62,9 +61,8 @@ class OperationDetailTest extends TestCase
         Storage::fake('local');
 
         $file = UploadedFile::fake()->create('test.txt');
-        $path = $this->controller->saveAttachment($this->user->id, $file);
-
-        Storage::assertExists($path);
+        $dir = FinancialOperation::getAttachmentsDirectoryPath($this->user);
+        $path = Storage::putFile($dir, $file);
 
         $operation = FinancialOperation::factory()
             ->create([
@@ -78,7 +76,11 @@ class OperationDetailTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDownload();
-        $this->assertEquals('attachment; filename=attachment_operation.txt', $response->headers->get('content-disposition'));
+
+        $attachmentClause = trans('files.attachment');
+
+        $this->assertEquals("attachment; filename=operation_$attachmentClause.txt",
+            $response->headers->get('content-disposition'));
 
         Storage::fake('local');
     }

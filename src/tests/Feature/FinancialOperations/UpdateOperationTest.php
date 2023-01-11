@@ -14,7 +14,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class EditOperationTest extends TestCase
+class UpdateOperationTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -44,6 +44,7 @@ class EditOperationTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(
             [
+                'account_id' => $this->account,
                 'operation_type_id' => $this->type
             ]);
 
@@ -88,7 +89,10 @@ class EditOperationTest extends TestCase
     public function test_update_type_to_lending_creates_lending_record(){
 
         $operation = FinancialOperation::factory()->create(
-            ['operation_type_id' => $this->type]);
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->type
+            ]);
 
         $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
 
@@ -119,7 +123,10 @@ class EditOperationTest extends TestCase
     public function test_update_type_from_lending_deletes_lending_record(){
 
         $operation = FinancialOperation::factory()->create(
-            ['operation_type_id' => $this->lendingType]);
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
         Lending::factory()->create(['id' => $operation]);
 
         $this->assertDatabaseHas('lendings', ['id' => $operation->id]);
@@ -147,7 +154,11 @@ class EditOperationTest extends TestCase
         $file = UploadedFile::fake()->create('test.txt');
 
         $operation = FinancialOperation::factory()->create(
-            ['operation_type_id' => $this->type, 'attachment' => null]);
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->type,
+                'attachment' => null
+            ]);
 
         $operationData = [
             'title' => 'test',
@@ -175,12 +186,16 @@ class EditOperationTest extends TestCase
         Storage::fake('local');
 
         $file = UploadedFile::fake()->create('test.txt');
-        $oldPath = $this->controller->saveAttachment($this->user->id, $file);
 
-        Storage::assertExists($oldPath);
+        $dir = FinancialOperation::getAttachmentsDirectoryPath($this->user);
+        $oldPath = Storage::putFile($dir, $file);
 
         $operation = FinancialOperation::factory()->create(
-            ['operation_type_id' => $this->type, 'attachment' => $oldPath]);
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->type,
+                'attachment' => $oldPath
+            ]);
 
         $newFile = UploadedFile::fake()->create('test.txt');
         $operationData = [
@@ -200,6 +215,52 @@ class EditOperationTest extends TestCase
         $newPath = $operation->attachment;
         Storage::disk('local')->assertExists($newPath);
         Storage::disk('local')->assertMissing($oldPath);
+    }
+
+    public function test_check_operation()
+    {
+
+        $operation = FinancialOperation::factory()->create(
+            ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->type]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$operation->id", ['checked' => true]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('financial_operations', [
+            'id' => $operation->id,
+            'checked' => true
+        ]);
+    }
+
+    public function test_uncheck_operation()
+    {
+
+        $operation = FinancialOperation::factory()->create(
+            ['account_id' => $this->account, 'checked' => true, 'operation_type_id' => $this->type]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$operation->id", ['checked' => false]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('financial_operations', [
+            'id' => $operation->id,
+            'checked' => false
+        ]);
+    }
+
+    public function test_cannnot_check_lending()
+    {
+
+        $operation = FinancialOperation::factory()->create(
+            ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->lendingType]);
+        Lending::factory()->create(['id' => $operation]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$operation->id", ['checked' => true]);
+
+        $response->assertStatus(422);
+
     }
 
 }
