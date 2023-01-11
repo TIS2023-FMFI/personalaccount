@@ -2,8 +2,6 @@
 
 namespace App\Http\Helpers;
 
-use App\Exceptions\StorageException;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -11,20 +9,6 @@ use Illuminate\Support\Str;
  */
 class FileHelper
 {
-    /**
-     * Deletes a file if it exists.
-     *
-     * @param string $path
-     * path to the file
-     * @throws StorageException
-     */
-    public static function deleteFileIfExists(string $path)
-    {
-        if (! $path || ! Storage::exists($path))
-            return;
-        if (! Storage::delete($path))
-            throw new StorageException('The file wasn\'t deleted.');
-    }
 
     /**
      * Transforms a string by replacing all spaces by dashes and removing all characters which are not a letter,

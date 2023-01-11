@@ -5,7 +5,6 @@ namespace App\Http\Controllers\FinancialOperations;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\StorageException;
 use App\Http\Helpers\DBTransaction;
-use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\FinancialOperation;
@@ -14,6 +13,7 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Manages updates of financial operations, including checking and unchecking.
@@ -32,15 +32,13 @@ class UpdateOperationController extends GeneralOperationController
      */
     public function handleUpdateOperationRequest(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
-        try
-        {
+        try {
             $newAttachment = $this->saveAttachmentFileFromRequest($operation->account, $request);
             $oldAttachment = $operation->attachment;
 
             $this->runUpdateOperationTransaction($operation, $request,  $oldAttachment, $newAttachment);
         }
-        catch (Exception $e)
-        {
+        catch (Exception $e) {
             return response(trans('financial_operations.update.failure'), 500);
         }
         return response(trans('financial_operations.update.success'));
@@ -64,7 +62,7 @@ class UpdateOperationController extends GeneralOperationController
     {
         $updateOperationTransaction = new DBTransaction(
             fn () => $this->updateOperation($operation, $request, $oldAttachment, $newAttachment),
-            fn () => FileHelper::deleteFileIfExists($newAttachment)
+            fn () => Storage::delete($newAttachment)
         );
 
         $updateOperationTransaction->run();
@@ -98,7 +96,7 @@ class UpdateOperationController extends GeneralOperationController
             $this->upsertLending($operation->id, $request);
 
         if ($newAttachment)
-            FileHelper::deleteFileIfExists($oldAttachment);
+            Storage::delete($oldAttachment);
     }
 
     /**

@@ -22,17 +22,7 @@ class OperationsOverviewController extends Controller
      * @var int
      * number of operations to be shown on one page
      */
-    public static int $perPage = 15;
-
-    /**
-     * shortcut for the $perPage static variable
-     *
-     * @return int
-     */
-    private function getPerPage()
-    {
-        return OperationsOverviewController::$perPage;
-    }
+    public static int $resultsPerPage = 15;
 
     /**
      * Fills the 'operations overview' view with financial operations belonging to a financial account.
@@ -53,7 +43,7 @@ class OperationsOverviewController extends Controller
         $incomes = $account->operationsBetween($dateFrom, $dateTo)->incomes()->sum('sum');
         $expenses = $account->operationsBetween($dateFrom, $dateTo)->expenses()->sum('sum');
         $operations = $account->operationsBetween($dateFrom, $dateTo)->orderBy('date', 'desc')
-                              ->paginate($this->getPerPage())->withQueryString();
+                              ->paginate($this::$resultsPerPage)->withQueryString();
 
         return view('finances.account', [
             'account' => $account,
@@ -105,7 +95,7 @@ class OperationsOverviewController extends Controller
      * @param DateRequest $request
      * a HTTP request which may contain the dates to filter the operations by
      * @return StreamedResponse
-     * a response allowing the user to download the CSV file
+     * a response allowing the user to download the exported CSV file
      */
     public function downloadExport(Account $account, DateRequest $request)
     {
@@ -151,13 +141,13 @@ class OperationsOverviewController extends Controller
      */
     private function generateFromString(Carbon $dateFrom)
     {
-        if ($dateFrom == Date::minValue())
-            $from = '';
-        else
-        {
+        $from = '';
+
+        if ($dateFrom != Date::minValue()) {
             $fromClause = trans('files.from');
             $from = "_{$fromClause}_{$this->formatDate($dateFrom)}";
         }
+
         return $from;
     }
 
@@ -172,13 +162,13 @@ class OperationsOverviewController extends Controller
      */
     private function generateToString(Carbon $dateTo)
     {
-        if ($dateTo == Date::maxValue())
-            $to = '';
-        else
-        {
+        $to = '';
+
+        if ($dateTo != Date::maxValue()) {
             $toClause = trans('files.to');
             $to = "_{$toClause}_{$this->formatDate($dateTo)}";
         }
+
         return $to;
     }
 

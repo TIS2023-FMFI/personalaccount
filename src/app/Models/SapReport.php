@@ -53,7 +53,7 @@ class SapReport extends Model
      * @return string
      * the generated file name
      */
-    public function generateDisplayableFileName()
+    public function generateReportFileName()
     {
         $sanitizedSapId = $this->account->getSanitizedSapId();
         $contentClause = trans('files.sap_report');

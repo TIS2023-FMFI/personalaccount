@@ -27,7 +27,7 @@ class OperationsFilteringTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = OperationsOverviewController::$perPage;
+        $this->perPage = OperationsOverviewController::$resultsPerPage;
         for ($i = 0; $i < 6; $i++){
             $this->dates[$i] = Date::create(2000+$i);
         }

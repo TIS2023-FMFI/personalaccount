@@ -4,7 +4,6 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Helpers\DBTransaction;
-use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use Exception;
@@ -12,6 +11,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Manages creation of financial operations.
@@ -23,7 +23,6 @@ class CreateOperationController extends GeneralOperationController
      * Handles the request to create a new financial operation.
      *
      * @param Account $account
-
      * financial account to which the operation belongs
      * @param CreateOrUpdateOperationRequest $request
      * HTTP request to create the operation
@@ -32,13 +31,11 @@ class CreateOperationController extends GeneralOperationController
      */
     public function handleCreateOperationRequest(Account $account, CreateOrUpdateOperationRequest $request)
     {
-        try
-        {
+        try {
             $attachment = $this->saveAttachmentFileFromRequest($account, $request);
             $this->runCreateOperationTransaction($account, $request, $attachment);
         }
-        catch (Exception $e)
-        {
+        catch (Exception $e) {
             return response(trans('financial_operations.create.failure'), 500);
         }
         return response(trans('financial_operations.create.success'), 201);
@@ -61,7 +58,7 @@ class CreateOperationController extends GeneralOperationController
     {
         $createRecordTransaction = new DBTransaction(
             fn () => $this->createOperation($account, $request, $attachment),
-            fn () => FileHelper::deleteFileIfExists($attachment)
+            fn () => Storage::delete($attachment)
         );
 
         $createRecordTransaction->run();

@@ -46,7 +46,7 @@ class GeneralOperationController extends Controller
      * @return string
      * the path to the saved file
      */
-    public function saveAttachment(User $user, UploadedFile $file) : string
+    private function saveAttachment(User $user, UploadedFile $file) : string
     {
         $dir = FinancialOperation::getAttachmentsDirectoryPath($user);
         return Storage::putFile($dir, $file);

@@ -4,12 +4,12 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Helpers\DBTransaction;
-use App\Http\Helpers\FileHelper;
 use App\Models\FinancialOperation;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Manages deletion of financial operations.
@@ -26,12 +26,10 @@ class DeleteOperationController extends GeneralOperationController
      */
     public function handleDeleteOperationRequest(FinancialOperation $operation)
     {
-        try
-        {
+        try {
             $this->runDeleteOperationTransaction($operation);
         }
-        catch (Exception $e)
-        {
+        catch (Exception $e) {
             return response(trans('financial_operations.delete.failure'), 500);
         }
         return response(trans('financial_operations.delete.success'));
@@ -58,12 +56,13 @@ class DeleteOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation
      * the operation to be deleted
+     * @throws DatabaseException
      */
     public function deleteOperation(FinancialOperation $operation)
     {
         $attachment = $operation->attachment;
         if (! $operation->delete())
             throw new DatabaseException('The operation wasn\'t deleted.');
-        FileHelper::deleteFileIfExists($attachment);
+        Storage::delete($attachment);
     }
 }

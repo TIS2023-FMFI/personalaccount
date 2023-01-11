@@ -28,7 +28,7 @@ class OperationsExportTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = OperationsOverviewController::$perPage;
+        $this->perPage = OperationsOverviewController::$resultsPerPage;
         $this->extraRows = 2; // header + extra '\n' symbol in a csv file
         $this->dates = ['2000-01-01', '2001-01-01', '2002-01-01', '2003-01-01', '2004-01-01','2005-01-01'];
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);

@@ -186,9 +186,9 @@ class UpdateOperationTest extends TestCase
         Storage::fake('local');
 
         $file = UploadedFile::fake()->create('test.txt');
-        $oldPath = $this->controller->saveAttachment($this->user, $file);
 
-        Storage::assertExists($oldPath);
+        $dir = FinancialOperation::getAttachmentsDirectoryPath($this->user);
+        $oldPath = Storage::putFile($dir, $file);
 
         $operation = FinancialOperation::factory()->create(
             [

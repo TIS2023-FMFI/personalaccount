@@ -29,7 +29,7 @@ class FinancialAccountDetailTest extends TestCase
     {
         parent::setUp();
 
-        $this->perPage = OperationsOverviewController::$perPage;
+        $this->perPage = OperationsOverviewController::$resultsPerPage;
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
         $this->account = Account::factory()->create(['user_id' => $this->user]);
         $this->type = OperationType::firstOrCreate(['name' => 'type']);
