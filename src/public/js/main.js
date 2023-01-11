@@ -339,26 +339,910 @@ $(document).ready(function(){
     });
 
     $(".edit_account").click(function() {
+        let account_id = $(this).data("id");
         $("#edit-account-modal").css("display", "flex");
+        $("#edit-account-modal > .modal > #edit-account-form").data("id", account_id);
     });
 
     $(".delete_account").click(function() {
+        let account_id = $(this).data("id");
         $("#delete-account-modal").css("display", "flex");
+        $("#delete-account-modal > .modal > #delete-account-form").data("id", account_id);
     });
     // <-- Account modals
 
-    $(".account").click(function() {
-        window.location.href = '/accounts';
+    // Financial accounts -->
+
+    $(".account").click(function(){
+        var account_id = $(this).data("id");
+        window.location.href = '/accounts/'+account_id+'/operations';
     });
+
+    // Financial accounts filter operations-->
+    
+    $("#filter-operations").click(function(){
+        let account_id = $(this).data("account-id");
+        let date_from = $('#filter-operations-from').val();
+        let date_to = $('#filter-operations-to').val();
+        let url ='/accounts/'+account_id+'/operations';
+
+        if (date_from != "" || date_to != ""){
+            url += '?';
+        }
+        if (date_from != ""){
+            url += 'from=' + date_from
+        }
+        if (date_to != ""){
+            if (date_from != ""){
+                url += '&';
+            }
+            url += 'to=' + date_to
+        }
+        window.location.href = url;
+    });
+
+    // <-- Financial accounts filter operations
+    $(".toggle-button").change(function(){
+        let account_id = $(this).data("account-id");
+        if($(this).attr('checked')){
+            window.location.href = '/accounts/'+account_id+'/operations';
+        }else{
+            window.location.href = '/accounts/'+account_id+'/sap-reports';
+        }
+    })
+
+    // Financial accounts forms -->
+    
+    $("#create-account-form").keypress(e => {
+        if (e.which === 13) {
+            $('#create-account-form').submit();
+        }
+    });
+    // Create financial account form -->
+    $("#create-account-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let title = $("#add-account-name").val();
+        let sapId = $("#add-account-sap-id").val();
+
+        let csrf = $("#create-account-button").data("csrf");
+
+        $.ajax({
+            url: "/accounts",
+            type: "POST",
+            data: {
+                "_token": csrf,
+                'title': title,
+                'sap_id': sapId
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+             location.reload()
+            $(".modal-box").css("display", "none");
+
+            $.fn.createAccountClearForm(true);
+        }).fail(function(response) {
+            $.fn.createAccountClearForm();
+            if (response.status === 422) {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.title != 'undefined') {
+                    $("#add-account-name").css("border-color", "red");
+
+                    errors.title.forEach(e => {
+                        $("#add-account-name-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.sap_id != 'undefined') {
+                    $("#add-account-sap-id").css("border-color", "red");
+                    errors.sap_id.forEach(e => {
+                        $("#add-account-sap-id-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                
+            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: response.responseJSON.displayMessage
+                })
+            }
+            
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+
+    });
+
+
+    $.fn.createAccountClearForm = function(isDone = false){ 
+
+        if (isDone) {
+            $("#add-account-name").val("");
+            $("#add-account-sap-id").val("");
+        }
+
+        $("#add-account-name").css("border-color", "var(--primary)");
+        $("#add-account-sap-id").css("border-color", "var(--primary)");
+
+        $("#add-account-name").empty();
+        $("#add-account-sap-id").empty();
+        $("#add-account-sap-id-errors").empty();
+        $("#add-account-name-errors").empty();
+
+
+    }
+    // <-- Create financial account form
+
+    // Edit financial account form -->
+
+    $("#edit-account-form").on("submit", function(e) {
+        e.preventDefault();
+        
+        let account_id =  $(this).data("id");
+    
+        let title = $("#edit-account-name").val();
+        let sapId = $("#edit-account-sap-id").val();
+
+        let csrf = $("#edit-account-button").data("csrf");
+
+        $.ajax({
+            url: "/accounts/" + account_id,
+            type: "PUT",
+            data: {
+                "_token": csrf,
+                'title': title,
+                'sap_id': sapId
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+            $.fn.editAccountClearForm(true);
+        }).fail(function(response) {
+            $.fn.editAccountClearForm();
+            if (response.status === 422) {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.title != 'undefined') {
+                    $("#edit-account-name").css("border-color", "red");
+
+                    errors.title.forEach(e => {
+                        $("#edit-account-name-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.sap_id != 'undefined') {
+                    $("#edit-account-sap-id").css("border-color", "red");
+                    errors.sap_id.forEach(e => {
+                        $("#edit-account-sap-id-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                
+            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: response.responseJSON.displayMessage
+                })
+            }
+            
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+
+    });
+
+
+    $.fn.editAccountClearForm = function(isDone = false){ 
+
+        if (isDone) {
+            $("#edit-account-name").val("");
+            $("#edit-account-sap-id").val("");
+        }
+
+        $("#edit-account-name").css("border-color", "var(--primary)");
+        $("#edit-account-sap-id").css("border-color", "var(--primary)");
+
+        $("#edit-account-name").empty();
+        $("#edit-account-sap-id").empty();
+        $("#edit-account-sap-id-errors").empty();
+        $("#edit-account-name-errors").empty();
+    }
+
+    // <-- Edit financial account form
+
+    // Delete financial account form -->
+
+    $("#delete-account-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let account_id =  $(this).data("id");
+
+        let csrf = $("#create-account-button").data("csrf");
+
+        $.ajax({
+            url: "/accounts/" + account_id,
+            type: "DELETE",
+            data: {
+                "_token": csrf
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+            $.fn.createAccountClearForm(true);
+        }).fail(function(response) {
+            $.fn.createAccountClearForm();
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+
+    });
+
+    // <-- Delete financial account form
+    // <-- Financial accounts forms
+    // <-- Financial accounts
+
+    // --> SAP reports
+
+    $("#reports-filter").click(function(){
+        
+        let account_id = $(this).data("account-id");
+        let date_from = $('#filter-reports-from').val();
+        let date_to = $('#filter-reports-to').val();
+        let url ='/accounts/'+account_id+'/sap-reports';
+
+        if (date_from != "" || date_to != ""){
+            url += '?';
+        }
+        if (date_from != ""){
+            url += 'from=' + date_from
+        }
+        if (date_to != ""){
+            if (date_from != ""){
+                url += '&';
+            }
+            url += 'to=' + date_to
+        }
+        window.location.href = url;
+
+    });
+
+    // --> SAP reports forms
+
+    // --> add SAP report form
+    $("#add-sap-report").click(function(){
+        let account_id = $(this).data("account-id");
+        $("#add-report-modal").css("display","flex");
+        $("#add-report-modal > .modal > #create-report-form").data("account-id", account_id);
+    })
+
+    $("#create-report-form").on("submit", function(e){
+        e.preventDefault();
+
+        let account_id =  $(this).data("account-id");
+        let csrf = $("#create-report-button").data("csrf");
+
+        var fileUpload = $("#report-file").get(0);  
+        var files = fileUpload.files;  
+        var fileData = new FormData(); 
+        fileData.append('sap_report', files[0]);  
+
+        fileData.append('_token', csrf);
+        
+        $.ajax({
+            url: "/accounts/" + account_id + '/sap-reports',
+            type: "POST",
+            contentType: false, // Not to set any content header  
+            processData: false, // Not to process data  
+            data: fileData
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+
+            $(".modal-box").css("display", "none");
+
+            $.fn.createReportClearForm(true);
+        }).fail(function(response) {
+            $.fn.createReportClearForm();
+
+            if (response.status === 422) {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.sap_report != 'undefined') {
+                    $("#operation-file").css("border-color", "red");
+
+                    errors.sap_report.forEach(e => {
+                        $("#add-sap-report-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                
+            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: response.responseJSON.displayMessage
+                })
+            }
+            
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+    });
+
+    // <-- add SAP report form
+    $.fn.createReportClearForm = function(isDone = false){ 
+
+        if (isDone) {
+            $("#operation-file").val("");
+        }
+
+        $("#operation-file").css("border-color", "var(--primary)");
+        $("#add-sap-report-errors").css("border-color", "var(--primary)");
+
+        $("#operation-file").empty();
+        $("#add-sap-report-errors").empty();
+    }
+
+    // <-- SAP reports forms
+
+    // --> delete SAP report form
+
+    $(".report-delete").click(function(){
+        let report_id = $(this).data("report-id");
+        $("#delete-report-form").data("report-id", report_id);
+        $("#delete-report-modal").css("display", "flex");
+        $("#delete-report-modal").css("display", "flex");
+    });
+
+    $("#delete-report-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let report_id =  $(this).data("report-id");
+
+        let csrf = $("#delete-report-button").data("csrf");
+
+        $.ajax({
+            url: "/sap-reports/" + report_id,
+            type: "DELETE",
+            data: {
+                "_token": csrf
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+        }).fail(function(response) {
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+
+    });
+
+    // <-- delete SAP report form
+
+    // <-- SAP reports
+
+
+    // --> Financial operations
+
+    // --> Financial operations export
+
+    $("#operations-export").click(function(){
+        
+        let account_id = $(this).data("account-id");
+        let date_from = $('#filter-operations-from').val();
+        let date_to = $('#filter-operations-to').val();
+        let url ='/accounts/'+account_id+'/operations/export';
+
+        if (date_from != "" || date_to != ""){
+            url += '?';
+        }
+        if (date_from != ""){
+            url += 'from=' + date_from
+        }
+        if (date_to != ""){
+            if (date_from != ""){
+                url += '&';
+            }
+            url += 'to=' + date_to
+        }
+        window.location.href = url;
+
+    });
+
+    // <-- Financial operations export
+
+    // <-- Financial operations detail
 
     $(".operation-detail").click(function(){
         $("#operation-modal").css("display", "flex");
+
+        let operation_id = $(this).data("operation-id");
+        let csrf = $(this).data("csrf");
+
+        $.ajax({
+            url: "/operations/" + operation_id,
+            type: "GET",
+            data: {
+                "_token": csrf
+            }
+        }).done(function(response) {
+
+            if (response.operation.operation_type.expense == 0) {
+                $("#operation_main_type").html("<b>Typ: </b>Príjem");
+            } else {
+                $("#operation_main_type").html("<b>Typ: </b>Výdavok");
+            }
+
+            $("#operation_type").html("<b>Kategória: </b>" + response.operation.operation_type.name);
+            $("#operation_name").html("<b>Názov: </b>" + response.operation.title);
+            $("#operation_subject").html("<b>Subjekt: </b>" + response.operation.subject);
+            $("#operation_sum").html("<b>Suma: </b>" + response.operation.sum + " €");
+            $("#operation_date").html("<b>Dátum vytvorenia: </b>" + response.operation.date);
+
+            if (response.operation.operation_type.lending == 1) {
+                $("#operation_date_until").html("<b>Dátum splatnosti: </b>" + operation.lending.expected_date_of_return);
+            } else {
+                $("#operation_date_until").hide();
+            }
+            $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            if (response.operation.attachment == null){
+                $("#operation-attachment-button").hide();
+            }
+
+        }).fail(function(response) {
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
     })
+
+    // --> Financial operations detail
+
+    // --> Financial operations forms
+
+    // --> Delete operation form
+
+    $(".operation-delete").click(function(){
+        let operation_id = $(this).data("operation-id");
+        $("#delete-operation-form").data("operation-id", operation_id);
+        $("#delete-operation-modal").css("display", "flex");
+    })
+
+    $("#delete-operation-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let operation_id =  $(this).data("operation-id");
+
+        let csrf = $("#delete-operation-button").data("csrf");
+
+        $.ajax({
+            url: "/operations/" + operation_id,
+            type: "DELETE",
+            data: {
+                "_token": csrf
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+
+            $(".modal-box").css("display", "none");
+
+        }).fail(function(response) {
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+
+    });
+
+    // <-- Delete operation form
+
+    // --> Check/Uncheck operation
+
+    $(".operation-check").click(function(){
+        let operation_id = $(this).data("operation-id");
+        $("#check-operation-form").data("operation-id", operation_id);
+        let operation_checked = $(this).data("operation-checked");
+        $("#check-operation-form").data("operation-checked", operation_checked);
+        $("#check-operation-modal").css("display", "flex");
+    })
+
+
+    $("#check-operation-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let operation_id =  $(this).data("operation-id");
+        let operation_checked = ($(this).data("operation-checked") - 1) *(-1);
+
+        let csrf = $("#check-operation-button").data("csrf");
+
+        $.ajax({
+            url: "/operations/" + operation_id,
+            type: "PATCH",
+            data: {
+                '_token': csrf,
+                'checked': operation_checked    
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+        }).fail(function(response) {
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+        
+    });
+    // <-- Check/Uncheck operation
+
+    // --> Create operaton form
 
     $("#create_operation").click(function(){
-        $("#create-operation-modal").css("display", "flex");
+        let account_id = $(this).data("account-id");
+        $("#create-operation-form").data("account-id", account_id);
+        $("#create-operation-modal").css("display", "flex");    
     })
 
+    $("#create-operation-form").on("submit", function(e) {
+        e.preventDefault();
+        let csrf = $("#create-operation-button").data("csrf");
+
+        let account_id = $(this).data("account-id");
+        let expense_income = $("input[name='operation_type']:checked").val();
+        let operation_type_id = $("#operation_choice").val();
+        let title = $("#add-operation-name").val();
+        let subject = $("#add-operation-subject").val();
+        let sum = $("#add-operation-sum").val();
+        let date = $("#add-operation-to").val();
+
+        var fileUpload = $("#operation-file").get(0);  
+        var files = fileUpload.files;  
+        var fileData = new FormData(); 
+
+        fileData.append('_token', csrf);
+        fileData.append('title', title);
+        fileData.append('date', date);
+        fileData.append('operation_type_id', operation_type_id);
+        fileData.append('subject', subject);
+        fileData.append('sum', sum);
+        fileData.append('attachment', files[0]);  
+
+        $.ajax({
+            url: "/accounts/" + account_id + "/operations",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fileData
+
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+
+            $(".modal-box").css("display", "none");
+
+            $.fn.createOperationClearForm(true);
+        }).fail(function(response) {
+            $.fn.createOperationClearForm();
+            if (response.status === 422) {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.attachment != 'undefined') {
+                    $("#operation-file").css("border-color", "red");
+
+                    errors.attachment.forEach(e => {
+                        $("#add-operation-attachment-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.date != 'undefined') {
+                    $("#add-operation-to").css("border-color", "red");
+                    errors.date.forEach(e => {
+                        $("#add-operation-date-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.operation_type_id != 'undefined') {
+                    $("#add-operation-type").css("border-color", "red");
+
+                    errors.operation_type_id.forEach(e => {
+                        $("#add-operation-type-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.subject != 'undefined') {
+                    $("#add-operation-subject").css("border-color", "red");
+
+                    errors.subject.forEach(e => {
+                        $("#add-operation-subject-errors").append("<p>" + e + "</p>");
+                    });
+                }            
+                if (typeof errors.sum != 'undefined') {
+                    $("#add-operation-sum").css("border-color", "red");
+
+                    errors.sum.forEach(e => {
+                        $("#add-operation-sum-errors").append("<p>" + e + "</p>");
+                    });
+                }                
+                if (typeof errors.title != 'undefined') {
+                    $("#add-operation-name").css("border-color", "red");
+
+                    errors.title.forEach(e => {
+                        $("#add-operation-title-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                
+            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: response.responseJSON.displayMessage
+                })
+            }
+            
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+
+    });
+
+    $.fn.createOperationClearForm = function(isDone = false){ 
+
+        if (isDone) {
+            $("#operation-file").val("");
+            $("#add-operation-to").val("");
+            $("#add-operation-type").val("");
+            $("#add-operation-subject").val("");
+            $("#add-operation-sum").val("");
+            $("#add-operation-name").val("");
+        }
+
+        $("#operation-file").css("border-color", "var(--primary)");
+        $("#add-operation-to").css("border-color", "var(--primary)");
+        $("#add-operation-type").css("border-color", "var(--primary)");
+        $("#add-operation-subject").css("border-color", "var(--primary)");
+        $("#add-operation-sum").css("border-color", "var(--primary)");
+        $("#add-operation-name").css("border-color", "var(--primary)");
+        $("#add-operation-attachment-errors").css("border-color", "var(--primary)");
+        $("#add-operation-date-errors").css("border-color", "var(--primary)");
+        $("#add-operation-type-errors").css("border-color", "var(--primary)");
+        $("#add-operation-subject-errors").css("border-color", "var(--primary)");
+        $("#add-operation-sum-errors").css("border-color", "var(--primary)");
+        $("#add-operation-title-errors").css("border-color", "var(--primary)");
+
+        $("#operation-file").empty();
+        $("#add-operation-to").empty();
+        $("#add-operation-type").empty();
+        $("#add-operation-subject").empty();
+        $("#add-operation-sum").empty();
+        $("#add-operation-name").empty();
+        $("#add-operation-attachment-errors").empty();
+        $("#add-operation-date-errors").empty();
+        $("#add-operation-type-errors").empty();
+        $("#add-operation-subject-errors").empty();
+        $("#add-operation-sum-errors").empty();
+        $("#add-operation-title-errors").empty();
+    }
+
+    // <-- Create operation form
+
+
+    // --> Edit operaton form
+
+    $(".operation-edit").click(function(){
+        let account_id = $(this).data("account-id");
+        let operation_id = $(this).data("operation-id");
+        $("#edit-operation-form").data("account-id", account_id);
+        $("#edit-operation-form").data("operation-id", operation_id);
+        $("#edit-operation-modal").css("display", "flex");    
+
+    })
+
+    $("#edit-operation-form").on("submit", function(e) {
+        e.preventDefault();
+        let csrf = $("#edit-operation-button").data("csrf");
+        let operation_id = $("#edit-operation-form").data("operation-id");
+        let expense_income = $("input[name='edit_operation_type']:checked").val();
+        let operation_type_id = $("#operation_edit_choice").val();
+        let title = $("#edit-operation-name").val();
+        let subject = $("#edit-operation-subject").val();
+        let sum = $("#edit-operation-sum").val();
+        let date = $("#edit-operation-to").val();
+
+        var fileUpload = $("#edit-operation-file").get(0);  
+        var files = fileUpload.files;  
+        var fileData = new FormData(); 
+
+        fileData.append('title', title);
+        fileData.append('date', date);
+        fileData.append('operation_type_id', operation_type_id);
+        fileData.append('subject', subject);
+        fileData.append('sum', sum);
+        fileData.append('attachment', files[0]);  
+        fileData.append('_token', csrf);
+        fileData.append('_method', 'PUT');
+
+        $.ajax({
+            url: "/operations/" + operation_id,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fileData
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+            $.fn.editOperationClearForm(true);
+        }).fail(function(response) {
+            $.fn.editOperationClearForm();
+            if (response.status === 422) {
+                let errors = response.responseJSON.errors;
+
+                if (typeof errors.attachment != 'undefined') {
+                    $("#edit-operation-file").css("border-color", "red");
+
+                    errors.attachment.forEach(e => {
+                        $("#edit-operation-attachment-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.date != 'undefined') {
+                    $("#edit-operation-to").css("border-color", "red");
+                    errors.date.forEach(e => {
+                        $("#edit-operation-date-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.operation_type_id != 'undefined') {
+                    $("#edit-operation-type").css("border-color", "red");
+
+                    errors.operation_type_id.forEach(e => {
+                        $("#edit-operation-type-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                if (typeof errors.subject != 'undefined') {
+                    $("#edit-operation-subject").css("border-color", "red");
+
+                    errors.subject.forEach(e => {
+                        $("#edit-operation-subject-errors").append("<p>" + e + "</p>");
+                    });
+                }            
+                if (typeof errors.sum != 'undefined') {
+                    $("#edit-operation-sum").css("border-color", "red");
+
+                    errors.sum.forEach(e => {
+                        $("#edit-operation-sum-errors").append("<p>" + e + "</p>");
+                    });
+                }                
+                if (typeof errors.title != 'undefined') {
+                    $("#edit-operation-name").css("border-color", "red");
+
+                    errors.title.forEach(e => {
+                        $("#edit-operation-title-errors").append("<p>" + e + "</p>");
+                    });
+                }
+                
+            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: response.responseJSON.displayMessage
+                })
+            }
+            
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+
+    });
+
+    $.fn.editOperationClearForm = function(isDone = false){ 
+
+        if (isDone) {
+            $("#operation-file").val("");
+            $("#edit-operation-to").val("");
+            $("#edit-operation-type").val("");
+            $("#edit-operation-subject").val("");
+            $("#edit-operation-sum").val("");
+            $("#edit-operation-name").val("");
+        }
+
+        $("#operation-file").css("border-color", "var(--primary)");
+        $("#edit-operation-to").css("border-color", "var(--primary)");
+        $("#edit-operation-type").css("border-color", "var(--primary)");
+        $("#edit-operation-subject").css("border-color", "var(--primary)");
+        $("#edit-operation-sum").css("border-color", "var(--primary)");
+        $("#edit-operation-name").css("border-color", "var(--primary)");
+        $("#edit-operation-attachment-errors").css("border-color", "var(--primary)");
+        $("#edit-operation-date-errors").css("border-color", "var(--primary)");
+        $("#edit-operation-type-errors").css("border-color", "var(--primary)");
+        $("#edit-operation-subject-errors").css("border-color", "var(--primary)");
+        $("#edit-operation-sum-errors").css("border-color", "var(--primary)");
+        $("#edit-operation-title-errors").css("border-color", "var(--primary)");
+
+        $("#operation-file").empty();
+        $("#edit-operation-to").empty();
+        $("#edit-operation-type").empty();
+        $("#edit-operation-subject").empty();
+        $("#edit-operation-sum").empty();
+        $("#edit-operation-name").empty();
+        $("#edit-operation-attachment-errors").empty();
+        $("#edit-operation-date-errors").empty();
+        $("#edit-operation-type-errors").empty();
+        $("#edit-operation-subject-errors").empty();
+        $("#edit-operation-sum-errors").empty();
+        $("#edit-operation-title-errors").empty();
+    }
+
+    // <-- Edit operaton form
     function updateSelectOptions(operation_type){
         switch(operation_type){
             case 'income':
@@ -383,9 +1267,9 @@ $(document).ready(function(){
     });
 
     $("#operation_choice").change(function(){
-        if($(this).val() == "lending_to" || 
-        $(this).val() == "lending_from" ||
-        $(this).val() == "return_of_lending"){
+        if($(this).val() == "5" || 
+        $(this).val() == "8" ||
+        $(this).val() == "9"){
             $(".lending_opt").css("display","flex")
             return
         }
@@ -393,39 +1277,16 @@ $(document).ready(function(){
     })
 
     $("#edit_operation_choice").change(function(){
-        if($(this).val() == "lending_to" || 
-        $(this).val() == "lending_from" ||
-        $(this).val() == "return_of_lending"){
+        if($(this).val() == "5" || 
+        $(this).val() == "8" ||
+        $(this).val() == "9"){
             $(".edit_lending_opt").css("display","flex")
             return
         }
         $(".edit_lending_opt").css("display","none")
     })
 
-    $(".operation-check").click(function(){
-        $("#check-operation-modal").css("display", "flex");
-    })
+    // <-- Financial operations forms
 
-    $(".operation-delete").click(function(){
-        $("#delete-operation-modal").css("display", "flex");
-    })
-
-    $(".toggle-button").change(function(){
-        if($(this).attr('checked')){
-            window.location.href = '/accounts';
-        }else{
-            window.location.href = '/sap-reports';
-        }
-    })
-
-    $("#add_sap_report").click(function(){
-        $("#add-report-modal").css("display","flex")
-    })
-
-    $(".operation-edit").click(function(){
-        $("#edit-operation-modal").css("display", "flex");
-    })
-
-
-
+    // <-- Financial operations
 })

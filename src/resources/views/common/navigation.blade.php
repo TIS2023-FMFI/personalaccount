@@ -45,3 +45,4 @@
             @include('finances.modals.create_account')
             @include('finances.modals.edit_account')
             @include('finances.modals.delete_account')
+            @include('finances.modals.delete_report')

@@ -39,7 +39,10 @@ class ReportsOverviewController extends Controller
         $to = $request->getValidatedToDateOrMax();
         $reports = $this->retrieveSapReports($account, $from, $to);
 
-        return view('finances.sap_reports', [ 'reports' => $reports ]);
+        return view('finances.sap_reports', [
+            'account' => $account, 
+            'reports' => $reports 
+        ]);
     }
 
     /**
