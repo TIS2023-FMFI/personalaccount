@@ -35,6 +35,6 @@ class RealOperationTypeSeeder extends Seeder
      */
     public function run()
     {
-        OperationType::create($this->types);
+        OperationType::factory()->createMany($this->types);
     }
 }
