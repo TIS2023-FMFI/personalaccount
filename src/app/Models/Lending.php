@@ -33,12 +33,41 @@ class Lending extends Model
     public $incrementing = false;
 
     /**
-     * Get the operation with which is this lending associated.
+     * Get the operation with which this lending is associated.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function financialOperation()
+    public function operation()
     {
         return $this->hasOne(FinancialOperation::class, 'id', 'id');
+    }
+
+    /**
+     * Find the repayment associated with a loan.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+
+    /**
+     * Find a repayment associated with a loan.
+     * 
+     * @param int $loadId
+     * the id of the load for which to find a repayment
+     * @return Lending|null
+     * the repayment or null if none was found
+     */
+    public static function findRepayment(int $loadId)
+    {
+        return Lending::where('previous_lending_id', '=', $loadId)->first();
+    }
+
+    /**
+     * Get the loan with which this lending is associated.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function loan()
+    {
+        return $this->hasOne(FinancialOperation::class, 'id', 'previous_lending_id');
     }
 }

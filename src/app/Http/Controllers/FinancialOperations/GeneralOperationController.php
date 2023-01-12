@@ -4,7 +4,7 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -24,12 +24,12 @@ class GeneralOperationController extends Controller
      *
      * @param Account $account
      * the account to which the operation belongs
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * a HTTP request to create/update an operation
      * @return string
      * path to the saved file, or null if the request doesn't contain a file
      */
-    protected function saveAttachmentFileFromRequest(Account $account, CreateOrUpdateOperationRequest $request)
+    protected function saveAttachmentFileFromRequest(Account $account, CreateOperationRequest $request)
     {
         $file = $request->file('attachment');
         if ($file)
@@ -59,12 +59,12 @@ class GeneralOperationController extends Controller
      *
      * @param FinancialOperation $operation
      * the operation associated with the lending
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * the request containing data about the lending
      * @return void
      * @throws DatabaseException
      */
-    protected function upsertLending(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
+    protected function upsertLending(FinancialOperation $operation, CreateOperationRequest $request)
     {
         $validatedData = $this->getValidatedLendingUpsertData($operation, $request);
 
@@ -81,28 +81,80 @@ class GeneralOperationController extends Controller
      * 
      * @param FinancialOperation $operation
      * the operation associated with the lending
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * the request from which to extract the data
      * @return array
      * the validated data
      * @throws ValidationException
      */
     private function getValidatedLendingUpsertData(
-        FinancialOperation $operation, CreateOrUpdateOperationRequest $request
+        FinancialOperation $operation, CreateOperationRequest $request
     ) {
-        $expectedReturn = $request->validated('expected_date_of_return');
-        $previousLending = FinancialOperation::find(
+        return ($operation->isRepayment())
+            ? $this->getValidatedRepaymentUpsertData($operation, $request)
+            : $this->getValidatedLoanUpsertData($operation, $request);
+    }
+
+    /**
+     * Extracts repayment data from a request and validates them.
+     * 
+     * @param FinancialOperation $operation
+     * the operation associated with the lending
+     * @param CreateOperationRequest $request
+     * the request from which to extract the data
+     * @return array
+     * the validated data
+     * @throws ValidationException
+     */
+    private function getValidatedRepaymentUpsertData(
+        FinancialOperation $operation, CreateOperationRequest $request
+    ) {
+        $loan = FinancialOperation::findOrFail(
             $request->validated('previous_lending_id')
         );
 
-        if (!$previousLending)
-            return ['expected_date_of_return' => $expectedReturn];
+        $this->validateLendingDates($loan, $operation);
 
-        if ($operation->date->lt($previousLending->date))
+        return ['previous_lending_id' => $loan->id];
+    }
+
+    /**
+     * Extracts loan data from a request and validates them.
+     * 
+     * @param FinancialOperation $operation
+     * the operation associated with the lending
+     * @param CreateOperationRequest $request
+     * the request from which to extract the data
+     * @return array
+     * the validated data
+     * @throws ValidationException
+     */
+    private function getValidatedLoanUpsertData(
+        FinancialOperation $operation, CreateOperationRequest $request
+    ) {
+        $repaymentLending = Lending::findRepayment($operation->id);
+        $repayment = ($repaymentLending) ? $repaymentLending->operation : null;
+
+        $this->validateLendingDates($operation, $repayment);
+
+        return ['expected_date_of_return' => $request->validated('expected_date_of_return')];
+    }
+
+    /**
+     * Ensures that a loan is not repaid earlier than provided.
+     * 
+     * @param FinancialOperation $loan
+     * the loan to consider
+     * @param FinancialOperation|null $repayment
+     * the repayment to check (if exists)
+     * @return void
+     * @throws ValidationException
+     */
+    private function validateLendingDates(FinancialOperation $loan, FinancialOperation|null $repayment)
+    {
+        if ($loan && $repayment && $repayment->date->lt($loan->date))
             throw ValidationException::withMessages([
                 'date' => trans('validation.repayment_invalid_date')
             ]);
-
-        return ['previous_lending_id' => $previousLending->id];
     }
 }

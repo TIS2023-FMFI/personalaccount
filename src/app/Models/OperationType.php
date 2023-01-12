@@ -37,4 +37,28 @@ class OperationType extends Model
     {
         return $query->where('repayment', '=', false);
     }
+
+    /**
+     * Get the expense repayment type.
+     * 
+     * @return OperationType
+     */
+    public static function getRepaymentExpense()
+    {
+        return OperationType::where('expense', '=', true)
+                            ->where('repayment', '=', true)
+                            ->first();
+    }
+
+    /**
+     * Get the income repayment type.
+     * 
+     * @return OperationType
+     */
+    public static function getRepaymentIncome()
+    {
+        return OperationType::where('expense', '=', true)
+                            ->where('repayment', '=', true)
+                            ->first();
+    }
 }

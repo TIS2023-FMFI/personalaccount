@@ -7,7 +7,7 @@ use App\Exceptions\StorageException;
 use App\Http\Helpers\DBTransaction;
 use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
-use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateOperationRequest;
 use App\Models\FinancialOperation;
 use App\Models\OperationType;
 use Exception;
@@ -44,13 +44,14 @@ class UpdateOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation
      * the operation to be updated
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * the HTTP request to update the operation
      * @return Application|ResponseFactory|Response
      */
-    public function update(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
+    public function update(FinancialOperation $operation, CreateOperationRequest $request)
     {
         // From lendings only loans can be updated
+        // Type will not change
         try {
             $newAttachment = $this->saveAttachmentFileFromRequest($operation->account, $request);
             $oldAttachment = $operation->attachment;
@@ -70,7 +71,7 @@ class UpdateOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation
      * the operation to be updated
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * the HTTP request to update the operation
      * @param string|null $oldAttachment
      * path to the operation's original attachment file (if there was one)
@@ -78,7 +79,7 @@ class UpdateOperationController extends GeneralOperationController
      * path to the operation's updated attachment file (if there is one)
      * @throws Exception
      */
-    private function runUpdateOperationTransaction(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
+    private function runUpdateOperationTransaction(FinancialOperation $operation, CreateOperationRequest $request,
                                                    string|null $oldAttachment, string|null $newAttachment)
     {
         $updateOperationTransaction = new DBTransaction(
@@ -94,7 +95,7 @@ class UpdateOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation
      * the operation to be updated
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * the HTTP request to update the operation
      * @param string|null $oldAttachment
      * path to the operation's original attachment file (if there was one)
@@ -103,7 +104,7 @@ class UpdateOperationController extends GeneralOperationController
      * @throws DatabaseException
      * @throws StorageException
      */
-    private function updateOperation(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
+    private function updateOperation(FinancialOperation $operation, CreateOperationRequest $request,
                                      string|null $oldAttachment, string|null $newAttachment)
     {
         if ($this->typeChangedFromLending($operation, $request))
@@ -125,11 +126,11 @@ class UpdateOperationController extends GeneralOperationController
      * Updates the financial operation's record in the database
      *
      * @param FinancialOperation $operation the operation to be updated
-     * @param CreateOrUpdateOperationRequest $request the HTTP request to update the operation
+     * @param CreateOperationRequest $request the HTTP request to update the operation
      * @param string|null $newAttachment path to the operation's updated attachment file (if there is one)
      * @throws DatabaseException
      */
-    private function updateOperationRecord(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
+    private function updateOperationRecord(FinancialOperation $operation, CreateOperationRequest $request,
                                            string|null $newAttachment)
     {
         $validatedData = $request->validated();
@@ -151,11 +152,11 @@ class UpdateOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation
      * the operation to be updated
-     * @param CreateOrUpdateOperationRequest $request
+     * @param CreateOperationRequest $request
      * the HTTP request to update the operation
      * @return bool
      */
-    private function typeChangedFromLending(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
+    private function typeChangedFromLending(FinancialOperation $operation, CreateOperationRequest $request)
     {
         $newTypeId = $request->validated('operation_type_id');
 

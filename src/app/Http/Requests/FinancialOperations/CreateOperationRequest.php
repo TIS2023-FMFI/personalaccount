@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\File;
  * Fields: title, date, operation_type_id, subject, sum, attachment,
  *         expected_date_of_return, previous_lending_id
  */
-class CreateOrUpdateOperationRequest extends FormRequest
+class CreateOperationRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

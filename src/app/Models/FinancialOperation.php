@@ -134,13 +134,24 @@ class FinancialOperation extends Model
 
     /**
      * Returns whether this operation is a lending
-     * (based on the operation type, not on existence of a DB 'lending' record).
+     * (based on the operation type, not on the existence of a DB 'lending' record).
      *
      * @return bool
      */
     public function isLending()
     {
         return $this->operationType->lending;
+    }
+
+    /**
+     * Returns whether this operation is a repayment - subtype of lending
+     * (based on the operation type, not on the existence of a DB 'lending' record).
+     *
+     * @return bool
+     */
+    public function isRepayment()
+    {
+        return $this->operationType->repayment;
     }
 
     /**
