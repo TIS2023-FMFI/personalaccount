@@ -9,7 +9,7 @@
     <div>
 
         <h1>{{ $account->title }}</h1>
-        <p>{{ $account->sapId }}</p>
+        <p>{{ $account->sap_id }}</p>
     </div>
     <div class="switch-box">
         <p>Výpis účtu</p>
@@ -28,7 +28,7 @@
         <button data-account-id="{{ $account->id }}" type="button" id="reports-filter">Zobraziť</button>
     </div>
     <div>
-        <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button">+</i></button>
+        <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button" title="Nový výkaz">+</i></button>
     </div>
 </div>
 <table>
@@ -41,11 +41,11 @@
      @foreach ($reports as $key=>$report)
         
         <tr>
-            <td>{{ $key+1 }}</td>
+            <td>{{ $key+1 }}.</td>
             <td>{{ $report->exported_or_uploaded_on }}</td>
             <td>
-                <a href="/sap-reports/{{ $report->id }}/raw"><i class="bi bi-download "></i></a>
-                <a href="#"><i data-report-id="{{ $report->id }}" class="bi bi-trash3 report-delete"></i></a>
+                <a href="/sap-reports/{{ $report->id }}/raw"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
+                <a href="#"><i data-report-id="{{ $report->id }}" class="bi bi-trash3 report-delete" title="Zmazať výkaz"></i></a>
             </td>
         </tr>
 

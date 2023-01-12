@@ -59,12 +59,12 @@ $(document).ready(function(){
                         title: response.responseJSON.displayMessage
                     })
                 }
+            }else{
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
             }
-
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
     });
 
@@ -133,12 +133,12 @@ $(document).ready(function(){
                         title: response.responseJSON.displayMessage
                     })
                 }
+            }else{       
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
             }
-                
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
     });
 
@@ -220,12 +220,12 @@ $(document).ready(function(){
                         title: response.responseJSON.displayMessage
                     })
                 }
+            }else{       
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
             }
-                
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
     });
 
@@ -297,12 +297,12 @@ $(document).ready(function(){
                         title: response.responseJSON.displayMessage
                     })
                 }
+            }else{       
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
             }
-                
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
     });
 
@@ -340,8 +340,13 @@ $(document).ready(function(){
 
     $(".edit_account").click(function() {
         let account_id = $(this).data("id");
+        let account_title = $(this).data("title");
+        let account_sap_id = $(this).data("sap");
+
         $("#edit-account-modal").css("display", "flex");
         $("#edit-account-modal > .modal > #edit-account-form").data("id", account_id);
+        $("#edit-account-name").val(account_title);
+        $("#edit-account-sap-id").val(account_sap_id);
     });
 
     $(".delete_account").click(function() {
@@ -364,6 +369,7 @@ $(document).ready(function(){
         let account_id = $(this).data("account-id");
         let date_from = $('#filter-operations-from').val();
         let date_to = $('#filter-operations-to').val();
+        let error = $(this).data("date-errors");
         let url ='/accounts/'+account_id+'/operations';
 
         if (date_from != "" || date_to != ""){
@@ -402,9 +408,10 @@ $(document).ready(function(){
     $("#create-account-form").on("submit", function(e) {
         e.preventDefault();
 
+        $("#create-account-button").attr("disabled", true);
+
         let title = $("#add-account-name").val();
         let sapId = $("#add-account-sap-id").val();
-
         let csrf = $("#create-account-button").data("csrf");
 
         $.ajax({
@@ -428,34 +435,36 @@ $(document).ready(function(){
             $.fn.createAccountClearForm(true);
         }).fail(function(response) {
             $.fn.createAccountClearForm();
-            if (response.status === 422) {
-                let errors = response.responseJSON.errors;
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-                if (typeof errors.title != 'undefined') {
-                    $("#add-account-name").css("border-color", "red");
+                    if (typeof errors.title != 'undefined') {
+                        $("#add-account-name").css("border-color", "red");
 
-                    errors.title.forEach(e => {
-                        $("#add-account-name-errors").append("<p>" + e + "</p>");
-                    });
+                        errors.title.forEach(e => {
+                            $("#add-account-name-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.sap_id != 'undefined') {
+                        $("#add-account-sap-id").css("border-color", "red");
+                        errors.sap_id.forEach(e => {
+                            $("#add-account-sap-id-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
-                if (typeof errors.sap_id != 'undefined') {
-                    $("#add-account-sap-id").css("border-color", "red");
-                    errors.sap_id.forEach(e => {
-                        $("#add-account-sap-id-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                
-            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+            }else{
                 Toast.fire({
                     icon: 'error',
-                    title: response.responseJSON.displayMessage
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                 })
             }
-            
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
 
     });
@@ -467,6 +476,8 @@ $(document).ready(function(){
             $("#add-account-name").val("");
             $("#add-account-sap-id").val("");
         }
+
+        $("#create-account-button").attr("disabled", false);
 
         $("#add-account-name").css("border-color", "var(--primary)");
         $("#add-account-sap-id").css("border-color", "var(--primary)");
@@ -513,34 +524,36 @@ $(document).ready(function(){
             $.fn.editAccountClearForm(true);
         }).fail(function(response) {
             $.fn.editAccountClearForm();
-            if (response.status === 422) {
-                let errors = response.responseJSON.errors;
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-                if (typeof errors.title != 'undefined') {
-                    $("#edit-account-name").css("border-color", "red");
+                    if (typeof errors.title != 'undefined') {
+                        $("#edit-account-name").css("border-color", "red");
 
-                    errors.title.forEach(e => {
-                        $("#edit-account-name-errors").append("<p>" + e + "</p>");
-                    });
+                        errors.title.forEach(e => {
+                            $("#edit-account-name-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.sap_id != 'undefined') {
+                        $("#edit-account-sap-id").css("border-color", "red");
+                        errors.sap_id.forEach(e => {
+                            $("#edit-account-sap-id-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
-                if (typeof errors.sap_id != 'undefined') {
-                    $("#edit-account-sap-id").css("border-color", "red");
-                    errors.sap_id.forEach(e => {
-                        $("#edit-account-sap-id-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                
-            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+            }else{    
                 Toast.fire({
                     icon: 'error',
-                    title: response.responseJSON.displayMessage
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                 })
             }
-            
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
 
     });
@@ -592,12 +605,19 @@ $(document).ready(function(){
             $.fn.createAccountClearForm(true);
         }).fail(function(response) {
             $.fn.createAccountClearForm();
-
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
-
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
+                }
+            }else{    
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
         })
 
     });
@@ -643,13 +663,15 @@ $(document).ready(function(){
     $("#create-report-form").on("submit", function(e){
         e.preventDefault();
 
+        $("#create-report-button").attr("disabled", true);
+
         let account_id =  $(this).data("account-id");
         let csrf = $("#create-report-button").data("csrf");
 
         var fileUpload = $("#report-file").get(0);  
         var files = fileUpload.files;  
         var fileData = new FormData(); 
-        fileData.append('sap_report', files[0]);  
+        fileData.append('sap_report', files[0] ?? - '');  
 
         fileData.append('_token', csrf);
         
@@ -673,29 +695,30 @@ $(document).ready(function(){
             $.fn.createReportClearForm(true);
         }).fail(function(response) {
             $.fn.createReportClearForm();
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-            if (response.status === 422) {
-                let errors = response.responseJSON.errors;
+                    if (typeof errors.sap_report != 'undefined') {
+                        $("#operation-file").css("border-color", "red");
 
-                if (typeof errors.sap_report != 'undefined') {
-                    $("#operation-file").css("border-color", "red");
-
-                    errors.sap_report.forEach(e => {
-                        $("#add-sap-report-errors").append("<p>" + e + "</p>");
-                    });
+                        errors.sap_report.forEach(e => {
+                            $("#add-sap-report-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
-                
-            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+            }else{   
                 Toast.fire({
                     icon: 'error',
-                    title: response.responseJSON.displayMessage
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                 })
             }
-            
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
 
         })
     });
@@ -706,6 +729,8 @@ $(document).ready(function(){
         if (isDone) {
             $("#operation-file").val("");
         }
+
+        $("#create-report-button").attr("disabled", false);
 
         $("#operation-file").css("border-color", "var(--primary)");
         $("#add-sap-report-errors").css("border-color", "var(--primary)");
@@ -749,12 +774,19 @@ $(document).ready(function(){
             $(".modal-box").css("display", "none");
 
         }).fail(function(response) {
-
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
-
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
+                }
+            }else{   
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
         })
 
     });
@@ -810,19 +842,19 @@ $(document).ready(function(){
         }).done(function(response) {
 
             if (response.operation.operation_type.expense == 0) {
-                $("#operation_main_type").html("<b>Typ: </b>Príjem");
+                $("#operation_main_type").html("Príjem");
             } else {
-                $("#operation_main_type").html("<b>Typ: </b>Výdavok");
+                $("#operation_main_type").html("Výdavok");
             }
 
-            $("#operation_type").html("<b>Kategória: </b>" + response.operation.operation_type.name);
-            $("#operation_name").html("<b>Názov: </b>" + response.operation.title);
-            $("#operation_subject").html("<b>Subjekt: </b>" + response.operation.subject);
-            $("#operation_sum").html("<b>Suma: </b>" + response.operation.sum + " €");
-            $("#operation_date").html("<b>Dátum vytvorenia: </b>" + response.operation.date);
+            $("#operation_type").html(response.operation.operation_type.name);
+            $("#operation_name").html(response.operation.title);
+            $("#operation_subject").html(response.operation.subject);
+            $("#operation_sum").html(response.operation.sum + " €");
+            $("#operation_date").html(response.operation.date);
 
             if (response.operation.operation_type.lending == 1) {
-                $("#operation_date_until").html("<b>Dátum splatnosti: </b>" + operation.lending.expected_date_of_return);
+                $("#operation_date_until").html(operation.lending.expected_date_of_return);
             } else {
                 $("#operation_date_until").hide();
             }
@@ -832,10 +864,19 @@ $(document).ready(function(){
             }
 
         }).fail(function(response) {
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
+                }
+            }else{   
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
         })
     })
 
@@ -876,12 +917,19 @@ $(document).ready(function(){
             $(".modal-box").css("display", "none");
 
         }).fail(function(response) {
-
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
-
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
+                }
+            }else{   
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
         })
 
     });
@@ -946,8 +994,10 @@ $(document).ready(function(){
 
     $("#create-operation-form").on("submit", function(e) {
         e.preventDefault();
-        let csrf = $("#create-operation-button").data("csrf");
 
+        $("#create-operation-button").attr("disabled", true);
+
+        let csrf = $("#create-operation-button").data("csrf");
         let account_id = $(this).data("account-id");
         let expense_income = $("input[name='operation_type']:checked").val();
         let operation_type_id = $("#operation_choice").val();
@@ -966,7 +1016,7 @@ $(document).ready(function(){
         fileData.append('operation_type_id', operation_type_id);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
-        fileData.append('attachment', files[0]);  
+        fileData.append('attachment', files[0] ?? - '');  
 
         $.ajax({
             url: "/accounts/" + account_id + "/operations",
@@ -1007,10 +1057,7 @@ $(document).ready(function(){
                 }
                 if (typeof errors.operation_type_id != 'undefined') {
                     $("#add-operation-type").css("border-color", "red");
-
-                    errors.operation_type_id.forEach(e => {
-                        $("#add-operation-type-errors").append("<p>" + e + "</p>");
-                    });
+                    $("#add-operation-type-errors").append("<p>Neplatný typ operácie</p>");
                 }
                 if (typeof errors.subject != 'undefined') {
                     $("#add-operation-subject").css("border-color", "red");
@@ -1060,6 +1107,8 @@ $(document).ready(function(){
             $("#add-operation-name").val("");
         }
 
+        $("#create-operation-button").attr("disabled", false);
+
         $("#operation-file").css("border-color", "var(--primary)");
         $("#add-operation-to").css("border-color", "var(--primary)");
         $("#add-operation-type").css("border-color", "var(--primary)");
@@ -1103,6 +1152,9 @@ $(document).ready(function(){
 
     $("#edit-operation-form").on("submit", function(e) {
         e.preventDefault();
+
+        $("#edit-operation-button").attr("disabled", true);
+
         let csrf = $("#edit-operation-button").data("csrf");
         let operation_id = $("#edit-operation-form").data("operation-id");
         let expense_income = $("input[name='edit_operation_type']:checked").val();
@@ -1121,7 +1173,7 @@ $(document).ready(function(){
         fileData.append('operation_type_id', operation_type_id);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
-        fileData.append('attachment', files[0]);  
+        fileData.append('attachment', files[0] ?? - '');  
         fileData.append('_token', csrf);
         fileData.append('_method', 'PUT');
 
@@ -1144,62 +1196,61 @@ $(document).ready(function(){
             $.fn.editOperationClearForm(true);
         }).fail(function(response) {
             $.fn.editOperationClearForm();
-            if (response.status === 422) {
-                let errors = response.responseJSON.errors;
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
 
-                if (typeof errors.attachment != 'undefined') {
-                    $("#edit-operation-file").css("border-color", "red");
+                    if (typeof errors.attachment != 'undefined') {
+                        $("#edit-operation-file").css("border-color", "red");
 
-                    errors.attachment.forEach(e => {
-                        $("#edit-operation-attachment-errors").append("<p>" + e + "</p>");
-                    });
+                        errors.attachment.forEach(e => {
+                            $("#edit-operation-attachment-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.date != 'undefined') {
+                        $("#edit-operation-to").css("border-color", "red");
+                        errors.date.forEach(e => {
+                            $("#edit-operation-date-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.operation_type_id != 'undefined') {
+                        $("#edit-operation-type").css("border-color", "red");
+                        $("#edit-operation-type-errors").append("<p>Neplatný typ operácie</p>");;
+                    }
+                    if (typeof errors.subject != 'undefined') {
+                        $("#edit-operation-subject").css("border-color", "red");
+
+                        errors.subject.forEach(e => {
+                            $("#edit-operation-subject-errors").append("<p>" + e + "</p>");
+                        });
+                    }            
+                    if (typeof errors.sum != 'undefined') {
+                        $("#edit-operation-sum").css("border-color", "red");
+
+                        errors.sum.forEach(e => {
+                            $("#edit-operation-sum-errors").append("<p>" + e + "</p>");
+                        });
+                    }                
+                    if (typeof errors.title != 'undefined') {
+                        $("#edit-operation-name").css("border-color", "red");
+
+                        errors.title.forEach(e => {
+                            $("#edit-operation-title-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
-                if (typeof errors.date != 'undefined') {
-                    $("#edit-operation-to").css("border-color", "red");
-                    errors.date.forEach(e => {
-                        $("#edit-operation-date-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                if (typeof errors.operation_type_id != 'undefined') {
-                    $("#edit-operation-type").css("border-color", "red");
-
-                    errors.operation_type_id.forEach(e => {
-                        $("#edit-operation-type-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                if (typeof errors.subject != 'undefined') {
-                    $("#edit-operation-subject").css("border-color", "red");
-
-                    errors.subject.forEach(e => {
-                        $("#edit-operation-subject-errors").append("<p>" + e + "</p>");
-                    });
-                }            
-                if (typeof errors.sum != 'undefined') {
-                    $("#edit-operation-sum").css("border-color", "red");
-
-                    errors.sum.forEach(e => {
-                        $("#edit-operation-sum-errors").append("<p>" + e + "</p>");
-                    });
-                }                
-                if (typeof errors.title != 'undefined') {
-                    $("#edit-operation-name").css("border-color", "red");
-
-                    errors.title.forEach(e => {
-                        $("#edit-operation-title-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                
-            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+            }else{
                 Toast.fire({
                     icon: 'error',
-                    title: response.responseJSON.displayMessage
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                 })
             }
-            
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
 
     });
@@ -1214,6 +1265,8 @@ $(document).ready(function(){
             $("#edit-operation-sum").val("");
             $("#edit-operation-name").val("");
         }
+
+        $("#edit-operation-button").attr("disabled", false);
 
         $("#operation-file").css("border-color", "var(--primary)");
         $("#edit-operation-to").css("border-color", "var(--primary)");
@@ -1249,6 +1302,7 @@ $(document).ready(function(){
                 $(".expense_opt").css("display","none")
                 $(".income_opt").css("display","flex")
                 $("#operation_choice").val("default_opt")
+                $("#edit_operation_choice").val("default_opt")
                 $(".lending_opt").css("display","none")
                 $(".edit_lending_opt").css("display","none")
                 break;
@@ -1256,6 +1310,7 @@ $(document).ready(function(){
                 $(".income_opt").css("display","none")
                 $(".expense_opt").css("display","flex")
                 $("#operation_choice").val("default_opt")
+                $("#edit_operation_choice").val("default_opt")
                 $(".lending_opt").css("display","none")
                 $(".edit_lending_opt").css("display","none")
                 break;
@@ -1266,24 +1321,51 @@ $(document).ready(function(){
         updateSelectOptions($(this).val())
     });
 
-    $("#operation_choice").change(function(){
-        if($(this).val() == "5" || 
-        $(this).val() == "8" ||
-        $(this).val() == "9"){
-            $(".lending_opt").css("display","flex")
-            return
+    // 5 -> lending to
+    // 8 -> lending from
+    // 9 -> return of lending
+    function updateOperationForm(operation_category){
+        if(operation_category == "9"){
+            $(".add-operation-name").css("display","none");
+            $(".add-operation-subject").css("display","none");
+            $(".add-operation-sum").css("display","none");
+            $(".add-operation-to").css("display","flex");
+            $(".add-operation-expected-date").css("display","none");
+            $(".operation-file").css("display","none");
+            $(".choose-lending").css("display","flex");
+            return;
         }
-        $(".lending_opt").css("display","none")
+        if(operation_category == "5" ||
+            operation_category == "8"){
+            $(".add-operation-name").css("display","flex");
+            $(".add-operation-subject").css("display","flex");
+            $(".add-operation-sum").css("display","flex");
+            $(".add-operation-to").css("display","flex");
+            $(".add-operation-expected-date").css("display","flex");
+            $(".operation-file").css("display","none");
+            $(".choose-lending").css("display","none");
+            return;
+        }
+        $(".add-operation-name").css("display","flex");
+        $(".add-operation-subject").css("display","flex");
+        $(".add-operation-sum").css("display","flex");
+        $(".add-operation-to").css("display","flex");
+        $(".add-operation-expected-date").css("display","none");
+        $(".operation-file").css("display","flex");
+        $(".choose-lending").css("display","none");
+
+    }
+
+
+    // 5 -> lending to
+    // 8 -> lending from
+    // 9 -> return of lending
+    $("#operation_choice").change(function(){
+        updateOperationForm($(this).val());
     })
 
     $("#edit_operation_choice").change(function(){
-        if($(this).val() == "5" || 
-        $(this).val() == "8" ||
-        $(this).val() == "9"){
-            $(".edit_lending_opt").css("display","flex")
-            return
-        }
-        $(".edit_lending_opt").css("display","none")
+        updateOperationForm($(this).val());
     })
 
     // <-- Financial operations forms

@@ -124,7 +124,7 @@ nav div:first-child a {
     background-color: #e8e8e8;
 }
 .add_account_button {
-    width: 30%;
+    width: 27%;
     display: flex;
     align-items: center;
     height: 300px;
@@ -563,4 +563,23 @@ label, input {
 label {
     font-size: 14px;
     color: var(--primary);
+}
+
+.pagination ul li{
+    display: inline;
+    margin: 0px 5px;
+    padding-inline-start: 0px;
+    font-weight: 600;
+}
+
+a:link {
+color: var(--secondary);
+background-color: transparent;
+text-decoration: none;
+}
+  
+a:visited {
+color: var(--primary);
+background-color: transparent;
+text-decoration: none;
 }

@@ -18,7 +18,7 @@
                 <a href="/"><i class="bi bi-credit-card-fill"></i> BudgetMaster</a>
             </div>
             <div class="dropdown">
-                <button class="dropbtn">user@uniba.sk <i class="bi bi-caret-down-fill"></i></button>
+                <button class="dropbtn">{{ Auth::User()->email }}<i class="bi bi-caret-down-fill"></i></button>
                 <div class="dropdown-content">
                     <a class="change-pass">Zmena hesla</a>
                     <a class="create-user">Vytvoriť používateľa</a>
