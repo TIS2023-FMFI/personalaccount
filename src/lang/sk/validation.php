@@ -107,15 +107,15 @@ return [
     'prohibited_unless' => ':attribute je možné uviesť, iba ak :other je z :values.',
     'prohibits' => ':attribute neumožňuje uviesť :other.',
     'regex' => ':attribute má neplatný formát.',
-    'required' => ':attribute je potrebné vyplniť.',
+    'required' => ':attribute je potrebné uviesť.',
     'required_array_keys' => ':attribute musí obsahovať hodnoty pre: :values.',
-    'required_if' => ':attribute je potrebné vyplniť, pokiaľ :other je :value.',
-    'required_if_accepted' => ':attribute je potrebné vyplniť v prípade akceptovania :other.',
-    'required_unless' => ':attribute field je potrebné vyplniť, pokiaľ :other nie je z :values.',
-    'required_with' => ':attribute je potrebné vyplniť v prípade vyplnenia :values.',
-    'required_with_all' => ':attribute je potrebné vyplniť v prípade vyplnenia všetkých z :values.',
-    'required_without' => ':attribute je potrebné vyplniť v prípade nevyplnenia :values.',
-    'required_without_all' => ':attribute je potrebné vyplniť v prípade nevyplnenia ani jedného z :values.',
+    'required_if' => ':attribute je potrebné uviesť, pokiaľ :other je :value.',
+    'required_if_accepted' => ':attribute je potrebné uviesť v prípade akceptovania :other.',
+    'required_unless' => ':attribute field je potrebné uviesť, pokiaľ :other nie je z :values.',
+    'required_with' => ':attribute je potrebné uviesť v prípade uvedenia :values.',
+    'required_with_all' => ':attribute je potrebné uviesť v prípade uvedenia všetkých z :values.',
+    'required_without' => ':attribute je potrebné uviesť v prípade neuvedenia :values.',
+    'required_without_all' => ':attribute je potrebné uviesť v prípade neuvedenia ani jedného z :values.',
     'same' => ':attribute a :other sa musia zhodovať.',
     'size' => [
         'array' => ':attribute musí obsahovať presne :size prvkov.',
@@ -136,7 +136,7 @@ return [
 
     'custom' => [
         'email' => [
-            'required' => 'E-mailovú adresu je potrebné vyplniť.',
+            'required' => 'E-mailovú adresu je potrebné uviesť.',
         ],
     ],
 

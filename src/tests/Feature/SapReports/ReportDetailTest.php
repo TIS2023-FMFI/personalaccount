@@ -6,13 +6,14 @@ use App\Models\Account;
 use App\Models\SapReport;
 use App\Models\User;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ReportDetailTest extends TestCase
 {
     private $user, $account, $report;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -22,11 +23,20 @@ class ReportDetailTest extends TestCase
             return;
         }
 
+        Storage::fake();
+
         $this->user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
         $this->account = Account::factory()->for($this->user)->create();
         $this->report = SapReport::factory()->for($this->account)->create();
 
         $this->setupDone = true;
+    }
+
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
     }
 
     public function test_that_unauthenticated_user_cannot_download_report()
@@ -60,5 +70,7 @@ class ReportDetailTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertDownload($expectedName);
+
+        $this->lastTest = true;
     }
 }

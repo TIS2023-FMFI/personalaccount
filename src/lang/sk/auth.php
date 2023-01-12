@@ -12,7 +12,7 @@ return [
             'failed' => 'Nepodarilo sa nám vygenerovať pre Vás prihlasovací token, prosím, skúste to neskôr.',
         ],
         'sending' => [
-            'success' => 'Na Vašu e-mailovú adresu sme úspešne zaslali prihlasovaciu linku.',
+            'success' => 'Na Vašu e-mailovú adresu by Vám mala byť čoskoro doručená prihlasovacia linka.',
             'failed' => 'Na Vašu e-mailovú adresu sa nám nepodarilo zaslať prihlasovaciu linku, prosím, skúste to neskôr.',    
         ]
     ],

@@ -21,7 +21,7 @@ class FinancialOperationPolicyTest extends TestCase
 
     private $ajaxHeaders;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -59,10 +59,15 @@ class FinancialOperationPolicyTest extends TestCase
         $this->setupDone = true;
     }
 
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
+    }
+
     public function test_that_unauthorized_user_cannot_view_operation()
     {
-        //dd($this->operation, $this->otherUser->accounts);
-
         $response = $this->actingAs($this->otherUser)
                             ->get('/operations/' . $this->operation->id);
 
@@ -134,5 +139,7 @@ class FinancialOperationPolicyTest extends TestCase
 
         $response
             ->assertStatus(403);
+
+        $this->lastTest = true;
     }
 }

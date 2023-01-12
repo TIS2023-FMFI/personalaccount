@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Mail\LoginLink;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ForgotPasswordTest extends TestCase
@@ -101,6 +103,8 @@ class ForgotPasswordTest extends TestCase
 
     public function test_that_login_link_is_sent_to_user()
     {
+        Mail::fake();
+        
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
 
         $response = $this->withHeaders($this->ajaxHeaders)
@@ -115,5 +119,7 @@ class ForgotPasswordTest extends TestCase
                 'displayMessage',
                 trans('auth.login-link.sending.success')
             );
+
+        Mail::assertQueued(LoginLink::class);
     }
 }

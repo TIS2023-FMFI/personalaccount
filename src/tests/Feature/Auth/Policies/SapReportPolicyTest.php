@@ -21,7 +21,7 @@ class SapReportPolicyTest extends TestCase
 
     private $ajaxHeaders;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -30,6 +30,8 @@ class SapReportPolicyTest extends TestCase
         if ($this->setupDone) {
             return;
         }
+
+        Storage::fake();
 
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
         $this->account = Account::factory()->create([ 'user_id' => $user ]);
@@ -45,6 +47,13 @@ class SapReportPolicyTest extends TestCase
         $this->setupDone = true;
     }
 
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
+    }
+
     public function test_that_unauthorized_user_cannot_download_report()
     {
         $response = $this->actingAs($this->otherUser)
@@ -56,7 +65,6 @@ class SapReportPolicyTest extends TestCase
 
     public function test_that_unauthorized_user_cannot_upload_report()
     {
-        Storage::fake();
         $uploadedReport = UploadedFile::fake()
                             ->create('test', 0, 'text/plain');
 
@@ -83,5 +91,7 @@ class SapReportPolicyTest extends TestCase
         
         $response
             ->assertStatus(403);
+
+        $this->lastTest = true;
     }
 }

@@ -7,6 +7,7 @@ use App\Models\SapReport;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Tests\Util\HiddenMembersAccessor;
 
@@ -15,7 +16,7 @@ class ReportsOverviewTest extends TestCase
     private $reportsPerPage, $pages, $pageOverflow;
     private $user, $account, $reports;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -24,6 +25,8 @@ class ReportsOverviewTest extends TestCase
         if ($this->setupDone) {
             return;
         }
+
+        Storage::fake();
 
         $this->reportsPerPage = HiddenMembersAccessor::getHiddenStaticProperty(
             '\App\Http\Controllers\SapReports\ReportsOverviewController',
@@ -40,6 +43,13 @@ class ReportsOverviewTest extends TestCase
                             ->create();
 
         $this->setupDone = true;
+    }
+
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
     }
 
     public function test_that_unauthenticated_user_cannot_view_reports()
@@ -213,5 +223,7 @@ class ReportsOverviewTest extends TestCase
         $reports = $response->viewData('reports');
         
         $this->assertEquals($expectedTotal, $reports->total());
+
+        $this->lastTest = true;
     }
 }
