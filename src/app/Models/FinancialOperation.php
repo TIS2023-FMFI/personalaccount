@@ -80,17 +80,18 @@ class FinancialOperation extends Model
 
     /**
      * Extends a query asking for financial operations so that it demands only
-     * operations which represent unrepayed lendings.
+     * operations which represent unrepaid lendings.
      *
      * @param Builder $query
      * the builder whose query to extend
      * @return Builder
      * the extended query builder
      */
-    public function scopeUnrepayedLendings(Builder $query): Builder
+    public function scopeUnrepaidLendings(Builder $query): Builder
     {
         return $query
             ->join('lendings', 'financial_operations.id','=','lendings.id')
+            ->whereRaw('previous_lending_id is null')
             ->whereNotExists(function($query) {
                 $query->select(DB::raw(1))
                       ->fromRaw('lendings as repay')

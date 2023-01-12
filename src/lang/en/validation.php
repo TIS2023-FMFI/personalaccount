@@ -143,7 +143,7 @@ return [
     'url' => 'The :attribute must be a valid URL.',
     'uuid' => 'The :attribute must be a valid UUID.',
 
-    'lending_date' => 'A lending could be repayed before it was provided.',
+    'lending_date' => 'The loan repayment date cannot be earlier than the date it was provided.',
 
     /*
     |--------------------------------------------------------------------------

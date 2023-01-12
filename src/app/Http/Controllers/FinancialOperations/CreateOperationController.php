@@ -29,20 +29,20 @@ class CreateOperationController extends GeneralOperationController
      * the account with which the new operation will be associated
      * @return array
      * an array containing information about the supported operation types
-     * and a list of unrepayed lendings associated with the account under which
+     * and a list of unrepaid lendings associated with the account under which
      * the new operation will be created
      */
     public function getFormData(Account $account)
     {
         $operationTypes = OperationType::all();
-        $unrepayedLendings = $account
+        $unrepaidLendings = $account
                                 ->financialOperations()
-                                ->unrepayedLendings()
+                                ->unrepaidLendings()
                                 ->get();
 
         return [
             'operation_types' => $operationTypes,
-            'unrepayed_lendings' => $unrepayedLendings,
+            'unrepaid_lendings' => $unrepaidLendings,
         ];
     }
     

@@ -61,7 +61,7 @@ class UpdateOperationTest extends TestCase
             ->assertJsonPath('operation_types', OperationType::all()->toArray())
             ->assertJsonPath('operation.id', $op->id);
             
-        foreach ($response['unrepayed_lendings'] as $lending) {
+        foreach ($response['unrepaid_lendings'] as $lending) {
             in_array($lending['id'], $exp);
         }
     }

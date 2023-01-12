@@ -28,21 +28,21 @@ class UpdateOperationController extends GeneralOperationController
      * the operation that is about to be updated
      * @return array
      * an array containing information about the operation itself, supported
-     * operation types, and a list of unrepayed lendings associated with the same
+     * operation types, and a list of unrepaid lendings associated with the same
      * account as the operation that is about to be updated
      */
     public function getFormData(FinancialOperation $operation)
     {
         $operationTypes = OperationType::all();
-        $unrepayedLendings = $operation->account
+        $unrepaidLendings = $operation->account
                                 ->financialOperations()
-                                ->unrepayedLendings()
+                                ->unrepaidLendings()
                                 ->get();
 
         return [
             'operation' =>$operation,
             'operation_types' => $operationTypes,
-            'unrepayed_lendings' => $unrepayedLendings,
+            'unrepaid_lendings' => $unrepaidLendings,
         ];
     }
 

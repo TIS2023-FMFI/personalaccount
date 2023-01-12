@@ -58,7 +58,7 @@ class CreateOperationTest extends TestCase
         $response
             ->assertJsonPath('operation_types', OperationType::all()->toArray());
         
-        foreach ($response['unrepayed_lendings'] as $lending) {
+        foreach ($response['unrepaid_lendings'] as $lending) {
             in_array($lending['id'], $exp);
         }
     }
