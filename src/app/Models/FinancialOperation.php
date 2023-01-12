@@ -35,6 +35,15 @@ class FinancialOperation extends Model
      */
     protected $with = ['operationType'];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<int, string>
+     */
+    protected $casts = [
+        'date' => 'date:d.m.Y',
+    ];
+
 
     /**
      *  Extends a query asking for financial operations so that it demands only operations which represent expenses,
@@ -152,11 +161,10 @@ class FinancialOperation extends Model
             $this->id,
             $this->account->sap_id,
             $this->title,
-            $this->date,
+            $this->date->format('d.m.Y'),
             $this->operationType->name,
             $this->subject,
             $this->getSumString(),
-            $this->attachment,
             $this->getCheckedString(),
             $this->sap_id
         ];

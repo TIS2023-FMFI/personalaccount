@@ -143,6 +143,8 @@ return [
     'url' => 'The :attribute must be a valid URL.',
     'uuid' => 'The :attribute must be a valid UUID.',
 
+    'lending_date' => 'A lending could be repayed before it was provided.',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

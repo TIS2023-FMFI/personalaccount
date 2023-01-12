@@ -27,7 +27,7 @@ class SapReport extends Model
      * @var array<int, string>
      */
     protected $casts = [
-        'exported_or_uploaded_on' => 'date',
+        'exported_or_uploaded_on' => 'date:d.m.Y',
     ];
 
     /**

@@ -11,6 +11,7 @@ use App\Models\Lending;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Parent class containing general functions useful for both 'create operation' and 'update operation' controllers.
@@ -26,14 +27,14 @@ class GeneralOperationController extends Controller
      * @param CreateOrUpdateOperationRequest $request
      * a HTTP request to create/update an operation
      * @return string
-     * path to the saved file, or an empty string if the request doesn't contain a file
+     * path to the saved file, or null if the request doesn't contain a file
      */
     protected function saveAttachmentFileFromRequest(Account $account, CreateOrUpdateOperationRequest $request)
     {
         $file = $request->file('attachment');
         if ($file)
             return $this->saveAttachment($account->user, $file);
-        return '';
+        return null;
     }
 
     /**
@@ -56,23 +57,52 @@ class GeneralOperationController extends Controller
      * Inserts a lending record related to a financial operation into the database. If that operation already
      * has a lending record, the lending is instead updated with the new data.
      *
-     * @param int $operationId
-     * ID of the operation associated with the lending
+     * @param FinancialOperation $operation
+     * the operation associated with the lending
      * @param CreateOrUpdateOperationRequest $request
-     * request containing data about the lending
+     * the request containing data about the lending
      * @return void
      * @throws DatabaseException
      */
-    protected function upsertLending(int $operationId, CreateOrUpdateOperationRequest $request)
+    protected function upsertLending(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
+        $validatedData = $this->getValidatedLendingUpsertData($operation, $request);
+
         $lending = Lending::updateOrCreate(
-            ['id' => $operationId],
-            [
-                'expected_date_of_return' => $request->validated('expected_date_of_return'),
-                'previous_lending_id' => $request->validated('previous_lending_id'),
-            ]
+            ['id' => $operation->id],
+            $validatedData
         );
         if (!$lending->exists)
             throw new DatabaseException('The lending wasn\'t created.');
+    }
+    
+    /**
+     * Extracts lending data from a request and validates them.
+     * 
+     * @param FinancialOperation $operation
+     * the operation associated with the lending
+     * @param CreateOrUpdateOperationRequest $request
+     * the request from which to extract the data
+     * @return array
+     * the validated data
+     * @throws ValidationException
+     */
+    private function getValidatedLendingUpsertData(
+        FinancialOperation $operation, CreateOrUpdateOperationRequest $request
+    ) {
+        $expectedReturn = $request->validated('expected_date_of_return');
+        $previousLending = FinancialOperation::find(
+            $request->validated('previous_lending_id')
+        );
+
+        if (!$previousLending)
+            return ['expected_date_of_return' => $expectedReturn];
+
+        if ($operation->date->lt($previousLending->date))
+            throw ValidationException::withMessages([
+                'date' => trans('validation.lending_date')
+            ]);
+
+        return ['previous_lending_id' => $previousLending->id];
     }
 }

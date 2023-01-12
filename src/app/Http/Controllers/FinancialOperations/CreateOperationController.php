@@ -4,14 +4,17 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Helpers\DBTransaction;
+use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
+use App\Models\FinancialOperation;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Manages creation of financial operations.
@@ -34,8 +37,10 @@ class CreateOperationController extends GeneralOperationController
         try {
             $attachment = $this->saveAttachmentFileFromRequest($account, $request);
             $this->runCreateOperationTransaction($account, $request, $attachment);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
+            if ($e instanceof ValidationException)
+                throw $e;
+
             return response(trans('financial_operations.create.failure'), 500);
         }
         return response(trans('financial_operations.create.success'), 201);
@@ -48,17 +53,17 @@ class CreateOperationController extends GeneralOperationController
      * financial account to which the operation belongs
      * @param CreateOrUpdateOperationRequest $request
      * HTTP request to create the operation
-     * @param string $attachment
+     * @param string|null $attachment
      * path to the operation's attachment file
      * @return void
      * @throws Exception
      */
     private function runCreateOperationTransaction(Account $account, CreateOrUpdateOperationRequest $request,
-                                                   string  $attachment)
+                                                   string|null  $attachment)
     {
         $createRecordTransaction = new DBTransaction(
             fn () => $this->createOperation($account, $request, $attachment),
-            fn () => Storage::delete($attachment)
+            fn () => FileHelper::deleteFileIfExists($attachment)
         );
 
         $createRecordTransaction->run();
@@ -71,16 +76,16 @@ class CreateOperationController extends GeneralOperationController
      * financial account to which the operation belongs
      * @param CreateOrUpdateOperationRequest $request
      * HTTP request to create the operation
-     * @param string $attachment
+     * @param string|null $attachment
      * path to the operation's attachment file
      * @return void
      * @throws DatabaseException
      */
-    private function createOperation(Account $account, CreateOrUpdateOperationRequest $request, string $attachment)
+    private function createOperation(Account $account, CreateOrUpdateOperationRequest $request, string|null $attachment)
     {
         $operation = $this->createOperationRecord($account, $request, $attachment);
         if ($operation->isLending())
-            $this->upsertLending($operation->id, $request);
+            $this->upsertLending($operation, $request);
     }
 
     /**
@@ -90,13 +95,13 @@ class CreateOperationController extends GeneralOperationController
      * financial account to which the operation belongs
      * @param CreateOrUpdateOperationRequest $request
      * HTTP request to create the operation
-     * @param string $attachment
+     * @param string|null $attachment
      * path to the operation's attachment file
-     * @return Model
+     * @return FinancialOperation
      * model representing the created operation
      * @throws DatabaseException
      */
-    private function createOperationRecord(Account $account, CreateOrUpdateOperationRequest $request, string $attachment)
+    private function createOperationRecord(Account $account, CreateOrUpdateOperationRequest $request, string|null $attachment)
     {
         $validatedData = $request->validated();
 

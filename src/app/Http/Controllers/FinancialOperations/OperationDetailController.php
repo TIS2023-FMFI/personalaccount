@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\StorageException;
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\FileHelper;
 use App\Models\FinancialOperation;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -38,9 +39,9 @@ class OperationDetailController extends Controller
     public function downloadAttachment(FinancialOperation $operation)
     {
         $path = $operation->attachment;
-        if (! Storage::exists($path))
-            throw new StorageException('The requested file doesn\'t exist');
-        return Storage::download($path, $operation->generateAttachmentFileName());
+        $fileName = $operation->generateAttachmentFileName();
+
+        return FileHelper::downloadFileIfExists($path, $fileName);
     }
 
 }

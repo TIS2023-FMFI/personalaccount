@@ -2,6 +2,8 @@
 
 namespace App\Http\Helpers;
 
+use App\Exceptions\StorageException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -9,35 +11,83 @@ use Illuminate\Support\Str;
  */
 class FileHelper
 {
-
     /**
-     * Transforms a string by replacing all spaces by dashes and removing all characters which are not a letter,
-     * a digit or a dash.
+     * Delete a file if it exists.
      *
-     * @param string $string
-     * the string to be transformed
-     * @return string
-     * the transformed string
+     * @param string|null $path
+     * the path to the file to delete
+     * @throws \App\Exceptions\StorageException
+     * thrown if the file could not be deleted
      */
-    public static function sanitizeString(string $string)
+    public static function deleteFileIfExists(string|null $path)
     {
-        $stringWithoutSpaces = Str::replace(' ', '-', $string);
-        return preg_replace('/[^A-Za-z0-9\-]/', '', $stringWithoutSpaces);
+        if ($path === null || !Storage::exists($path)) {
+            return;
+        }
+            
+        if (!Storage::delete($path)) {
+            throw new StorageException('File not deleted.');
+        }
+    }
+    
+    /**
+     * Download a file if it exists.
+     * 
+     * @param string|null $path
+     * the path to the file to download
+     * @param string $filename
+     * the display name of the file
+     * @throws \App\Exceptions\StorageException
+     * thrown if the file was not found
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * a streamed response containing the file
+     */
+    public static function downloadFileIfExists(string|null $path, string $filename)
+    {
+        if ($path === null || !Storage::exists($path)) {
+            throw new StorageException('File not found.');
+        }
+
+        return Storage::download($path, $filename);
     }
 
     /**
-     * Appends a file's extension to a string. If the file has no extension, nothing is appended.
+     * Create a sanitized version of a string, so that it can be used as a file
+     * name.
+     * 
+     * The following rules are applied during sanitization:
+     *      - each whitespace is replaced by a dash ('-')
+     *      - all accented characters are translated to their closest ASCII
+     *        representation
+     *      - special characters (<>:"/\|,.;'!?*) are removed
      *
-     * @param string $path
+     * @param string $string
+     * the string to be sanitized
+     * @return string
+     * the sanitized string
+     */
+    public static function sanitizeString(string $string)
+    {
+        $ascii = Str::ascii($string);
+        $spacesSanitized = Str::replace(' ', '-', $ascii);
+        
+        return preg_replace('/[<>:"\/\\|,.;\'!?*]/', '', $spacesSanitized);
+    }
+
+    /**
+     * Append a file's extension to a file name. If the file has no extension
+     * or the path to the file is null, nothing is appended.
+     *
+     * @param string|null $path
      * path to the file whose extension should be extracted
      * @param string $fileName
-     * the string to which the extension should be appended
+     * the file name to which the extension should be appended
      * @return string
-     * the extended string
+     * the extended file name
      */
-    public static function appendFileExtension(string $path, string $fileName)
+    public static function appendFileExtension(string|null $path, string $fileName)
     {
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $extension = (empty($path)) ? '' : pathinfo($path, PATHINFO_EXTENSION);
 
         return (empty($extension)) ? $fileName : "$fileName.$extension";
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\FinancialOperations;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\StorageException;
 use App\Http\Helpers\DBTransaction;
+use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CheckOrUncheckOperationRequest;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\FinancialOperation;
@@ -37,9 +38,10 @@ class UpdateOperationController extends GeneralOperationController
             $oldAttachment = $operation->attachment;
 
             $this->runUpdateOperationTransaction($operation, $request, $oldAttachment, $newAttachment);
-        }
-        catch (Exception $e) {
-            //return response($e->getMessage(), 500);
+        } catch (Exception $e) {
+            if ($e instanceof ValidationException)
+                throw $e;
+            
             return response(trans('financial_operations.update.failure'), 500);
         }
         return response(trans('financial_operations.update.success'));
@@ -54,16 +56,16 @@ class UpdateOperationController extends GeneralOperationController
      * the HTTP request to update the operation
      * @param string|null $oldAttachment
      * path to the operation's original attachment file (if there was one)
-     * @param string $newAttachment
+     * @param string|null $newAttachment
      * path to the operation's updated attachment file (if there is one)
      * @throws Exception
      */
     private function runUpdateOperationTransaction(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
-                                                   string|null $oldAttachment, string $newAttachment)
+                                                   string|null $oldAttachment, string|null $newAttachment)
     {
         $updateOperationTransaction = new DBTransaction(
             fn () => $this->updateOperation($operation, $request, $oldAttachment, $newAttachment),
-            fn () => Storage::delete($newAttachment)
+            fn () => FileHelper::deleteFileIfExists($newAttachment)
         );
 
         $updateOperationTransaction->run();
@@ -78,13 +80,13 @@ class UpdateOperationController extends GeneralOperationController
      * the HTTP request to update the operation
      * @param string|null $oldAttachment
      * path to the operation's original attachment file (if there was one)
-     * @param string $newAttachment
+     * @param string|null $newAttachment
      * path to the operation's updated attachment file (if there is one)
      * @throws DatabaseException
      * @throws StorageException
      */
     private function updateOperation(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
-                                     string|null $oldAttachment, string $newAttachment)
+                                     string|null $oldAttachment, string|null $newAttachment)
     {
         if ($this->typeChangedFromLending($operation, $request))
             $operation->deleteLending();
@@ -94,11 +96,10 @@ class UpdateOperationController extends GeneralOperationController
         $operation->refresh();
 
         if ($operation->isLending())
-            $this->upsertLending($operation->id, $request);
+            $this->upsertLending($operation, $request);
 
-        if ($oldAttachment != null && $newAttachment) {
-            if (! Storage::delete($oldAttachment))
-                throw new StorageException('The file wasn\'t deleted.');
+        if ($newAttachment) {
+            FileHelper::deleteFileIfExists($oldAttachment);
         }
     }
 
@@ -107,11 +108,11 @@ class UpdateOperationController extends GeneralOperationController
      *
      * @param FinancialOperation $operation the operation to be updated
      * @param CreateOrUpdateOperationRequest $request the HTTP request to update the operation
-     * @param string $newAttachment path to the operation's updated attachment file (if there is one)
+     * @param string|null $newAttachment path to the operation's updated attachment file (if there is one)
      * @throws DatabaseException
      */
     private function updateOperationRecord(FinancialOperation $operation, CreateOrUpdateOperationRequest $request,
-                                           string $newAttachment)
+                                           string|null $newAttachment)
     {
         $validatedData = $request->validated();
 

@@ -45,7 +45,7 @@ class CreateOperationTest extends TestCase
             'operation_type_id' => $this->type->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => ''
+            'attachment' => null
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
@@ -82,7 +82,7 @@ class CreateOperationTest extends TestCase
             'operation_type_id' => $this->lendingType->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => ''
+            'attachment' => null
         ];
 
         $lendingData = [
@@ -106,15 +106,14 @@ class CreateOperationTest extends TestCase
 
         $operationData = [
             'title' => 'test',
-            'date' => '2022-12-24',
+            'date' => now()->format('Y-m-d'),
             'operation_type_id' => $this->lendingType->id,
             'subject' => 'test',
             'sum' => 100,
-            'attachment' => ''
+            'attachment' => null
         ];
 
         $lendingData = [
-            'expected_date_of_return' => '2023-01-01',
             'previous_lending_id' => $previousLending->id
         ];
 
@@ -150,6 +149,34 @@ class CreateOperationTest extends TestCase
 
         $response->assertStatus(422);
 
+    }
+
+    public function test_create_operation_with_lending_cannot_be_repayed_before_provided(){
+
+        $previousLendingOperation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->lendingType]);
+        $previousLending = Lending::factory()->create(['id' => $previousLendingOperation]);
+
+        $operationData = [
+            'title' => 'test',
+            'date' => $previousLendingOperation->date->subDays(1),
+            'operation_type_id' => $this->lendingType->id,
+            'subject' => 'test',
+            'sum' => 100,
+            'attachment' => null
+        ];
+
+        $lendingData = [
+            'previous_lending_id' => $previousLending->id
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->post('/accounts/' . $this->account->id . '/operations', array_merge($operationData, $lendingData));
+
+        $response->assertStatus(422)
+            ->assertJsonPath(
+                'errors.date.0',
+                trans('validation.lending_date')
+            );
     }
 
     public function test_create_operation_with_file(){
