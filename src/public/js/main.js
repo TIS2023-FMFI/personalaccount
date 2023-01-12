@@ -671,7 +671,7 @@ $(document).ready(function(){
         var fileUpload = $("#report-file").get(0);  
         var files = fileUpload.files;  
         var fileData = new FormData(); 
-        fileData.append('sap_report', files[0] ?? - '');  
+        fileData.append('sap_report', files[0] ?? '');  
 
         fileData.append('_token', csrf);
         
@@ -1008,6 +1008,7 @@ $(document).ready(function(){
 
         var fileUpload = $("#operation-file").get(0);  
         var files = fileUpload.files;  
+
         var fileData = new FormData(); 
 
         fileData.append('_token', csrf);
@@ -1016,7 +1017,7 @@ $(document).ready(function(){
         fileData.append('operation_type_id', operation_type_id);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
-        fileData.append('attachment', files[0] ?? - '');  
+        fileData.append('attachment', files[0] ?? '');  
 
         $.ajax({
             url: "/accounts/" + account_id + "/operations",
@@ -1039,59 +1040,64 @@ $(document).ready(function(){
             $.fn.createOperationClearForm(true);
         }).fail(function(response) {
             $.fn.createOperationClearForm();
-            if (response.status === 422) {
-                let errors = response.responseJSON.errors;
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    if (files.length == 0){
+                        $("#operation-file").css("border-color", "red");
+                        $("#add-operation-attachment-errors").append("<p>Pole s prílohou je potrebné vyplniť</p>");
+                    }
+                    if (typeof errors.attachment != 'undefined') {
+                        $("#operation-file").css("border-color", "red");
 
-                if (typeof errors.attachment != 'undefined') {
-                    $("#operation-file").css("border-color", "red");
+                        errors.attachment.forEach(e => {
+                            $("#add-operation-attachment-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.date != 'undefined') {
+                        $("#add-operation-to").css("border-color", "red");
+                        errors.date.forEach(e => {
+                            $("#add-operation-date-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.operation_type_id != 'undefined') {
+                        $("#add-operation-type").css("border-color", "red");
+                        $("#add-operation-type-errors").append("<p>Neplatný typ operácie</p>");
+                    }
+                    if (typeof errors.subject != 'undefined') {
+                        $("#add-operation-subject").css("border-color", "red");
 
-                    errors.attachment.forEach(e => {
-                        $("#add-operation-attachment-errors").append("<p>" + e + "</p>");
-                    });
+                        errors.subject.forEach(e => {
+                            $("#add-operation-subject-errors").append("<p>" + e + "</p>");
+                        });
+                    }            
+                    if (typeof errors.sum != 'undefined') {
+                        $("#add-operation-sum").css("border-color", "red");
+
+                        errors.sum.forEach(e => {
+                            $("#add-operation-sum-errors").append("<p>" + e + "</p>");
+                        });
+                    }                
+                    if (typeof errors.title != 'undefined') {
+                        $("#add-operation-name").css("border-color", "red");
+
+                        errors.title.forEach(e => {
+                            $("#add-operation-title-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    
+                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
                 }
-                if (typeof errors.date != 'undefined') {
-                    $("#add-operation-to").css("border-color", "red");
-                    errors.date.forEach(e => {
-                        $("#add-operation-date-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                if (typeof errors.operation_type_id != 'undefined') {
-                    $("#add-operation-type").css("border-color", "red");
-                    $("#add-operation-type-errors").append("<p>Neplatný typ operácie</p>");
-                }
-                if (typeof errors.subject != 'undefined') {
-                    $("#add-operation-subject").css("border-color", "red");
-
-                    errors.subject.forEach(e => {
-                        $("#add-operation-subject-errors").append("<p>" + e + "</p>");
-                    });
-                }            
-                if (typeof errors.sum != 'undefined') {
-                    $("#add-operation-sum").css("border-color", "red");
-
-                    errors.sum.forEach(e => {
-                        $("#add-operation-sum-errors").append("<p>" + e + "</p>");
-                    });
-                }                
-                if (typeof errors.title != 'undefined') {
-                    $("#add-operation-name").css("border-color", "red");
-
-                    errors.title.forEach(e => {
-                        $("#add-operation-title-errors").append("<p>" + e + "</p>");
-                    });
-                }
-                
-            } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+            }else{   
                 Toast.fire({
                     icon: 'error',
-                    title: response.responseJSON.displayMessage
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                 })
             }
-            
-            Toast.fire({
-                icon: 'error',
-                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-            })
         })
 
     });
@@ -1173,7 +1179,7 @@ $(document).ready(function(){
         fileData.append('operation_type_id', operation_type_id);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
-        fileData.append('attachment', files[0] ?? - '');  
+        fileData.append('attachment', files[0] ?? '');  
         fileData.append('_token', csrf);
         fileData.append('_method', 'PUT');
 
@@ -1199,7 +1205,10 @@ $(document).ready(function(){
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
-
+                    if (files.length == 0){
+                        $("#edit-operation-file").css("border-color", "red");
+                        $("#edit-operation-attachment-errors").append("<p>Pole s prílohou je potrebné vyplniť</p>");
+                    }
                     if (typeof errors.attachment != 'undefined') {
                         $("#edit-operation-file").css("border-color", "red");
 
@@ -1215,7 +1224,7 @@ $(document).ready(function(){
                     }
                     if (typeof errors.operation_type_id != 'undefined') {
                         $("#edit-operation-type").css("border-color", "red");
-                        $("#edit-operation-type-errors").append("<p>Neplatný typ operácie</p>");;
+                        $("#edit-operation-type-errors").append("<p>Neplatný typ operácie.</p>");;
                     }
                     if (typeof errors.subject != 'undefined') {
                         $("#edit-operation-subject").css("border-color", "red");

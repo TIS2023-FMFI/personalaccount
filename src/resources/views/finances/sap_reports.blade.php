@@ -40,10 +40,10 @@
 
      @foreach ($reports as $key=>$report)
         
-        <tr>
+        <tr class="sap-row">
             <td>{{ $key+1 }}.</td>
             <td>{{ $report->exported_or_uploaded_on }}</td>
-            <td>
+            <td class="sap-icons">
                 <a href="/sap-reports/{{ $report->id }}/raw"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
                 <a href="#"><i data-report-id="{{ $report->id }}" class="bi bi-trash3 report-delete" title="Zmazať výkaz"></i></a>
             </td>

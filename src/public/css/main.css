@@ -35,6 +35,9 @@ nav div:first-child a {
     color: white;
     text-decoration: none;
 }
+.bi{
+    color: var(--primary);
+}
 .content {
     padding-bottom: 30px;
 }
@@ -86,6 +89,9 @@ nav div:first-child a {
     position: relative;
     height: 300px;
     margin-bottom: 50px;
+}
+.account_box div h2{
+    margin-bottom: 0px;
 }
 .edit_account {
     position: absolute;
@@ -235,6 +241,9 @@ table td a {
 }
 table td a:hover {
     opacity: 0.7;
+}
+.sap-icons{
+    text-align: end;
 }
 .filter-box {
     display: flex;
@@ -571,15 +580,18 @@ label {
     padding-inline-start: 0px;
     font-weight: 600;
 }
-
-a:link {
-color: var(--secondary);
-background-color: transparent;
-text-decoration: none;
+a{
+    color: #1e1e1e;
+    background-color: transparent;
+    text-decoration: none;
 }
-  
+a:link {
+    color: var(--primary);
+    background-color: transparent;
+    text-decoration: none;
+}
 a:visited {
-color: var(--primary);
-background-color: transparent;
-text-decoration: none;
+    color: var(--primary);
+    background-color: transparent;
+    text-decoration: none;
 }

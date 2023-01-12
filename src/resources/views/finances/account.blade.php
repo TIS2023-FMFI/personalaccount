@@ -8,7 +8,8 @@
 <div class="flex-between">
     <div>
         <h1>{{ $account->title }}</h1>
-        <p>{{ $account->sap_id }}</p>
+        <label for="sap-id-detail"><b>Sap ID:</b></label>
+        <p id="sap-id-detail">{{ $account->sap_id }}</p>
     </div>
     <div class="switch-box">
         <p>Výpis účtu</p>
@@ -37,7 +38,7 @@
 
 @if ($errors->has('to'))
     <div class="error-div" style="width: 70%; margin: 0px 0px 0px 50px">
-        <p style="color:red">Dátum "Do:" musí byť rovnaký ako "Od:" alebo neskorší!</p>
+        <p style="color:red">{{ $errors->first('to') }}</p>
     </div>
 @endif
 
