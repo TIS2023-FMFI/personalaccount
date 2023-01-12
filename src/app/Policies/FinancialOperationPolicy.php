@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
+use App\Models\Lending;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -39,6 +40,21 @@ class FinancialOperationPolicy
     public function create(User $user, Account $account)
     {
         return $user->id === $account->user_id;
+    }
+
+    /**
+     * Determine whether a user can create a repayment operation.
+     *
+     * @param  \App\Models\User  $user
+     * the user whose request to authorize
+     * @param  \App\Models\Lending  $lending
+     * the lending for which the user is attempting to create the repayment
+     * @return bool
+     * true if the user is allowed to perform this operation, false otherwise
+     */
+    public function createRepayment(User $user, Lending $lending)
+    {
+        return $user->id === $lending->financialOperation->account->user_id;
     }
 
     /**

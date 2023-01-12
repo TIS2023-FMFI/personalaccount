@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Lending extends Model
 {
@@ -31,4 +32,13 @@ class Lending extends Model
      */
     public $incrementing = false;
 
+    /**
+     * Get the operation with which is this lending associated.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function financialOperation()
+    {
+        return $this->hasOne(FinancialOperation::class, 'id', 'id');
+    }
 }
