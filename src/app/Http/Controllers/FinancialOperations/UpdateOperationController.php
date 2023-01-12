@@ -33,16 +33,9 @@ class UpdateOperationController extends GeneralOperationController
      */
     public function getFormData(FinancialOperation $operation)
     {
-        $operationTypes = OperationType::all();
-        $unrepaidLendings = $operation->account
-                                ->financialOperations()
-                                ->unrepaidLendings()
-                                ->get();
-
         return [
             'operation' =>$operation,
-            'operation_types' => $operationTypes,
-            'unrepaid_lendings' => $unrepaidLendings,
+            'operation_types' => OperationType::userAssignable(),
         ];
     }
 
@@ -57,6 +50,7 @@ class UpdateOperationController extends GeneralOperationController
      */
     public function update(FinancialOperation $operation, CreateOrUpdateOperationRequest $request)
     {
+        // From lendings only loans can be updated
         try {
             $newAttachment = $this->saveAttachmentFileFromRequest($operation->account, $request);
             $oldAttachment = $operation->attachment;
@@ -190,8 +184,8 @@ class UpdateOperationController extends GeneralOperationController
             return response(trans('financial_operations.invalid_check'), 422);
 
         if ($operation->update(['checked' => $request->validated('checked')]))
-            return response(trans('financial_operations.edit.success'));
+            return response(trans('financial_operations.update.success'));
 
-        return response(trans('financial_operations.edit.failure'), 500);
+        return response(trans('financial_operations.update.failure'), 500);
     }
 }

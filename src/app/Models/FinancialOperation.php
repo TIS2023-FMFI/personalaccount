@@ -34,7 +34,10 @@ class FinancialOperation extends Model
      *
      * @var string[]
      */
-    protected $with = ['operationType'];
+    protected $with = [
+        'operationType',
+        'lending'
+    ];
 
     /**
      * The attributes that should be cast.

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('expense')->default(false);
             $table->boolean('lending')->default(false);
+            $table->boolean('repayment')->default(false);
             $table->unique(['name', 'expense']);
         });
     }

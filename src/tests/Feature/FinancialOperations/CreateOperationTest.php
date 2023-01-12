@@ -201,7 +201,7 @@ class CreateOperationTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonPath(
                 'errors.date.0',
-                trans('validation.lending_date')
+                trans('validation.repayment_invalid_date')
             );
     }
 

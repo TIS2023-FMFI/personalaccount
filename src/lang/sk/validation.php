@@ -132,8 +132,6 @@ return [
     'url' => ':attribute nie je platná URL adresa.',
     'uuid' => ':attribute musí byť platné UUID.',
 
-    'lending_date' => 'Dátum splatenia pôžičky nemôže byť skorší ako dátum jej poskytnutia.',
-
     'custom' => [
         'email' => [
             'required' => 'E-mailovú adresu je potrebné uviesť.',

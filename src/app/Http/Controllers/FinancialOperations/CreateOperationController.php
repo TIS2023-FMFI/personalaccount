@@ -6,8 +6,10 @@ use App\Exceptions\DatabaseException;
 use App\Http\Helpers\DBTransaction;
 use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
+use App\Http\Requests\FinancialOperations\CreateRepaymentRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
+use App\Models\Lending;
 use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -34,15 +36,8 @@ class CreateOperationController extends GeneralOperationController
      */
     public function getFormData(Account $account)
     {
-        $operationTypes = OperationType::all();
-        $unrepaidLendings = $account
-                                ->financialOperations()
-                                ->unrepaidLendings()
-                                ->get();
-
         return [
-            'operation_types' => $operationTypes,
-            'unrepaid_lendings' => $unrepaidLendings,
+            'operation_types' => OperationType::userAssignable(),
         ];
     }
     
@@ -58,6 +53,7 @@ class CreateOperationController extends GeneralOperationController
      */
     public function create(Account $account, CreateOrUpdateOperationRequest $request)
     {
+        // From lendings only loans can be created
         try {
             $attachment = $this->saveAttachmentFileFromRequest($account, $request);
             $this->runCreateOperationTransaction($account, $request, $attachment);
@@ -68,6 +64,22 @@ class CreateOperationController extends GeneralOperationController
             return response(trans('financial_operations.create.failure'), 500);
         }
         return response(trans('financial_operations.create.success'), 201);
+    }
+
+    
+    public function createRepayment(Lending $lending, CreateRepaymentRequest $request)
+    {
+        // Repayment creation goes here
+        // try {
+        //     $attachment = $this->saveAttachmentFileFromRequest($account, $request);
+        //     $this->runCreateOperationTransaction($account, $request, $attachment);
+        // } catch (Exception $e) {
+        //     if ($e instanceof ValidationException)
+        //         throw $e;
+
+        //     return response(trans('financial_operations.create.failure'), 500);
+        // }
+        // return response(trans('financial_operations.create.success'), 201);
     }
 
     /**

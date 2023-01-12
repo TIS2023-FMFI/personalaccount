@@ -100,7 +100,7 @@ class GeneralOperationController extends Controller
 
         if ($operation->date->lt($previousLending->date))
             throw ValidationException::withMessages([
-                'date' => trans('validation.lending_date')
+                'date' => trans('validation.repayment_invalid_date')
             ]);
 
         return ['previous_lending_id' => $previousLending->id];
