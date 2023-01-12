@@ -9,8 +9,8 @@
     <div>
 
         <h1>{{ $account->title }}</h1>
-        <p>{{ $account->sap_id }}</p>
-    </div>
+        <label for="sap-id-detail-sap"><b>Sap ID:</b></label>
+        <p id="sap-id-detail-sap">{{ $account->sap_id }}</p>    </div>
     <div class="switch-box">
         <p>Výpis účtu</p>
         <label class="switch">
