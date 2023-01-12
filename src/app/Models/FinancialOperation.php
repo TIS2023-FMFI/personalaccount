@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class FinancialOperation extends Model
 {
@@ -46,11 +47,13 @@ class FinancialOperation extends Model
 
 
     /**
-     *  Extends a query asking for financial operations so that it demands only operations which represent expenses,
-     *  and returns the new query builder.
+     * Extends a query asking for financial operations so that it demands only
+     * operations which represent expenses.
      *
      * @param Builder $query
+     * the builder whose query to extend
      * @return Builder
+     * the extended query builder
      */
     public function scopeExpenses(Builder $query): Builder
     {
@@ -60,17 +63,39 @@ class FinancialOperation extends Model
     }
 
     /**
-     *  Extends a query asking for financial operations so that it demands only operations which represent income,
-     *  and returns the new query builder.
+     * Extends a query asking for financial operations so that it demands only
+     * operations which represent income.
      *
      * @param Builder $query
+     * the builder whose query to extend
      * @return Builder
+     * the extended query builder
      */
     public function scopeIncomes(Builder $query): Builder
     {
         return $query
             ->join('operation_types', 'operation_type_id','=','operation_types.id')
             ->where('expense', '=', false);
+    }
+
+    /**
+     * Extends a query asking for financial operations so that it demands only
+     * operations which represent unrepayed lendings.
+     *
+     * @param Builder $query
+     * the builder whose query to extend
+     * @return Builder
+     * the extended query builder
+     */
+    public function scopeUnrepayedLendings(Builder $query): Builder
+    {
+        return $query
+            ->join('lendings', 'financial_operations.id','=','lendings.id')
+            ->whereNotExists(function($query) {
+                $query->select(DB::raw(1))
+                      ->fromRaw('lendings as repay')
+                      ->whereRaw('repay.previous_lending_id = financial_operations.id');
+            });
     }
 
     /**

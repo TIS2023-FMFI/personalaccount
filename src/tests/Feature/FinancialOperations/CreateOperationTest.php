@@ -37,6 +37,32 @@ class CreateOperationTest extends TestCase
 
     }
 
+    public function test_create_operation_form_data(){
+        $op = FinancialOperation::factory()
+                    ->create([
+                        'account_id' => $this->account,
+                        'operation_type_id' => $this->lendingType
+                    ]);
+        Lending::factory()->create(['id' => $op]);
+
+        $exp = [$op->id];
+
+        $response = $this->actingAs($this->user)
+                            ->withHeaders($this->headers)
+                            ->get(
+                                '/accounts/' . $this->account->id
+                                . '/operations/create'
+                            );
+        
+        $response->assertStatus(200);
+        $response
+            ->assertJsonPath('operation_types', OperationType::all()->toArray());
+        
+        foreach ($response['unrepayed_lendings'] as $lending) {
+            in_array($lending['id'], $exp);
+        }
+    }
+
     public function test_create_operation(){
 
         $operationData = [

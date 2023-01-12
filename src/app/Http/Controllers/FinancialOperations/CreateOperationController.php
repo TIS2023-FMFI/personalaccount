@@ -8,6 +8,7 @@ use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
+use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -21,7 +22,30 @@ use Illuminate\Validation\ValidationException;
  */
 class CreateOperationController extends GeneralOperationController
 {
+    /**
+     * Prepares the data necessary to populate the form handling operation creation.
+     * 
+     * @param Account $operation
+     * the account with which the new operation will be associated
+     * @return array
+     * an array containing information about the supported operation types
+     * and a list of unrepayed lendings associated with the account under which
+     * the new operation will be created
+     */
+    public function getFormData(Account $account)
+    {
+        $operationTypes = OperationType::all();
+        $unrepayedLendings = $account
+                                ->financialOperations()
+                                ->unrepayedLendings()
+                                ->get();
 
+        return [
+            'operation_types' => $operationTypes,
+            'unrepayed_lendings' => $unrepayedLendings,
+        ];
+    }
+    
     /**
      * Handles the request to create a new financial operation.
      *

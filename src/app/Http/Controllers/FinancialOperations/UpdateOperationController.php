@@ -21,6 +21,30 @@ use Illuminate\Support\Facades\Storage;
  */
 class UpdateOperationController extends GeneralOperationController
 {
+    /**
+     * Prepares the data necessary to populate the form handling operation updates.
+     * 
+     * @param FinancialOperation $operation
+     * the operation that is about to be updated
+     * @return array
+     * an array containing information about the operation itself, supported
+     * operation types, and a list of unrepayed lendings associated with the same
+     * account as the operation that is about to be updated
+     */
+    public function getFormData(FinancialOperation $operation)
+    {
+        $operationTypes = OperationType::all();
+        $unrepayedLendings = $operation->account
+                                ->financialOperations()
+                                ->unrepayedLendings()
+                                ->get();
+
+        return [
+            'operation' =>$operation,
+            'operation_types' => $operationTypes,
+            'unrepayed_lendings' => $unrepayedLendings,
+        ];
+    }
 
     /**
      * Handles the request to update a financial operation.

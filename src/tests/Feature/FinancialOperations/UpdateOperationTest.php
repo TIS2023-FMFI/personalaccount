@@ -40,6 +40,32 @@ class UpdateOperationTest extends TestCase
 
     }
 
+    public function test_update_operation_form_data(){
+        $op = FinancialOperation::factory()
+                    ->create([
+                        'account_id' => $this->account,
+                        'operation_type_id' => $this->lendingType
+                    ]);
+        Lending::factory()->create(['id' => $op]);
+
+        $exp = [$op->id];
+
+        $response = $this->actingAs($this->user)
+                            ->withHeaders($this->headers)
+                            ->get(
+                                '/operations/' . $op->id . '/update'
+                            );
+        
+        $response->assertStatus(200);
+        $response
+            ->assertJsonPath('operation_types', OperationType::all()->toArray())
+            ->assertJsonPath('operation.id', $op->id);
+            
+        foreach ($response['unrepayed_lendings'] as $lending) {
+            in_array($lending['id'], $exp);
+        }
+    }
+
     public function test_update_operation(){
 
         $operation = FinancialOperation::factory()->create(

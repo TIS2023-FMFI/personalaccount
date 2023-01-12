@@ -100,10 +100,12 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     });
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
+        Route::get('/accounts/{account}/operations/create', [CreateOperationController::class, 'getFormData']);
         Route::post('/accounts/{account}/operations', [CreateOperationController::class, 'create'])
             ->middleware('can:create,App\Models\FinancialOperation,account');
 
         Route::middleware('can:update,operation')->group(function () {
+            Route::get('/operations/{operation}/update', [UpdateOperationController::class, 'getFormData']);
             Route::put('/operations/{operation}', [UpdateOperationController::class, 'update']);
             Route::patch('/operations/{operation}', [UpdateOperationController::class, 'checkOrUncheck']);
         });
