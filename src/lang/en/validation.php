@@ -172,6 +172,8 @@ return [
     */
 
     'attributes' => [
+        'operation_type_id' => 'Operation type',
+
         'sap_id' => 'SAP ID',
         'sap_report' => 'SAP Report',
     ],

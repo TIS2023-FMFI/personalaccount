@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * A controller responsible for presenting existing SAP reports to a user.
- * 
+ *
  * This controller provides methods to:
  *      - show a list of SAP reports associated with an account
  */
@@ -17,7 +17,7 @@ class ReportsOverviewController extends Controller
 {
     /**
      * The number of SAP reports to show on a single page.
-     * 
+     *
      * @var int
      */
     private static int $resultsPerPage = 15;
@@ -25,7 +25,7 @@ class ReportsOverviewController extends Controller
     /**
      * Show the SAP Reports view for an account with reports filtered based on
      * the date they were exported or uploaded. The filtered reports are paginated.
-     * 
+     *
      * @param \App\Http\Requests\Base\DateRequest $request
      * the request containing the date interval used for filtering
      * @param \App\Models\Account $account
@@ -40,15 +40,15 @@ class ReportsOverviewController extends Controller
         $reports = $this->retrieveSapReports($account, $from, $to);
 
         return view('finances.sap_reports', [
-            'account' => $account, 
-            'reports' => $reports 
+            'account' => $account,
+            'reports' => $reports
         ]);
     }
 
     /**
      * Retrieve the paginated SAP Reports for an account which were exported or
      * uploaded within a specified period.
-     * 
+     *
      * @param \App\Models\Account $account
      * the account for which to show the SAP reports
      * @param \Illuminate\Support\Carbon $from

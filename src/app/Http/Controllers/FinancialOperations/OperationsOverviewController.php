@@ -5,46 +5,35 @@ namespace App\Http\Controllers\FinancialOperations;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Base\DateRequest;
 use App\Models\Account;
-use App\Models\FinancialOperation;
-use Exception;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Manages the 'account detail' screen and all functionality available directly from that screen.
+ * Manages the 'operations overview' view, as well as listing, filtering and exporting operations.
  */
 class OperationsOverviewController extends Controller
 {
     /**
-     * @var int - number of operations to be shown on one page
+     * @var int
+     * number of operations to be shown on one page
      */
-    public static int $perPage = 15;
+    private static int $resultsPerPage = 15;
 
     /**
-     * shortcut for the $perPage static variable
+     * Fills the 'operations overview' view with financial operations belonging to a financial account.
+     * The operations are paginated and can be filtered by date.
      *
-     * @return int
-     */
-    public function perPage()
-    {
-        return OperationsOverviewController::$perPage;
-    }
-
-    /**
-     * Handles the request to get the account detail page. Returns a view filled with the operations belonging
-     * to the given account. The operations are paginated and can be filtered by date by GET parameters 'from'
-     * (first date in the interval) and 'to' ('last date').
-     *
-     * @param Account $account - route parameter
-     * @param DateRequest $request - the GET request containing query parameters
+     * @param Account $account
+     * the financial account to which the operations belong
+     * @param DateRequest $request
+     * a HTTP request which may contain the dates to filter the operations by
      * @return Application|Factory|View
+     * the view filled with data
      */
     public function show(Account $account, DateRequest $request)
     {
@@ -53,7 +42,8 @@ class OperationsOverviewController extends Controller
 
         $incomes = $account->operationsBetween($dateFrom, $dateTo)->incomes()->sum('sum');
         $expenses = $account->operationsBetween($dateFrom, $dateTo)->expenses()->sum('sum');
-        $operations = $account->operationsBetween($dateFrom, $dateTo)->orderBy('date', 'desc')->paginate($this->perPage())->withQueryString();
+        $operations = $account->operationsBetween($dateFrom, $dateTo)->orderBy('date', 'desc')
+                              ->paginate($this::$resultsPerPage)->withQueryString();
 
         return view('finances.account', [
             'account' => $account,
@@ -64,11 +54,14 @@ class OperationsOverviewController extends Controller
     }
 
     /**
-     * Returns a date taken from the query parameter of a given request, specified by the $key parameter.
-     * If the parameter isn't present, the minimal possible date is returned instead.
+     * If the operations are requested to be filtered by date, gets the earliest date of the requested interval
+     * (all operations before this date should be filtered out).
+     * If no such date is present, gets the minimal possible date instead.
      *
      * @param DateRequest $request
+     * a HTTP request which may contain the dates to filter the operations by
      * @return Carbon
+     * the obtained date
      */
     private function getFromDateOrMin(DateRequest $request)
     {
@@ -78,11 +71,14 @@ class OperationsOverviewController extends Controller
     }
 
     /**
-     * Returns a date taken from the query parameter of a given request, specified by the $key parameter.
-     * If the parameter isn't present, the maximal possible date is returned instead.
+     * If the operations are requested to be filtered by date, gets the latest date of the requested interval
+     * (all operations after this date should be filtered out).
+     * If no such date is present, gets the maximal possible date instead.
      *
      * @param DateRequest $request
+     * a HTTP request which may contain the dates to filter the operations by
      * @return Carbon
+     * the obtained date
      */
     private function getToDateOrMax(DateRequest $request)
     {
@@ -92,11 +88,14 @@ class OperationsOverviewController extends Controller
     }
 
     /**
-     * Handles a request to download a CSV export for the given account.
+     * Handles a request to download a CSV export of financial operations.
      *
      * @param Account $account
+     * the financial account to which the operations belong
      * @param DateRequest $request
+     * a HTTP request which may contain the dates to filter the operations by
      * @return StreamedResponse
+     * a response allowing the user to download the exported CSV file
      */
     public function downloadExport(Account $account, DateRequest $request)
     {
@@ -110,34 +109,78 @@ class OperationsOverviewController extends Controller
     }
 
     /**
-     * Generates a name for the CSV export file, containing the name of the account. If the dates in the export are limited,
-     * the bounding dates are present in the name as well.
+     * Generates a name for the CSV export file, containing the name of the account.
+     * If the dates in the export are limited, the bounding dates are present in the name as well.
      *
      * @param $account
+     * the financial account to which the operations belong
      * @param $dateFrom
+     * first day in the filtered interval
      * @param $dateTo
+     * last day in the filtered interval
      * @return string
+     * the generated file name
      */
-    private function generateExportName($account, $dateFrom, $dateTo)
+    private function generateExportName(Account $account, Carbon $dateFrom, Carbon $dateTo)
     {
-        $name = $this->removeSpecialCharacters($account->title);
+        $title = $account->getSanitizedTitle();
+        $from = $this->generateFromString($dateFrom);
+        $to = $this->generateToString($dateTo);
 
-        if (!$dateFrom || $dateFrom == Date::minValue()) $from = '';
-        else $from = "_from_{$this->simplifyDate($dateFrom)}";
-
-        if (!$dateTo || $dateTo == Date::maxValue()) $to = '';
-        else $to = "_to_{$this->simplifyDate($dateTo)}";
-
-        return "export_{$name}{$from}{$to}.csv";
+        return "{$title}_export{$from}{$to}.csv";
     }
 
     /**
-     * Returns a formatted string containing only the date from the given date/dateTime.
+     * If the filtering interval is bound by the earliest date, generates a string describing that date.
+     * Otherwise, generates an empty string.
      *
-     * @param $date
+     * @param Carbon $dateFrom
+     * the earliest date of the interval
      * @return string
+     * the generated string
      */
-    private function simplifyDate($date)
+    private function generateFromString(Carbon $dateFrom)
+    {
+        $from = '';
+
+        if ($dateFrom != Date::minValue()) {
+            $fromClause = trans('files.from');
+            $from = "_{$fromClause}_{$this->formatDate($dateFrom)}";
+        }
+
+        return $from;
+    }
+
+    /**
+     * If the filtering interval is bound by the latest date, generates a string describing that date.
+     * Otherwise, generates an empty string.
+     *
+     * @param Carbon $dateTo
+     * the latest date of the interval
+     * @return string
+     * the generated string
+     */
+    private function generateToString(Carbon $dateTo)
+    {
+        $to = '';
+
+        if ($dateTo != Date::maxValue()) {
+            $toClause = trans('files.to');
+            $to = "_{$toClause}_{$this->formatDate($dateTo)}";
+        }
+
+        return $to;
+    }
+
+    /**
+     * Creates a string in the 'd-m-Y' format from a date object.
+     *
+     * @param Carbon $date
+     * the date to be formatted
+     * @return string
+     * the formatted string
+     */
+    private function formatDate(Carbon $date)
     {
         return Date::parse($date)->format('d-m-Y');
     }
@@ -145,12 +188,16 @@ class OperationsOverviewController extends Controller
     /**
      * Writes a CSV file into output file stream, containing data about financial operations.
      *
-     * @param $operations - collection of financial operations
+     * @param Collection $operations
+     * collection of financial operations
      * @return false|resource
+     * stream containing the exported file
      */
-    private function generateCSVfile($operations)
+    private function generateCSVfile(Collection $operations)
     {
-        $columns = ['ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Attachment', 'Checked', 'SAP ID'];
+        $columns = [
+            'ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Attachment', 'Checked', 'SAP ID'
+        ];
         $stream = fopen('php://output', 'w');
         fputcsv($stream,$columns,';');
 

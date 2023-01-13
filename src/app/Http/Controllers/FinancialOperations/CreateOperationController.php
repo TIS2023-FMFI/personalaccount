@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\FinancialOperations;
 
+use App\Exceptions\DatabaseException;
+use App\Http\Helpers\DBTransaction;
 use App\Http\Requests\FinancialOperations\CreateOrUpdateOperationRequest;
 use App\Models\Account;
-use App\Models\FinancialOperation;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
- * Manages the functionality of the 'create operation' modal.
+ * Manages creation of financial operations.
  */
 class CreateOperationController extends GeneralOperationController
 {
@@ -20,54 +22,95 @@ class CreateOperationController extends GeneralOperationController
     /**
      * Handles the request to create a new financial operation.
      *
-     * @param Account $account - route parameter
+     * @param Account $account
+     * financial account to which the operation belongs
      * @param CreateOrUpdateOperationRequest $request
+     * HTTP request to create the operation
      * @return Application|ResponseFactory|Response
+     * a response containing information about this operation's result
      */
-    public function handleCreateOperationRequest(Account $account, CreateOrUpdateOperationRequest $request)
+    public function create(Account $account, CreateOrUpdateOperationRequest $request)
     {
-        $attachmentPath = null;
-        $file = $request->file('attachment');
-        if ($file) $attachmentPath = $this->saveAttachment($account->user_id, $file);
-
-        DB::beginTransaction();
-        try
-        {
-            $operation = $this->createOperation($request, $account, $attachmentPath);
-            if ($operation->isLending()) $this->upsertLending($request, $operation->id);
+        try {
+            $attachment = $this->saveAttachmentFileFromRequest($account, $request);
+            $this->runCreateOperationTransaction($account, $request, $attachment);
         }
-        catch (Exception $e)
-        {
-            $this->deleteFileIfExists($attachmentPath);
-            DB::rollBack();
-            // return \response($e->getMessage(), 500); //for debugging purposes
-            return response('financial_operations.create.failure', 500);
+        catch (Exception $e) {
+            return response(trans('financial_operations.create.failure'), 500);
         }
-        DB::commit();
         return response(trans('financial_operations.create.success'), 201);
     }
 
+    /**
+     * Runs a database transaction in which a financial operation is created.
+     *
+     * @param Account $account
+     * financial account to which the operation belongs
+     * @param CreateOrUpdateOperationRequest $request
+     * HTTP request to create the operation
+     * @param string $attachment
+     * path to the operation's attachment file
+     * @return void
+     * @throws Exception
+     */
+    private function runCreateOperationTransaction(Account $account, CreateOrUpdateOperationRequest $request,
+                                                   string  $attachment)
+    {
+        $createRecordTransaction = new DBTransaction(
+            fn () => $this->createOperation($account, $request, $attachment),
+            fn () => Storage::delete($attachment)
+        );
+
+        $createRecordTransaction->run();
+    }
 
     /**
-     * Creates a new operation DB record using the data from the request. Returns the created operation model.
+     * Creates a record for the new operation, and, if needed, its associated lending record.
      *
-     * @param $request
-     * @param $account
-     * @param $attachment
-     * @return mixed
+     * @param Account $account
+     * financial account to which the operation belongs
+     * @param CreateOrUpdateOperationRequest $request
+     * HTTP request to create the operation
+     * @param string $attachment
+     * path to the operation's attachment file
+     * @return void
+     * @throws DatabaseException
      */
-    private function createOperation($request, $account, $attachment)
+    private function createOperation(Account $account, CreateOrUpdateOperationRequest $request, string $attachment)
     {
+        $operation = $this->createOperationRecord($account, $request, $attachment);
+        if ($operation->isLending())
+            $this->upsertLending($operation->id, $request);
+    }
+
+    /**
+     * Creates a new financial operation record in the database.
+     *
+     * @param Account $account
+     * financial account to which the operation belongs
+     * @param CreateOrUpdateOperationRequest $request
+     * HTTP request to create the operation
+     * @param string $attachment
+     * path to the operation's attachment file
+     * @return Model
+     * model representing the created operation
+     * @throws DatabaseException
+     */
+    private function createOperationRecord(Account $account, CreateOrUpdateOperationRequest $request, string $attachment)
+    {
+        $validatedData = $request->validated();
+
         $operation = $account->financialOperations()->create([
             'account_id' => $account->id,
-            'title' => $request->validated('title'),
-            'date' => $request->validated('date'),
-            'operation_type_id' => $request->validated('operation_type_id'),
-            'subject' => $request->validated('subject'),
-            'sum' => $request->validated('sum'),
+            'title' => $validatedData['title'],
+            'date' => $validatedData['date'],
+            'operation_type_id' => $validatedData['operation_type_id'],
+            'subject' => $validatedData['subject'],
+            'sum' => $validatedData['sum'],
             'attachment' => $attachment,
         ]);
-        if (!$operation->exists) throw new Exception('The operation wasn\'t created.');
+        if (!$operation->exists)
+            throw new DatabaseException('The operation wasn\'t created.');
         return $operation;
     }
 }

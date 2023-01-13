@@ -144,6 +144,14 @@ return [
         'old_password' => 'Staré heslo',
         'new_password' => 'Nové heslo',
 
+        'date' => 'Dátum',
+        'operation_type_id' => 'Typ operácie',
+        'subject' => 'Subjekt',
+        'sum' => 'Suma',
+        'attachment' => 'Príloha',
+        'expected_date_of_return' => 'Očakávaný dátum splatenia',
+        'previous_lending_id' => 'ID predchádzajúcej pôžičky',
+
         'title' => 'Názov',
         'sap_id' => 'SAP ID',
         'sap_report' => 'SAP výkaz',

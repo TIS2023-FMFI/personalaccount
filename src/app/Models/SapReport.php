@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Http\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Date;
 
 class SapReport extends Model
 {
@@ -39,7 +39,7 @@ class SapReport extends Model
 
     /**
      * Get the account with which the report is associated.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function account()
@@ -49,40 +49,24 @@ class SapReport extends Model
 
     /**
      * Generate a user-friendly name for the SAP report file represented by the model.
-     * 
+     *
      * @return string
      * the generated file name
      */
-    public function generateDisplayableFileName()
-    {   
+    public function generateReportFileName()
+    {
         $sanitizedSapId = $this->account->getSanitizedSapId();
         $contentClause = trans('files.sap_report');
         $exportedOrUploadedOn = $this->exported_or_uploaded_on->format('d-m-Y');
 
         $fileName = "${sanitizedSapId}_${contentClause}_${exportedOrUploadedOn}";
 
-        return $this->appendFileExtension($fileName);
-    }
-
-    /**
-     * Append the extension of the SAP report file represented by the model to a
-     * file name. If the SAP report file has no extension, nothing is appended.
-     * 
-     * @param string $fileName
-     * the file name to which to append the extension
-     * @return string
-     * the extended file name
-     */
-    private function appendFileExtension(string $fileName)
-    {
-        $extension = pathinfo($this->path, PATHINFO_EXTENSION);
-
-        return (empty($extension)) ? $fileName : $fileName . ".${extension}";
+        return FileHelper::appendFileExtension($this->path, $fileName);
     }
 
     /**
      * Get the path to the directory within which a user's reports are stored.
-     * 
+     *
      * @param User $user
      * the user whose directory for reports to consider
      * @return string
