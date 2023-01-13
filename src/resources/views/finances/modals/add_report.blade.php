@@ -4,14 +4,16 @@
     <span class="close-modal"><i class="bi bi-x"></i></span>
     <h2>Pridať výkaz</h2>
 
-    <div class="input-box">
-      <div class="field">
-        <input type="file" id="operation_file" name="" accept=".doc, .docx, .pdf">
-        <label for="operation_file">SAP výkaz</label>
+    <form id="create-report-form">
+      <div class="input-box">
+        <div class="field">
+          <input type="file" id="report-file" name="">
+          <label for="report-file">SAP výkaz</label>
+        </div>
+        <div class="error-box" id="add-sap-report-errors"></div>
       </div>
-    </div>
-
-    <button type="button" class="create">Uložiť</button>
+      <button data-csrf="{{ csrf_token() }}" type="submit" class="create" id="create-report-button">Uložiť</button>
+    </form>
 
   </div>
 

@@ -1,13 +1,14 @@
 <div id="check-operation-modal" class="modal-box">
 
   <div class="modal">
-    <span class="close-modal"><i class="bi bi-x"></i></span>
-    <p>Naozaj si želáte označiť operáciu ako skontrolovanú?</p>
-    <div>
-        <button class="proceed" type="button">Áno</button>
+    <form id="check-operation-form">
+      <span class="close-modal"><i class="bi bi-x"></i></span>
+      <p>Naozaj si želáte označiť/odznačiť operáciu ako skontrolovanú?</p>
+      <div>
+        <button class="proceed" type="submit" data-csrf="{{ csrf_token() }}"  id="check-operation-button">Áno</button>
         <button class="cancel" type="button">Nie</button>
-
-    </div>
+      </div>
+    </form>
   </div>
 
 </div>
