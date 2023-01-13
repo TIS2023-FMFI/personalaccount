@@ -1,30 +1,48 @@
 @include('common.navigation')
 
+<?php
+    $from = filter_input(INPUT_GET, 'from', FILTER_SANITIZE_URL);
+    $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);           
+?>
+
 <div class="flex-between">
-    <div>
-        <h1>Názov účtu</h1>
-        <p>O-06-107/0008-00</p>
+    <div class="main_info">
+        <a href="/" class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad</a>
+        <h1>{{ $account->title }}</h1>
+        <label for="sap-id-detail"><b>SAP ID:</b></label>
+        <p id="sap-id-detail">{{ $account->sap_id }}</p>
     </div>
     <div class="switch-box">
         <p>Výpis účtu</p>
         <label class="switch">
-            <input class="toggle-button" type="checkbox">
+            <input data-account-id="{{ $account->id }}" class="toggle-button" type="checkbox">
             <span class="slider round"></span>
         </label>
         <p>SAP</p>
     </div>
 </div>
+
 <div class="filter-box">
+    
     <div>
-        <label>Od:</label><input type="date"></input>
-        <label>Do:</label><input type="date"></input>
-        <button type="button">Zobraziť</button>
+
+        <label>Od:</label><input type="date" id="filter-operations-from" value="<?php echo $from ?>"></input>
+        <label>Do:</label><input type="date" id="filter-operations-to" value="<?php echo $to ?>"></input>
+        <button type="button" data-account-id="{{ $account->id }}" data-date-errors="{{$errors->first('to')}}" id="filter-operations">Filtrovať</button>
+        <button data-account-id="{{ $account->id }}" type="button" id="operations-export">Exportovať</button>
     </div>
+
     <div>
-        <button type="button">Export</button>
-        <button id="create_operation" type="button">+</i></button>
+        <button data-account-id="{{ $account->id }}" id="create_operation" type="button" title="Nová operácia">+</i></button>
     </div>
 </div>
+
+@if ($errors->has('to'))
+    <div class="error-div" style="width: 70%; margin: 0px 0px 0px 50px">
+        <p style="color:red">{{ $errors->first('to') }}</p>
+    </div>
+@endif
+
 <table>
     <tr>
         <th>Poradie</th>
@@ -35,82 +53,46 @@
         <th class="align-right">Suma</th>
         <th></th>
     </tr>
-    <tr>
-        <td>1.</td>
-        <td>Lorem ipsum</td>
-        <td>12.12.2022</td>
-        <td>Grant</td>
-        <td>Nie</td>
-        <td class="align-right" style="color: green;">123€</td>
-        <td>
-            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
-            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
-            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
-            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
-        </td>
-    </tr>
-    <tr>
-        <td>2.</td>
-        <td>Lorem ipsum</td>
-        <td>12.12.2022</td>
-        <td>Grant</td>
-        <td>Áno</td>
-        <td class="align-right" style="color: green;">3429€</td>
-        <td>
-            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
-            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
-            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
-            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
-        </td>
-    </tr>
-    <tr>
-        <td>3.</td>
-        <td>Lorem ipsum</td>
-        <td>12.12.2022</td>
-        <td>Nákup</td>
-        <td>Áno</td>
-        <td class="align-right" style="color: red;">-564€</td>
-        <td>
-            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
-            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
-            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
-            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
-        </td>
-    </tr>
-    <tr>
-        <td>4.</td>
-        <td>Lorem ipsum</td>
-        <td>12.12.2022</td>
-        <td>Pôžička</td>
-        <td>Áno</td>
-        <td class="align-right" style="color: red;">-1203€</td>
-        <td>
-            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
-            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
-            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
-            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
-        </td>
-    </tr>
-    <tr>
-        <td>5.</td>
-        <td>Lorem ipsum</td>
-        <td>12.12.2022</td>
-        <td>Pôžička</td>
-        <td>Áno</td>
-        <td class="align-right" style="color: green;">123€</td>
-        <td>
-            <a href="#"><i class="bi bi-info-circle operation-detail"></i></a>
-            <a href="#"><i class="bi bi-check2-all operation-check"></i></a>
-            <a href="#"><i class="bi bi-pencil operation-edit"></i></a>
-            <a href="#"><i class="bi bi-trash3 operation-delete"></i></a>
-        </td>
-    </tr>
+    @foreach ($operations as $key=>$operation)
+        
+        <tr>
+            <td>{{ ($operations->currentPage() - 1) * $operations->perPage() + $key + 1}}.</td>
+            <td>{{ $operation->title }}</td>
+            <td>{{ $operation->date }}</td>
+            <td>{{ $operation->operationType->name }}</td>
+            @if( $operation->checked )
+                <td>Áno</td>
+            @else
+                <td>Nie</td>
+            @endif
+            @if( $operation->isExpense())
+                <td class="align-right" style="color: red;">-{{ $operation->sum }}€</td>
+            @else
+                <td class="align-right" style="color: green;">{{ $operation->sum }}€</td>
+            @endif
+            <td>
+                <button type="button" data-operation-id="{{ $operation->id }}" class="operation-detail"><i  class="bi bi-info-circle" title="Detail operácie"></i></button>
+                @if( ! $operation->isLending() )
+                <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu" ></i>
+                @endif
+                <button type="button" data-operation-id="{{ $operation->id }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
+                <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
+            </td>
+        </tr>
+
+    @endforeach
 </table>
-<div class="pagination">1 <b>2</b> .. 10</div>
+
 <div class="table-sum">
-    <p id="income">Príjmy: <em>3675€</em></p>
-    <p id="outcome">Výdavky: <em>1767€</em></p>
-    <p id="total">Rozdiel: <em style="color: green;">1908€</em></p>
+    <div class="pagination"> {{ $operations->links("pagination::semantic-ui") }} </div>
+
+    <p id="income">Príjmy: <em>{{ $incomes_total }}€</em></p>
+    <p id="outcome">Výdavky: <em>{{ $expenses_total }}€</em></p>
+    @if( ($incomes_total - $expenses_total) >= 0)
+        <p id="total">Rozdiel: <em style="color: green;">{{ $incomes_total - $expenses_total }}€</em></p>
+    @else
+        <p id="total">Rozdiel: <em style="color: red;">{{ $incomes_total - $expenses_total }}€</em></p>
+    @endif
 </div>
 
 

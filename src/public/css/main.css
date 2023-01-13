@@ -35,6 +35,16 @@ nav div:first-child a {
     color: white;
     text-decoration: none;
 }
+.bi{
+    color: var(--primary);
+}
+.bi-credit-card-fill{
+    color: white;
+}
+.bi-caret-down-fill{
+    color: white;
+    margin-left: 5px;
+}
 .content {
     padding-bottom: 30px;
 }
@@ -87,17 +97,26 @@ nav div:first-child a {
     height: 300px;
     margin-bottom: 50px;
 }
+.account_box div h2{
+    margin-bottom: 0px;
+}
 .edit_account {
     position: absolute;
     top: 10px;
     right: 35px;
+    font-size: larger;
+    margin-right: 5px;
 }
 .delete_account {
     position: absolute;
     top: 10px;
     right: 10px;
+    font-size: larger;
 }
 .edit_account:hover, .delete_account:hover {
+    cursor: pointer;
+}
+.operation_type:hover, .operation_type:hover {
     cursor: pointer;
 }
 .account {
@@ -124,7 +143,7 @@ nav div:first-child a {
     background-color: #e8e8e8;
 }
 .add_account_button {
-    width: 30%;
+    width: 27%;
     display: flex;
     align-items: center;
     height: 300px;
@@ -227,7 +246,12 @@ table tr:nth-child(odd) {
 }
 table tr td:last-child {
     width: 120px;
+    text-align: right;
 }
+table tr td:last-child .bi {
+    font-size: larger;
+}
+
 table td a {
     color: var(--primary);
     text-decoration: none;
@@ -235,6 +259,9 @@ table td a {
 }
 table td a:hover {
     opacity: 0.7;
+}
+.sap-icons{
+    text-align: end;
 }
 .filter-box {
     display: flex;
@@ -400,7 +427,6 @@ footer {
 }
 .modal h2 {
     font-size: 30px;
-    margin-bottom: 50px;
 }
 #set-pass-modal .modal h2 {
     margin-bottom: 0;
@@ -564,4 +590,41 @@ label, input {
 label {
     font-size: 14px;
     color: var(--primary);
+}
+
+.pagination ul li{
+    display: inline;
+    margin: 0px 5px;
+    padding-inline-start: 0px;
+    font-weight: 600;
+}
+a{
+    color: #1e1e1e;
+    background-color: transparent;
+    text-decoration: none;
+}
+a:link {
+    color: var(--primary);
+    background-color: transparent;
+    text-decoration: none;
+}
+a:visited {
+    color: var(--primary);
+    background-color: transparent;
+    text-decoration: none;
+}
+#operations-export {
+    margin-left: 5px;
+}
+.main_info {
+    margin-top: 20px;
+}
+.operation-detail:hover, .operation-check:hover, .operation-edit:hover, .operation-delete:hover, .report-delete:hover{
+    cursor: pointer;
+    background: transparent;
+}
+.operation-detail, .operation-check, .operation-edit, .operation-delete, .report-delete{
+
+    border: none;
+    background: transparent;
 }
