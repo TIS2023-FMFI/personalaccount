@@ -24,7 +24,6 @@ return [
         'failure' => 'We were unable to delete the operation, please, try again later.'
     ],
 
-    'invalid_check' => 'A lending cannot be marked as checked.',
     'repayment_date_invalid' => 'The loan repayment date cannot be earlier than the date it was provided.',
 
 ];

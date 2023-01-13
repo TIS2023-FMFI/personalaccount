@@ -6,10 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
 /**
- * A request to create new or update an existing financial operation.
+ * A request to create a new financial operation.
  * 
  * Fields: title, date, operation_type_id, subject, sum, attachment,
- *         expected_date_of_return, previous_lending_id
+ *         expected_date_of_return.
  */
 class CreateOperationRequest extends FormRequest
 {
@@ -27,8 +27,7 @@ class CreateOperationRequest extends FormRequest
             'subject' => ['required', 'max:255'],
             'sum' => ['required', 'numeric', 'min:0'],
             'attachment' => ['nullable', File::types(['txt','pdf'])],
-            'expected_date_of_return' => ['nullable', 'date'],
-            'previous_lending_id' => ['nullable', 'numeric', 'exists:lendings,id'],
+            'expected_date_of_return' => ['nullable', 'date', 'after_or_equal:date'],
         ];
     }
 }

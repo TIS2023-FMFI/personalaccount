@@ -72,7 +72,7 @@ class OperationsOverviewController extends Controller
         $filename = $this->generateExportName($account, $dateFrom, $dateTo);
 
         return response()->streamDownload(
-            fn() => $this->generateCSVfile($operations),
+            fn () => $this->generateCSVfile($operations),
             $filename
         );
     }

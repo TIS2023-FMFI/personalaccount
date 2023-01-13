@@ -82,27 +82,6 @@ class FinancialOperation extends Model
     }
 
     /**
-     * Extends a query asking for financial operations so that it demands only
-     * operations which represent unrepaid lendings.
-     *
-     * @param Builder $query
-     * the builder whose query to extend
-     * @return Builder
-     * the extended query builder
-     */
-    public function scopeUnrepaidLendings(Builder $query): Builder
-    {
-        return $query
-            ->join('lendings', 'financial_operations.id','=','lendings.id')
-            ->whereRaw('previous_lending_id is null')
-            ->whereNotExists(function($query) {
-                $query->select(DB::raw(1))
-                      ->fromRaw('lendings as repay')
-                      ->whereRaw('repay.previous_lending_id = financial_operations.id');
-            });
-    }
-
-    /**
      * Returns the account to which this operation belongs.
      *
      * @return BelongsTo
@@ -162,19 +141,6 @@ class FinancialOperation extends Model
     public function lending()
     {
         return $this->hasOne(Lending::class, 'id', 'id');
-    }
-
-    /**
-     * Deletes the lending record related to this operation, if there is one.
-     *
-     * @throws DatabaseException
-     */
-    public function deleteLending()
-    {
-        if (! $this->isLending())
-            return;
-        if (! Lending::destroy($this->id))
-            throw new DatabaseException('The lending wasn\'t deleted.');
     }
 
     /**

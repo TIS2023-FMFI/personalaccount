@@ -2,14 +2,15 @@
 
 namespace App\Http\Requests\FinancialOperations;
 
+use App\Models\FinancialOperation;
+use App\Models\OperationType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
 /**
- * A request to create new or update an existing financial operation.
+ * A request to create a new repayment operation.
  * 
- * Fields: title, date, operation_type_id, subject, sum, attachment,
- *         expected_date_of_return, previous_lending_id
+ * Fields: date.
  */
 class CreateRepaymentRequest extends FormRequest
 {
@@ -22,6 +23,31 @@ class CreateRepaymentRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date'],
+        ];
+    }
+
+    /**
+     * Prepare operation data for this repayment based on the loan with which
+     * the repayment will be associated.
+     * 
+     * @param FinancialOperation $loan
+     * the loan with which the repayment will be associated
+     * @return array
+     * the operation data
+     */
+    public function prepareValidatedOperationData(FinancialOperation $loan)
+    {
+        $repaymentType = ($loan->isExpense())
+                            ? OperationType::getRepaymentIncome()
+                            : OperationType::getRepaymentExpense();
+        
+        return [
+            'title' => $loan->title,
+            'date' => $this->validated('date'),
+            'operation_type_id' => $repaymentType,
+            'subject' => $loan->subject,
+            'sum' => $loan->sum,
+            'previous_lending_id' => $loan->id,
         ];
     }
 }
