@@ -57,7 +57,7 @@ class OperationType extends Model
      */
     public static function getRepaymentIncome()
     {
-        return OperationType::where('expense', '=', true)
+        return OperationType::where('expense', '=', false)
                             ->where('repayment', '=', true)
                             ->first();
     }
