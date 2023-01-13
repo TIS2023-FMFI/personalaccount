@@ -184,6 +184,38 @@ class CreateOperationTest extends TestCase
 
     }
 
+    public function test_cannot_repay_loan_twice()
+    {
+        $loan = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
+        $lending = Lending::factory()->create(['id' => $loan]);
+
+        $operationData = [
+            'date' => now()->format('Y-m-d')
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->post('/operations/' . $lending->id . '/repayment', $operationData);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('lendings', ['previous_lending_id' => $lending->id]);
+
+        $operationData = [
+            'date' => now()->addDay()
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->post('/operations/' . $lending->id . '/repayment', $operationData);
+
+        $response->assertStatus(500);
+        $repaymentsCount = Lending::where('previous_lending_id', '=', $lending->id)->get()->count();
+
+        $this->assertEquals(1, $repaymentsCount);
+    }
+
     public function test_create_operation_with_lending_cannot_be_repayed_before_provided(){
 
         $loan = FinancialOperation::factory()->create(

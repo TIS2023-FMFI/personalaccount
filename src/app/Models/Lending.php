@@ -43,10 +43,14 @@ class Lending extends Model
     }
 
     /**
-     * Find the repayment associated with a loan.
+     * Get the repayment associated with this loan.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
+    public function repayment()
+    {
+        return $this->hasOne(Lending::class, 'previous_lending_id', 'id');
+    }
 
     /**
      * Find a repayment associated with a loan.

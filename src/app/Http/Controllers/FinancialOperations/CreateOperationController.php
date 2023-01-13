@@ -69,10 +69,13 @@ class CreateOperationController extends GeneralOperationController
      */
     public function createRepayment(Lending $lending, CreateRepaymentRequest $request)
     {
+        if ($lending->repayment)
+            return response(trans('financial_operations.create.failure'), 500);
+        
         $lendingOperation = $lending->operation;
 
         if ($lendingOperation->isRepayment())
-            return response(trans('financial_operations.create.failure'), 500);
+            return response(trans('financial_operations.create.failure'), 500);    
 
         $account = $lendingOperation->account;
         $data = $request->prepareValidatedOperationData($lendingOperation);
@@ -101,7 +104,6 @@ class CreateOperationController extends GeneralOperationController
             if ($e instanceof ValidationException)
                 throw $e;
 
-            //return response($e->getMessage(), 500);
             return response(trans('financial_operations.create.failure'), 500);
         }
 
@@ -149,7 +151,7 @@ class CreateOperationController extends GeneralOperationController
     ) {
         $operation = $this->createOperationRecord($account, $data, $attachment);
 
-        if ($operation->isLending() || $operation->isRepayment())
+        if ($operation->isLending())
             $this->upsertLending($operation, $data);
     }
 
@@ -169,7 +171,6 @@ class CreateOperationController extends GeneralOperationController
     private function createOperationRecord(
         Account $account, array $data, string|null $attachment
     ) {
-
         $recordData = array_merge($data, ['attachment' => $attachment]);
         $operation = $account->operations()->create($recordData);
 

@@ -42,7 +42,12 @@ class FinancialOperationPolicyTest extends TestCase
         $dir = FinancialOperation::getAttachmentsDirectoryPath($user);
         $path = Storage::putFile($dir, $file);
 
-        $type = OperationType::firstOrCreate([ 'name' => 'type' ]);
+        $type = OperationType::firstOrCreate([
+            'name' => 'type',
+            'expense' => false,
+            'lending' => false,
+            'repayment' => false
+        ]);
         $this->operation = FinancialOperation::factory()
                             ->create([
                                 'title' => 'operation',
@@ -105,11 +110,15 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $updated = $this->operation->getAttributes();
         $updated['title'] = 'new title';
-        unset($updated['attachment'], $updated['account_id']);
+        unset(
+            $updated['attachment'],
+            $updated['account_id'],
+            $updated['operation_type_id']
+        );
 
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->put(
+                            ->patch(
                                 '/operations/' . $this->operation->id,
                                 $updated
                             );

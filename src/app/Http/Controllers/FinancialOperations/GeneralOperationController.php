@@ -32,7 +32,7 @@ class GeneralOperationController extends Controller
      */
     protected function saveAttachment(Account $account, array $requestData)
     {
-        if (array_key_exists('attachment', $requestData)){
+        if (array_key_exists('attachment', $requestData)) {
             $file = $requestData['attachment'];
             if ($file)
                 return $this->saveAttachmentToUserStorage($account->user, $file);
@@ -158,7 +158,6 @@ class GeneralOperationController extends Controller
     private function validateLendingDates(
         FinancialOperation $loan, FinancialOperation|null $repayment
     ) {
-        //dd($loan->date, $repayment->date);
         if ($loan && $repayment && $repayment->date->lt($loan->date))
             throw ValidationException::withMessages([
                 'date' => trans('validation.repayment_invalid_date')

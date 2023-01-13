@@ -63,7 +63,7 @@ class UpdateOperationController extends GeneralOperationController
         } catch (Exception $e) {
             if ($e instanceof ValidationException)
                 throw $e;
-            return response($e->getMessage());
+            
             return response(trans('financial_operations.update.failure'), 500);
         }
 

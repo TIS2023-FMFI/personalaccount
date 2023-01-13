@@ -44,7 +44,7 @@ class CreateRepaymentRequest extends FormRequest
         return [
             'title' => $loan->title,
             'date' => $this->validated('date'),
-            'operation_type_id' => $repaymentType,
+            'operation_type_id' => $repaymentType->id,
             'subject' => $loan->subject,
             'sum' => $loan->sum,
             'previous_lending_id' => $loan->id,

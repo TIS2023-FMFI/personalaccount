@@ -39,7 +39,7 @@ return [
     'enum' => 'Výber pre :attribute je neplatný.',
     'exists' => 'Výber pre :attribute je neplatný.',
     'file' => ':attribute musí byť súbor.',
-    'filled' => ':attribute je potrebné vyplniť.',
+    'filled' => ':attribute je potrebné uviesť.',
     'gt' => [
         'array' => ':attribute musí obsahovať viac ako :value prvkov.',
         'file' => ':attribute musí mať viac ako :value kilobajtov.',
@@ -135,6 +135,10 @@ return [
     'custom' => [
         'email' => [
             'required' => 'E-mailovú adresu je potrebné uviesť.',
+        ],
+        'sum' => [
+            'filled' => 'Sumu je potrebné uviesť.',
+            'required' => 'Sumu je potrebné uviesť.',
         ],
     ],
 
