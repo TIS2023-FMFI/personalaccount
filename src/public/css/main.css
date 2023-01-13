@@ -38,7 +38,7 @@ nav div:first-child a {
 .bi{
     color: var(--primary);
 }
-.bi-credit-card-fill{
+.bi-credit-card-fill, .bi-caret-down-fill{
     color: white;
 }
 .content {
@@ -100,14 +100,14 @@ nav div:first-child a {
     position: absolute;
     top: 10px;
     right: 35px;
-    font-size: x-large;
+    font-size: larger;
     margin-right: 5px;
 }
 .delete_account {
     position: absolute;
     top: 10px;
     right: 10px;
-    font-size: x-large;
+    font-size: larger;
 }
 .edit_account:hover, .delete_account:hover {
     cursor: pointer;
@@ -613,7 +613,7 @@ a:visited {
     margin-left: 5px;
 }
 .main_info {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 .operation-detail:hover, .operation-check:hover, .operation-edit:hover, .operation-delete:hover, .report-delete:hover{
     cursor: pointer;

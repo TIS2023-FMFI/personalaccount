@@ -29,7 +29,7 @@
         <label>Od:</label><input type="date" id="filter-operations-from" value="<?php echo $from ?>"></input>
         <label>Do:</label><input type="date" id="filter-operations-to" value="<?php echo $to ?>"></input>
         <button type="button" data-account-id="{{ $account->id }}" data-date-errors="{{$errors->first('to')}}" id="filter-operations">Filtrovať</button>
-        <button data-account-id="{{ $account->id }}" type="button" id="operations-export">Export</button>
+        <button data-account-id="{{ $account->id }}" type="button" id="operations-export">Exportovať</button>
     </div>
 
     <div>

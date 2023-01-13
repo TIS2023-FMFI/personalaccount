@@ -10,8 +10,8 @@
     <label for="operation_type"><b>Kategória:</b></label>
     <p id="operation_type"></p>
 
-    <label for="operation_title"><b>Názov:</b></label>
-    <p id="operation_title"></p>
+    <label for="operation_name"><b>Názov:</b></label>
+    <p id="operation_name"></p>
 
     <label for="operation_subject"><b>Subjekt:</b></label>
     <p id="operation_subject"></p>
