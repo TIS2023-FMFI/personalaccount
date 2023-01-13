@@ -38,8 +38,12 @@ nav div:first-child a {
 .bi{
     color: var(--primary);
 }
-.bi-credit-card-fill, .bi-caret-down-fill{
+.bi-credit-card-fill{
     color: white;
+}
+.bi-caret-down-fill{
+    color: white;
+    margin-left: 5px;
 }
 .content {
     padding-bottom: 30px;
