@@ -10,11 +10,11 @@
       <div class="radio-buttons-box">
           <div>
             <input class="operation_type" id="income_choice" name="operation_type" type="radio" value="income" checked>&ensp;
-            <label for="income_choice"><i>Príjem</i></label>
+            <label class="operation_type" for="income_choice"><i>Príjem</i></label>
           </div>
           <div>
             <input class="operation_type" id="expense_choice" name="operation_type" type="radio" value="expense">&ensp;
-            <label for="expense_choice"><i>Výdavok</i></label>
+            <label class="operation_type" for="expense_choice"><i>Výdavok</i></label>
           </div>
       </div>
 

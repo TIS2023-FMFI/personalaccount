@@ -10,22 +10,22 @@
     <label for="operation_type"><b>Kategória:</b></label>
     <p id="operation_type"></p>
 
-    <label for="operation_main_type"><b>Názov:</b></label>
-    <p id="operation_name"></p>
+    <label for="operation_title"><b>Názov:</b></label>
+    <p id="operation_title"></p>
 
-    <label for="operation_main_type"><b>Subjekt:</b></label>
+    <label for="operation_subject"><b>Subjekt:</b></label>
     <p id="operation_subject"></p>
 
-    <label for="operation_main_type"><b>Suma:</b></label>
+    <label for="operation_sum"><b>Suma:</b></label>
     <p id="operation_sum"></p>
 
-    <label for="operation_main_type"><b>Dátum:</b></label>
+    <label for="operation_date"><b>Dátum:</b></label>
     <p id="operation_date"></p>
 
-    <label for="operation_main_type"><b>Predpokladaný dátum splatenia:</b></label>
-    <p id="operation_date_until"></p>
+    <label for="operation_date_until" id="operation_date_until_label" ><b>Predpokladaný dátum splatenia:</b></label>
+    <p id="operation_date_until" style="visibility: hidden"></p>
 
-    <button type="button" onclick="" id="operation-attachment-button">Doklad na stiahnutie</button>
+    <button type="button" onclick="" id="operation-attachment-button"><i class="bi bi-download" title="Stiahnuť výkaz"></i> Doklad</button>
   </div>
 
 </div>

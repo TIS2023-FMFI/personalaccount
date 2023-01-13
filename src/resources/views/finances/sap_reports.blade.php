@@ -9,7 +9,7 @@
     <div>
 
         <h1>{{ $account->title }}</h1>
-        <label for="sap-id-detail-sap"><b>Sap ID:</b></label>
+        <label for="sap-id-detail-sap"><b>SAP ID:</b></label>
         <p id="sap-id-detail-sap">{{ $account->sap_id }}</p>    </div>
     <div class="switch-box">
         <p>Výpis účtu</p>
@@ -45,7 +45,7 @@
             <td>{{ $report->exported_or_uploaded_on }}</td>
             <td class="sap-icons">
                 <a href="/sap-reports/{{ $report->id }}/raw"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
-                <a href="#"><i data-report-id="{{ $report->id }}" class="bi bi-trash3 report-delete" title="Zmazať výkaz"></i></a>
+                <button type="button" data-report-id="{{ $report->id }}" class="report-delete"><i  class="bi bi-trash3" title="Zmazať výkaz"></i></button>
             </td>
         </tr>
 

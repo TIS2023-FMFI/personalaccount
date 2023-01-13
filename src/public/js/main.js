@@ -852,11 +852,14 @@ $(document).ready(function(){
             $("#operation_subject").html(response.operation.subject);
             $("#operation_sum").html(response.operation.sum + " €");
             $("#operation_date").html(response.operation.date);
+            
 
             if (response.operation.operation_type.lending == 1) {
-                $("#operation_date_until").html(operation.lending.expected_date_of_return);
+                $("#operation_date_until").html(response.operation.lending.expected_date_of_return);
+                $("#operation_date_until_label").css("visibility","visible");
             } else {
                 $("#operation_date_until").hide();
+                $("#operation_date_until_label").hide();
             }
             $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
             if (response.operation.attachment == null){
@@ -1043,10 +1046,6 @@ $(document).ready(function(){
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
-                    if (files.length == 0){
-                        $("#operation-file").css("border-color", "red");
-                        $("#add-operation-attachment-errors").append("<p>Pole s prílohou je potrebné vyplniť</p>");
-                    }
                     if (typeof errors.attachment != 'undefined') {
                         $("#operation-file").css("border-color", "red");
 
@@ -1062,7 +1061,7 @@ $(document).ready(function(){
                     }
                     if (typeof errors.operation_type_id != 'undefined') {
                         $("#add-operation-type").css("border-color", "red");
-                        $("#add-operation-type-errors").append("<p>Neplatný typ operácie</p>");
+                        $("#add-operation-type-errors").append("<p>Neplatný typ operácie.</p>");
                     }
                     if (typeof errors.subject != 'undefined') {
                         $("#add-operation-subject").css("border-color", "red");
@@ -1205,10 +1204,6 @@ $(document).ready(function(){
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
-                    if (files.length == 0){
-                        $("#edit-operation-file").css("border-color", "red");
-                        $("#edit-operation-attachment-errors").append("<p>Pole s prílohou je potrebné vyplniť</p>");
-                    }
                     if (typeof errors.attachment != 'undefined') {
                         $("#edit-operation-file").css("border-color", "red");
 

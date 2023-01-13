@@ -38,6 +38,9 @@ nav div:first-child a {
 .bi{
     color: var(--primary);
 }
+.bi-credit-card-fill{
+    color: white;
+}
 .content {
     padding-bottom: 30px;
 }
@@ -97,13 +100,19 @@ nav div:first-child a {
     position: absolute;
     top: 10px;
     right: 35px;
+    font-size: x-large;
+    margin-right: 5px;
 }
 .delete_account {
     position: absolute;
     top: 10px;
     right: 10px;
+    font-size: x-large;
 }
 .edit_account:hover, .delete_account:hover {
+    cursor: pointer;
+}
+.operation_type:hover, .operation_type:hover {
     cursor: pointer;
 }
 .account {
@@ -233,7 +242,12 @@ table tr:nth-child(odd) {
 }
 table tr td:last-child {
     width: 120px;
+    text-align: right;
 }
+table tr td:last-child .bi {
+    font-size: larger;
+}
+
 table td a {
     color: var(--primary);
     text-decoration: none;
@@ -594,4 +608,19 @@ a:visited {
     color: var(--primary);
     background-color: transparent;
     text-decoration: none;
+}
+#operations-export {
+    margin-left: 5px;
+}
+.main_info {
+    margin-top: 15px;
+}
+.operation-detail:hover, .operation-check:hover, .operation-edit:hover, .operation-delete:hover, .report-delete:hover{
+    cursor: pointer;
+    background: transparent;
+}
+.operation-detail, .operation-check, .operation-edit, .operation-delete, .report-delete{
+
+    border: none;
+    background: transparent;
 }
