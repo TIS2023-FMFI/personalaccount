@@ -39,11 +39,11 @@ class Account extends Model
     }
 
     /**
-     * Gets all operations belonging to this account.
+     * Gets all financial operations belonging to this account.
      *
      * @return HasMany
      */
-    public function financialOperations()
+    public function operations()
     {
         return $this->hasMany(FinancialOperation::class);
     }
@@ -89,8 +89,8 @@ class Account extends Model
      */
     public function getBalance()
     {
-        $incomes = $this->financialOperations()->incomes()->sum('sum');
-        $expenses = $this->financialOperations()->expenses()->sum('sum');
+        $incomes = $this->operations()->incomes()->sum('sum');
+        $expenses = $this->operations()->expenses()->sum('sum');
 
         return round($incomes - $expenses, 3);
     }
@@ -107,7 +107,7 @@ class Account extends Model
      */
     public function operationsBetween(Carbon $dateFrom, Carbon $dateTo)
     {
-        return $this->financialOperations()->whereBetween('date', [$dateFrom, $dateTo]);
+        return $this->operations()->whereBetween('date', [$dateFrom, $dateTo]);
     }
 
     /**

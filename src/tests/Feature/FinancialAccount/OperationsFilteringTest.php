@@ -47,7 +47,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
 
-        $this->assertCount(4, $this->account->financialOperations);
+        $this->assertCount(4, $this->account->operations);
         $this->assertCount(4, $this->account->operationsBetween($this->dates[0], $this->dates[3])->get());
         $this->assertCount(2, $this->account->operationsBetween($this->dates[0], $this->dates[1])->get());
         $this->assertCount(0, $this->account->operationsBetween($this->dates[4], $this->dates[5])->get());
@@ -59,7 +59,7 @@ class OperationsFilteringTest extends TestCase
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
         FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
 
-        $this->assertCount(2, $this->account->financialOperations);
+        $this->assertCount(2, $this->account->operations);
         $this->assertCount(0, $this->account->operationsBetween($this->dates[1], $this->dates[0])->get());
 
     }

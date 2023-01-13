@@ -14,7 +14,7 @@ class DeleteReportTest extends TestCase
 
     private $ajaxHeaders;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -23,6 +23,8 @@ class DeleteReportTest extends TestCase
         if ($this->setupDone) {
             return;
         }
+
+        Storage::fake();
 
         $this->user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
         $this->account = Account::factory()->for($this->user)->create();
@@ -34,6 +36,13 @@ class DeleteReportTest extends TestCase
         ];
 
         $this->setupDone = true;
+    }
+
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
     }
 
     public function test_that_unauthenticated_user_cannot_delete_report()
@@ -73,5 +82,7 @@ class DeleteReportTest extends TestCase
 
         $this->assertDatabaseMissing('sap_reports', [ 'id' => $this->report->id ]);
         Storage::assertMissing($this->report->path);
+
+        $this->lastTest = true;
     }
 }

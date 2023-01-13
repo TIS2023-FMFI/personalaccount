@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class FinancialOperation extends Model
 {
@@ -33,15 +34,29 @@ class FinancialOperation extends Model
      *
      * @var string[]
      */
-    protected $with = ['operationType'];
+    protected $with = [
+        'operationType',
+        'lending'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<int, string>
+     */
+    protected $casts = [
+        'date' => 'date:d.m.Y',
+    ];
 
 
     /**
-     *  Extends a query asking for financial operations so that it demands only operations which represent expenses,
-     *  and returns the new query builder.
+     * Extends a query asking for financial operations so that it demands only
+     * operations which represent expenses.
      *
      * @param Builder $query
+     * the builder whose query to extend
      * @return Builder
+     * the extended query builder
      */
     public function scopeExpenses(Builder $query): Builder
     {
@@ -51,11 +66,13 @@ class FinancialOperation extends Model
     }
 
     /**
-     *  Extends a query asking for financial operations so that it demands only operations which represent income,
-     *  and returns the new query builder.
+     * Extends a query asking for financial operations so that it demands only
+     * operations which represent income.
      *
      * @param Builder $query
+     * the builder whose query to extend
      * @return Builder
+     * the extended query builder
      */
     public function scopeIncomes(Builder $query): Builder
     {
@@ -96,13 +113,24 @@ class FinancialOperation extends Model
 
     /**
      * Returns whether this operation is a lending
-     * (based on the operation type, not on existence of a DB 'lending' record).
+     * (based on the operation type, not on the existence of a DB 'lending' record).
      *
      * @return bool
      */
     public function isLending()
     {
         return $this->operationType->lending;
+    }
+
+    /**
+     * Returns whether this operation is a repayment - subtype of lending
+     * (based on the operation type, not on the existence of a DB 'lending' record).
+     *
+     * @return bool
+     */
+    public function isRepayment()
+    {
+        return $this->operationType->repayment;
     }
 
     /**
@@ -113,19 +141,6 @@ class FinancialOperation extends Model
     public function lending()
     {
         return $this->hasOne(Lending::class, 'id', 'id');
-    }
-
-    /**
-     * Deletes the lending record related to this operation, if there is one.
-     *
-     * @throws DatabaseException
-     */
-    public function deleteLending()
-    {
-        if (! $this->isLending())
-            return;
-        if (! Lending::destroy($this->id))
-            throw new DatabaseException('The lending wasn\'t deleted.');
     }
 
     /**
@@ -152,11 +167,10 @@ class FinancialOperation extends Model
             $this->id,
             $this->account->sap_id,
             $this->title,
-            $this->date,
+            $this->date->format('d.m.Y'),
             $this->operationType->name,
             $this->subject,
             $this->getSumString(),
-            $this->attachment,
             $this->getCheckedString(),
             $this->sap_id
         ];

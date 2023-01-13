@@ -37,7 +37,7 @@ class FinancialAccountBalanceTest extends TestCase
             'operation_type_id' => $this->incomeType,
             'sum' => 10]);
 
-        $this->assertCount(1, $this->account->financialOperations);
+        $this->assertCount(1, $this->account->operations);
         $this->assertEquals(10, $this->account->getBalance());
     }
 
@@ -48,7 +48,7 @@ class FinancialAccountBalanceTest extends TestCase
             'operation_type_id' => $this->expenseType,
             'sum' => 10]);
 
-        $this->assertCount(1, $this->account->financialOperations);
+        $this->assertCount(1, $this->account->operations);
         $this->assertEquals(-10, $this->account->getBalance());
     }
 
@@ -63,7 +63,7 @@ class FinancialAccountBalanceTest extends TestCase
             'operation_type_id' => $this->expenseType,
             'sum' => 10]);
 
-        $this->assertCount(2, $this->account->financialOperations);
+        $this->assertCount(2, $this->account->operations);
         $this->assertEquals(0, $this->account->getBalance());
     }
 
@@ -82,7 +82,7 @@ class FinancialAccountBalanceTest extends TestCase
             'operation_type_id' => $this->expenseType,
             'sum' => 385.95]);
 
-        $this->assertCount(3, $this->account->financialOperations);
+        $this->assertCount(3, $this->account->operations);
         $this->assertEquals(-136.45, $this->account->getBalance());
     }
 

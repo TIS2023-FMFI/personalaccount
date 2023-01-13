@@ -23,7 +23,7 @@ return [
             'failed' => 'We were unable to generate a login token, please, try again later.',
         ],
         'sending' => [
-            'success' => 'We have successfully emailed you a login link.',
+            'success' => 'The login link should be delivered to your email address in a few moments.',
             'failed' => 'We were unable to email you a login link, please, try again later.',
         ]
     ],

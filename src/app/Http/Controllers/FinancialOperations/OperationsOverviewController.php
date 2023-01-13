@@ -37,8 +37,8 @@ class OperationsOverviewController extends Controller
      */
     public function show(Account $account, DateRequest $request)
     {
-        $dateFrom = $this->getFromDateOrMin($request);
-        $dateTo = $this->getToDateOrMax($request);
+        $dateFrom = $request->getValidatedFromDateOrMin();
+        $dateTo = $request->getValidatedToDateOrMax();
 
         $incomes = $account->operationsBetween($dateFrom, $dateTo)->incomes()->sum('sum');
         $expenses = $account->operationsBetween($dateFrom, $dateTo)->expenses()->sum('sum');
@@ -54,40 +54,6 @@ class OperationsOverviewController extends Controller
     }
 
     /**
-     * If the operations are requested to be filtered by date, gets the earliest date of the requested interval
-     * (all operations before this date should be filtered out).
-     * If no such date is present, gets the minimal possible date instead.
-     *
-     * @param DateRequest $request
-     * a HTTP request which may contain the dates to filter the operations by
-     * @return Carbon
-     * the obtained date
-     */
-    private function getFromDateOrMin(DateRequest $request)
-    {
-        $date = $request->validated('from');
-        if ($date) return Date::create($date);
-        return Date::minValue();
-    }
-
-    /**
-     * If the operations are requested to be filtered by date, gets the latest date of the requested interval
-     * (all operations after this date should be filtered out).
-     * If no such date is present, gets the maximal possible date instead.
-     *
-     * @param DateRequest $request
-     * a HTTP request which may contain the dates to filter the operations by
-     * @return Carbon
-     * the obtained date
-     */
-    private function getToDateOrMax(DateRequest $request)
-    {
-        $date = $request->validated('to');
-        if ($date) return Date::create($date);
-        return Date::maxValue();
-    }
-
-    /**
      * Handles a request to download a CSV export of financial operations.
      *
      * @param Account $account
@@ -99,13 +65,16 @@ class OperationsOverviewController extends Controller
      */
     public function downloadExport(Account $account, DateRequest $request)
     {
-        $dateFrom = $this->getFromDateOrMin($request);
-        $dateTo = $this->getToDateOrMax($request);
+        $dateFrom = $request->getValidatedFromDateOrMin();
+        $dateTo = $request->getValidatedToDateOrMax();
 
         $operations = $account->operationsBetween($dateFrom, $dateTo)->orderBy('date', 'desc')->get();
         $filename = $this->generateExportName($account, $dateFrom, $dateTo);
 
-        return response()->streamDownload(function() use ($operations){ $this->generateCSVfile($operations); }, $filename);
+        return response()->streamDownload(
+            fn () => $this->generateCSVfile($operations),
+            $filename
+        );
     }
 
     /**
@@ -196,7 +165,7 @@ class OperationsOverviewController extends Controller
     private function generateCSVfile(Collection $operations)
     {
         $columns = [
-            'ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Attachment', 'Checked', 'SAP ID'
+            'ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Checked', 'SAP ID'
         ];
         $stream = fopen('php://output', 'w');
         fputcsv($stream,$columns,';');

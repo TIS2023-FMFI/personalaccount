@@ -17,7 +17,7 @@ class UploadReportTest extends TestCase
 
     private $ajaxHeaders;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -26,6 +26,8 @@ class UploadReportTest extends TestCase
         if ($this->setupDone) {
             return;
         }
+
+        Storage::fake();
 
         $this->sapReportAttr = trans('validation.attributes.sap_report');
 
@@ -38,6 +40,13 @@ class UploadReportTest extends TestCase
         ];
 
         $this->setupDone = true;
+    }
+
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
     }
 
     public function test_that_unauthenticated_user_cannot_upload_report()
@@ -95,7 +104,6 @@ class UploadReportTest extends TestCase
 
     public function test_that_sap_report_must_be_text_file()
     {
-        Storage::fake();
         $uploadedReport = UploadedFile::fake()
                             ->create('test', 0, 'application/pdf');
 
@@ -120,7 +128,6 @@ class UploadReportTest extends TestCase
 
     public function test_that_sap_report_is_uploaded_with_date_uploaded()
     {
-        Storage::fake();
         $uploadedReport = UploadedFile::fake()
                             ->create('test', 0, 'text/plain');
 
@@ -148,7 +155,6 @@ class UploadReportTest extends TestCase
         Storage::assertExists($report->path);
 
         $report->delete();
-        Storage::fake();
     }
 
     public function test_that_sap_report_is_uploaded_with_date_exported()
@@ -156,7 +162,6 @@ class UploadReportTest extends TestCase
         $exported = '4.5.2020';
         $reportContent = $exported . ' test';
 
-        Storage::fake();
         $uploadedReport = UploadedFile::fake()
                             ->createWithContent('test', $reportContent)
                             ->mimeType('text/plain');
@@ -185,6 +190,7 @@ class UploadReportTest extends TestCase
         Storage::assertExists($report->path);
 
         $report->delete();
-        Storage::fake();
+
+        $this->lastTest = true;
     }
 }

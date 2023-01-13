@@ -2,6 +2,7 @@
 
 namespace App\Http\Helpers;
 use App\Exceptions\FileFormatException;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -53,12 +54,10 @@ class SapReportParser
             throw new FileFormatException('The date exported not found.');
         }
 
-        $date = Carbon::createFromFormat('d.m.Y', $rawDate);
-
-        if ($date === false) {
+        try {
+            return Carbon::createFromFormat('d.m.Y', $rawDate);
+        } catch (InvalidFormatException $e) {
             throw new FileFormatException('Invalid date format.');
         }
-
-        return $date;
     }
 }

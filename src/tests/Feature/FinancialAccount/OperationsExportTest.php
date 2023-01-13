@@ -67,7 +67,7 @@ class OperationsExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;2000-01-01;income;subject;100.00;attachments/test;FALSE;',
+        $expected = sprintf('%d;%s;title;01.01.2000;income;subject;100.00;FALSE;',
             $operation->id,
             $this->account->sap_id);
 
@@ -96,7 +96,7 @@ class OperationsExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;2000-01-01;expense;subject;100.00-;attachments/test;FALSE;',
+        $expected = sprintf('%d;%s;title;01.01.2000;expense;subject;100.00-;FALSE;',
             $operation->id,
             $this->account->sap_id);
 
@@ -125,7 +125,7 @@ class OperationsExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;2000-01-01;income;subject;100.00;attachments/test;TRUE;99',
+        $expected = sprintf('%d;%s;title;01.01.2000;income;subject;100.00;TRUE;99',
             $operation->id,
             $this->account->sap_id);
 
@@ -154,7 +154,7 @@ class OperationsExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;2000-01-01;lending;subject;100.00;attachments/test;;',
+        $expected = sprintf('%d;%s;title;01.01.2000;lending;subject;100.00;;',
             $operation->id,
             $this->account->sap_id);
 

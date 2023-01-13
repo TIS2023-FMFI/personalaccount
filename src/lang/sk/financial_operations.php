@@ -14,6 +14,7 @@ return [
         'success' => 'Operácia bola úspešne odstránená.',
         'failure' => 'Operáciu sa nám neporadilo odstrániť, prosím, skúste to neskôr.'
     ],
-    'invalid_check' => 'Pôžička nemôže byť označená ako skontrolovaná.'
+    
+    'repayment_invalid_date' => 'Dátum splatenia pôžičky nemôže byť skorší ako dátum jej poskytnutia.',
 
 ];

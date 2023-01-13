@@ -21,7 +21,7 @@ class FinancialOperationPolicyTest extends TestCase
 
     private $ajaxHeaders;
 
-    private $setupDone = false;
+    private $setupDone = false, $lastTest = false;
 
     public function setUp(): void
     {
@@ -42,7 +42,12 @@ class FinancialOperationPolicyTest extends TestCase
         $dir = FinancialOperation::getAttachmentsDirectoryPath($user);
         $path = Storage::putFile($dir, $file);
 
-        $type = OperationType::firstOrCreate([ 'name' => 'type' ]);
+        $type = OperationType::firstOrCreate([
+            'name' => 'type',
+            'expense' => false,
+            'lending' => false,
+            'repayment' => false
+        ]);
         $this->operation = FinancialOperation::factory()
                             ->create([
                                 'title' => 'operation',
@@ -59,10 +64,15 @@ class FinancialOperationPolicyTest extends TestCase
         $this->setupDone = true;
     }
 
+    public function tearDown(): void
+    {
+        if ($this->lastTest) {
+            Storage::fake();
+        }
+    }
+
     public function test_that_unauthorized_user_cannot_view_operation()
     {
-        //dd($this->operation, $this->otherUser->accounts);
-
         $response = $this->actingAs($this->otherUser)
                             ->get('/operations/' . $this->operation->id);
 
@@ -100,11 +110,15 @@ class FinancialOperationPolicyTest extends TestCase
     {
         $updated = $this->operation->getAttributes();
         $updated['title'] = 'new title';
-        unset($updated['attachment'], $updated['account_id']);
+        unset(
+            $updated['attachment'],
+            $updated['account_id'],
+            $updated['operation_type_id']
+        );
 
         $response = $this->actingAs($this->otherUser)
                             ->withHeaders($this->ajaxHeaders)
-                            ->put(
+                            ->patch(
                                 '/operations/' . $this->operation->id,
                                 $updated
                             );
@@ -134,5 +148,7 @@ class FinancialOperationPolicyTest extends TestCase
 
         $response
             ->assertStatus(403);
+
+        $this->lastTest = true;
     }
 }

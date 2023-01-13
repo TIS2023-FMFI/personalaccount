@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SapReports;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\FileHelper;
 use App\Http\Requests\SapReports\DownloadReportRequest;
 use App\Models\SapReport;
 use Illuminate\Http\Request;
@@ -27,6 +28,6 @@ class ReportDetailController extends Controller
         $path = $report->path;
         $fileName = $report->generateReportFileName();
 
-        return Storage::download($path, $fileName);
+        return FileHelper::downloadFileIfExists($path, $fileName);
     }
 }

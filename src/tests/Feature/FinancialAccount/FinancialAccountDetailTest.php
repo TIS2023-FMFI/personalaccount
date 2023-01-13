@@ -54,7 +54,7 @@ class FinancialAccountDetailTest extends TestCase
     public function test_correct_view_data()
     {
 
-        $account = Account::factory()->has(FinancialOperation::factory()->count(5))
+        $account = Account::factory()->has(FinancialOperation::factory()->count(5), 'operations')
             ->create(['user_id' => $this->user]);
 
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
@@ -71,7 +71,7 @@ class FinancialAccountDetailTest extends TestCase
     {
 
         $count = $this->operationsPerPage;
-        $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
+        $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1), 'operations')
             ->create(['user_id' => $this->user]);
 
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
@@ -93,7 +93,7 @@ class FinancialAccountDetailTest extends TestCase
     {
 
         $count = $this->operationsPerPage;
-        $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1))
+        $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1), 'operations')
             ->create(['user_id' => $this->user]);
 
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations?page=2");
