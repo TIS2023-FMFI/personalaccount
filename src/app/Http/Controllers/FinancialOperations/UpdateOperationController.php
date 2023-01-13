@@ -26,9 +26,8 @@ class UpdateOperationController extends GeneralOperationController
      * @param FinancialOperation $operation
      * the operation that is about to be updated
      * @return array
-     * an array containing information about the operation itself, supported
-     * operation types, and a list of unrepaid lendings associated with the same
-     * account as the operation that is about to be updated
+     * an array containing information about the operation itself and the supported
+     * operation types
      */
     public function getFormData(FinancialOperation $operation)
     {

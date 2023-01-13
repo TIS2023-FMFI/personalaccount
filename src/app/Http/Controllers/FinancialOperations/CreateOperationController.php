@@ -30,9 +30,7 @@ class CreateOperationController extends GeneralOperationController
      * @param Account $operation
      * the account with which the new operation will be associated
      * @return array
-     * an array containing information about the supported operation types
-     * and a list of unrepaid lendings associated with the account under which
-     * the new operation will be created
+     * an array containing the supported operation types
      */
     public function getFormData(Account $account)
     {
