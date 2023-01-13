@@ -7,7 +7,7 @@ use Illuminate\Validation\Rules\File;
 
 /**
  * A request to update an existing financial operation.
- * 
+ *
  * Fields: title, date, subject, sum, attachment, expected_date_of_return.
  */
 class UpdateOperationRequest extends FormRequest
@@ -20,11 +20,11 @@ class UpdateOperationRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => ['nullable', 'max:255'],
-            'date' => ['nullable', 'date'],
-            'subject' => ['nullable', 'max:255'],
-            'sum' => ['nullable', 'numeric', 'min:0'],
-            'attachment' => ['nullable', File::types(['txt','pdf'])],
+            'title' => ['filled', 'max:255'],
+            'date' => ['filled', 'date'],
+            'subject' => ['filled', 'max:255'],
+            'sum' => ['filled', 'numeric', 'min:0'],
+            'attachment' => ['filled', File::types(['txt','pdf'])],
             'checked' => ['nullable', 'boolean'],
             'expected_date_of_return' => ['nullable', 'date'],
         ];

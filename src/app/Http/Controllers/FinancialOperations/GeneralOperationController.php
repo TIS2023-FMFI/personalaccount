@@ -32,9 +32,11 @@ class GeneralOperationController extends Controller
      */
     protected function saveAttachment(Account $account, array $requestData)
     {
-        $file = $requestData['attachment'];
-        if ($file)
-            return $this->saveAttachmentToUserStorage($account->user, $file);
+        if (array_key_exists('attachment', $requestData)){
+            $file = $requestData['attachment'];
+            if ($file)
+                return $this->saveAttachmentToUserStorage($account->user, $file);
+        }
         return null;
     }
 
@@ -78,10 +80,10 @@ class GeneralOperationController extends Controller
         if (!$lending->exists)
             throw new DatabaseException('The lending wasn\'t created.');
     }
-    
+
     /**
      * Validates lending data.
-     * 
+     *
      * @param FinancialOperation $operation
      * the operation associated with the lending
      * @param array $lendingData
@@ -100,7 +102,7 @@ class GeneralOperationController extends Controller
 
     /**
      * Validates repayment data.
-     * 
+     *
      * @param FinancialOperation $operation
      * the operation associated with the lending
      * @param array $repaymentData
@@ -123,7 +125,7 @@ class GeneralOperationController extends Controller
 
     /**
      * Validates loan data.
-     * 
+     *
      * @param FinancialOperation $operation
      * the operation associated with the lending
      * @param array $loanData
@@ -145,7 +147,7 @@ class GeneralOperationController extends Controller
 
     /**
      * Ensures that a loan is not repaid earlier than provided.
-     * 
+     *
      * @param FinancialOperation $loan
      * the loan to consider
      * @param FinancialOperation|null $repayment
@@ -156,6 +158,7 @@ class GeneralOperationController extends Controller
     private function validateLendingDates(
         FinancialOperation $loan, FinancialOperation|null $repayment
     ) {
+        //dd($loan->date, $repayment->date);
         if ($loan && $repayment && $repayment->date->lt($loan->date))
             throw ValidationException::withMessages([
                 'date' => trans('validation.repayment_invalid_date')

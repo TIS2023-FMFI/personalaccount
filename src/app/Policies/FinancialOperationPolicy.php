@@ -54,7 +54,7 @@ class FinancialOperationPolicy
      */
     public function createRepayment(User $user, Lending $lending)
     {
-        return $user->id === $lending->financialOperation->account->user_id;
+        return $user->id === $lending->operation->account->user_id;
     }
 
     /**

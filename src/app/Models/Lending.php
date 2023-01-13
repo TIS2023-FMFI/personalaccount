@@ -50,15 +50,15 @@ class Lending extends Model
 
     /**
      * Find a repayment associated with a loan.
-     * 
-     * @param int $loadId
-     * the id of the load for which to find a repayment
+     *
+     * @param int $loanId
+     * the id of the loan for which to find a repayment
      * @return Lending|null
      * the repayment or null if none was found
      */
-    public static function findRepayment(int $loadId)
+    public static function findRepayment(int $loanId)
     {
-        return Lending::where('previous_lending_id', '=', $loadId)->first();
+        return Lending::where('previous_lending_id', '=', $loanId)->first();
     }
 
     /**

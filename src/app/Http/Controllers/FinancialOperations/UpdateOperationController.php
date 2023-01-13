@@ -14,6 +14,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Manages updates of financial operations, including checking and unchecking.
@@ -22,7 +23,7 @@ class UpdateOperationController extends GeneralOperationController
 {
     /**
      * Prepares the data necessary to populate the form handling operation updates.
-     * 
+     *
      * @param FinancialOperation $operation
      * the operation that is about to be updated
      * @return array
@@ -32,8 +33,7 @@ class UpdateOperationController extends GeneralOperationController
     public function getFormData(FinancialOperation $operation)
     {
         return [
-            'operation' =>$operation,
-            'operation_types' => OperationType::userAssignable(),
+            'operation' => $operation
         ];
     }
 
@@ -49,7 +49,7 @@ class UpdateOperationController extends GeneralOperationController
     public function update(FinancialOperation $operation, UpdateOperationRequest $request)
     {
         $requestData = $request->validated();
-        
+
         if (!$this->validateUpdate($operation, $requestData))
             return response(trans('financial_operations.update.failure'), 500);
 
@@ -63,7 +63,7 @@ class UpdateOperationController extends GeneralOperationController
         } catch (Exception $e) {
             if ($e instanceof ValidationException)
                 throw $e;
-            
+            return response($e->getMessage());
             return response(trans('financial_operations.update.failure'), 500);
         }
 
@@ -151,7 +151,7 @@ class UpdateOperationController extends GeneralOperationController
 
     /**
      * Validates an attempt to update an operation.
-     * 
+     *
      * @param FinancialOperation $operation
      * the operation to be updated
      * @param array $data

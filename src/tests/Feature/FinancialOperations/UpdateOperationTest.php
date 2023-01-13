@@ -18,7 +18,7 @@ class UpdateOperationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private Model $user, $account, $type, $lendingType;
+    private Model $user, $account, $type, $lendingType, $repaymentType;
     private array $headers;
     private GeneralOperationController $controller;
 
@@ -30,6 +30,7 @@ class UpdateOperationTest extends TestCase
         $this->account = Account::factory()->create(['user_id' => $this->user]);
         $this->type = OperationType::firstOrCreate(['name' => 'type', 'lending' => false]);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
+        $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'repayment' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -48,22 +49,21 @@ class UpdateOperationTest extends TestCase
                     ]);
         Lending::factory()->create(['id' => $op]);
 
-        $exp = [$op->id];
+        /*$exp = [$op->id];*/
 
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->headers)
                             ->get(
                                 '/operations/' . $op->id . '/update'
                             );
-        
+
         $response->assertStatus(200);
         $response
-            ->assertJsonPath('operation_types', OperationType::all()->toArray())
             ->assertJsonPath('operation.id', $op->id);
-            
-        foreach ($response['unrepaid_lendings'] as $lending) {
+
+        /*foreach ($response['unrepaid_lendings'] as $lending) {
             in_array($lending['id'], $exp);
-        }
+        }*/
     }
 
     public function test_update_operation(){
@@ -71,106 +71,57 @@ class UpdateOperationTest extends TestCase
         $operation = FinancialOperation::factory()->create(
             [
                 'account_id' => $this->account,
+                'title' => 'original',
+                'sum' => 100,
                 'operation_type_id' => $this->type
             ]);
 
-        $operationData = [
-            'title' => 'title',
-            'date' => '2022-12-24',
-            'operation_type_id' => $this->type->id,
-            'subject' => 'subject',
-            'sum' => 100,
-            'attachment' => null
+        $patchData = [
+            'title' => 'updated',
+            'sum' => 50
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operations/$operation->id", $operationData);
+            ->patch("/operations/$operation->id", $patchData);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('financial_operations', [
             'id' => $operation->id,
-            'title' => 'title',
-            'sum' => 100,
-            'subject' => 'subject'
+            'title' => 'updated',
+            'sum' => 50
         ]);
     }
 
-    public function test_update_nonexisting_operation(){
-
-        $operationData = [
-            'title' => 'title',
-            'date' => '2022-12-24',
-            'operation_type_id' => $this->type->id,
-            'subject' => 'subject',
-            'sum' => 100,
-            'attachment' => null
-        ];
-
-        $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put('/operations/9999', $operationData);
-
-        $response->assertStatus(404);
-    }
-
-    public function test_update_type_to_lending_creates_lending_record(){
+    public function test_cannot_update_with_empty_data(){
 
         $operation = FinancialOperation::factory()->create(
             [
                 'account_id' => $this->account,
+                'title' => 'original',
+                'sum' => 100,
                 'operation_type_id' => $this->type
             ]);
 
-        $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
-
-        $operationData = [
-            'title' => 'test',
-            'date' => '2022-12-24',
-            'operation_type_id' => $this->lendingType->id,
-            'subject' => 'test',
-            'sum' => 100,
-            'attachment' => null
-        ];
-
-        $lendingData = [
-            'expected_date_of_return' => '2023-01-01',
-            'previous_lending_id' => null
+        $patchData = [
+            'title' => ''
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operations/$operation->id", array_merge($operationData, $lendingData));
+            ->patch("/operations/$operation->id", $patchData);
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('lendings', [
-            'id' => $operation->id,
-            'expected_date_of_return' => '2023-01-01'
-        ]);
+        $response->assertStatus(422);
     }
 
-    public function test_update_type_from_lending_deletes_lending_record(){
+    public function test_cannot_update_nonexisting_operation(){
 
-        $operation = FinancialOperation::factory()->create(
-            [
-                'account_id' => $this->account,
-                'operation_type_id' => $this->lendingType
-            ]);
-        Lending::factory()->create(['id' => $operation]);
-
-        $this->assertDatabaseHas('lendings', ['id' => $operation->id]);
-
-        $operationData = [
-            'title' => 'test',
-            'date' => '2022-12-24',
-            'operation_type_id' => $this->type->id,
-            'subject' => 'test',
-            'sum' => 100,
-            'attachment' => null
+        $patchData = [
+            'title' => 'updated'
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operations/$operation->id", $operationData);
+            ->patch('/operations/9999', $patchData);
 
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('lendings', ['id' => $operation->id]);
+        $response->assertStatus(404);
     }
 
     public function test_update_operation_creates_file(){
@@ -186,17 +137,12 @@ class UpdateOperationTest extends TestCase
                 'attachment' => null
             ]);
 
-        $operationData = [
-            'title' => 'test',
-            'date' => '2022-12-24',
-            'operation_type_id' => $this->type->id,
-            'subject' => 'test',
-            'sum' => 100,
+        $patchData = [
             'attachment' => $file
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operations/$operation->id", $operationData);
+            ->patch("/operations/$operation->id", $patchData);
 
         $response->assertStatus(200);
         $operation->refresh();
@@ -224,23 +170,99 @@ class UpdateOperationTest extends TestCase
             ]);
 
         $newFile = UploadedFile::fake()->create('test.txt');
-        $operationData = [
-            'title' => 'test',
-            'date' => '2022-12-24',
-            'operation_type_id' => $this->type->id,
-            'subject' => 'test',
-            'sum' => 100,
+        $patchData = [
             'attachment' => $newFile
         ];
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
-            ->put("/operations/$operation->id", $operationData);
+            ->patch("/operations/$operation->id", $patchData);
 
         $response->assertStatus(200);
         $operation->refresh();
         $newPath = $operation->attachment;
         Storage::disk('local')->assertExists($newPath);
         Storage::disk('local')->assertMissing($oldPath);
+
+        Storage::fake('local');
+    }
+
+    public function test_update_lending_expected_date()
+    {
+        $loan = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
+
+        $lending = Lending::factory()->create(
+            [
+                'id' => $loan,
+                'expected_date_of_return' => now()->format('Y-m-d')
+            ]);
+
+        $laterDate = now()->addDay()->format('Y-m-d');
+        $patchData = [
+            'expected_date_of_return' => $laterDate
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$loan->id", $patchData);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('lendings', [
+            'id' => $lending->id,
+            'expected_date_of_return' => $laterDate
+        ]);
+
+    }
+
+    public function test_cannot_update_loan_to_be_later_than_repayment()
+    {
+        $loan = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
+        $loanLending = Lending::factory()->create(['id' => $loan]);
+
+        $repayment = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->repaymentType,
+                'date' => $loan->date->addDay()
+            ]);
+        $repaymentLending = Lending::factory()->create(
+            [
+                'id' => $repayment,
+                'previous_lending_id' => $loan
+            ]);
+
+        $patchData = [
+            'date' => $repayment->date->addDay()
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$loan->id", $patchData);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_cannot_update_repayment()
+    {
+        $repayment = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->repaymentType
+            ]);
+
+        $patchData = [
+            'title' => 'updated'
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$repayment->id", $patchData);
+
+        $response->assertStatus(500);
     }
 
     public function test_check_operation()
@@ -285,7 +307,21 @@ class UpdateOperationTest extends TestCase
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
             ->patch("/operations/$operation->id", ['checked' => true]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(500);
+
+    }
+
+    public function test_cannnot_check_repayment()
+    {
+
+        $operation = FinancialOperation::factory()->create(
+            ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->repaymentType]);
+        Lending::factory()->create(['id' => $operation]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$operation->id", ['checked' => true]);
+
+        $response->assertStatus(500);
 
     }
 

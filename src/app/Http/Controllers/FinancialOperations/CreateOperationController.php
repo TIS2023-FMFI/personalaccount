@@ -14,9 +14,7 @@ use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -26,7 +24,7 @@ class CreateOperationController extends GeneralOperationController
 {
     /**
      * Prepares the data necessary to populate the form handling operation creation.
-     * 
+     *
      * @param Account $operation
      * the account with which the new operation will be associated
      * @return array
@@ -35,10 +33,10 @@ class CreateOperationController extends GeneralOperationController
     public function getFormData(Account $account)
     {
         return [
-            'operation_types' => OperationType::userAssignable(),
+            'operation_types' => OperationType::userAssignable()->get(),
         ];
     }
-    
+
     /**
      * Handles the request to create a new financial operation.
      *
@@ -76,7 +74,7 @@ class CreateOperationController extends GeneralOperationController
         if ($lendingOperation->isRepayment())
             return response(trans('financial_operations.create.failure'), 500);
 
-        $account = $lendingOperation->accout;
+        $account = $lendingOperation->account;
         $data = $request->prepareValidatedOperationData($lendingOperation);
 
         return $this->createOperationFromData($account, $data);
@@ -103,6 +101,7 @@ class CreateOperationController extends GeneralOperationController
             if ($e instanceof ValidationException)
                 throw $e;
 
+            //return response($e->getMessage(), 500);
             return response(trans('financial_operations.create.failure'), 500);
         }
 
@@ -150,7 +149,7 @@ class CreateOperationController extends GeneralOperationController
     ) {
         $operation = $this->createOperationRecord($account, $data, $attachment);
 
-        if ($operation->isLending())
+        if ($operation->isLending() || $operation->isRepayment())
             $this->upsertLending($operation, $data);
     }
 
@@ -170,8 +169,8 @@ class CreateOperationController extends GeneralOperationController
     private function createOperationRecord(
         Account $account, array $data, string|null $attachment
     ) {
+
         $recordData = array_merge($data, ['attachment' => $attachment]);
-        
         $operation = $account->operations()->create($recordData);
 
         if (!$operation->exists)
