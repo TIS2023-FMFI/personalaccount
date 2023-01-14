@@ -6,7 +6,6 @@ use App\Exceptions\StorageException;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\FileHelper;
 use App\Models\FinancialOperation;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**

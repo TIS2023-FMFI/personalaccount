@@ -158,7 +158,7 @@ class UpdateOperationController extends GeneralOperationController
      * @return bool
      * true if the update is valid, false otherwise
      */
-    public function validateUpdate(FinancialOperation $operation, array $data)
+    private function validateUpdate(FinancialOperation $operation, array $data)
     {
         if ($operation->isRepayment())
             return false;

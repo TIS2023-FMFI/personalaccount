@@ -72,7 +72,7 @@ class OperationsOverviewController extends Controller
         $filename = $this->generateExportName($account, $dateFrom, $dateTo);
 
         return response()->streamDownload(
-            fn () => $this->generateCSVfile($operations),
+            fn () => $this->generateCsvFile($operations),
             $filename
         );
     }
@@ -162,7 +162,7 @@ class OperationsOverviewController extends Controller
      * @return false|resource
      * stream containing the exported file
      */
-    private function generateCSVfile(Collection $operations)
+    private function generateCsvFile(Collection $operations)
     {
         $columns = [
             'ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Checked', 'SAP ID'
