@@ -654,7 +654,25 @@ a:visited {
     padding: 5px 0;
     font-size: 20px;
     border: none;
+    justify-content: center;
 }
 .edit_type_category div{
     margin-right: 50px;
+}
+#operation-modal .modal{
+    width: fit-content;
+    min-width: 20%;
+}
+.detail_div{
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    padding: 5px 0;
+    font-size: 20px;
+    border: none;
+    flex-wrap: nowrap;
+}
+.detail_div div{
+    margin-right: 50px;
+    white-space: nowrap; 
 }

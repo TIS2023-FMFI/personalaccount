@@ -862,13 +862,13 @@ $(document).ready(function(){
             let return_of_lending = response.operation.operation_type.repayment
 
             if ( lending == 1 && return_of_lending == 0) {
-                    $("#operation_date_until_label").css("display","flex");
+                    $("#operation_date_until_label").css("visibility", "visible")
                     return_date = response.operation.lending.expected_date_of_return
                     rdd = return_date.substring(8,10);
                     rmm = return_date.substring(5,7);
                     ryyyy = return_date.substring(0,4);
                     $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
-                    $("#operation_date_until").css("display", "flex")
+                    $("#operation_date_until").css("visibility", "visible")
                 
             } else {
                 $("#operation_date_until").css("display", "none")
