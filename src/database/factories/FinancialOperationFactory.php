@@ -21,7 +21,7 @@ class FinancialOperationFactory extends Factory
     public function definition()
     {
         $accounts = Account::all('id');
-        $operationTypes = OperationType::all('id');
+        $operationTypes = OperationType::where('lending', '=', false)->get('id');
         $checked = fake()->boolean(30);
 
         return [

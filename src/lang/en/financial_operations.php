@@ -24,6 +24,6 @@ return [
         'failure' => 'We were unable to delete the operation, please, try again later.'
     ],
 
-    'repayment_date_invalid' => 'The loan repayment date cannot be earlier than the date it was provided.',
+    'repayment_date_invalid' => 'The loan repayment date cannot be earlier than the date the loan was provided.',
 
 ];
