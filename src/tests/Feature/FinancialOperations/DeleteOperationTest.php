@@ -21,7 +21,7 @@ class DeleteOperationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private Model $user, $account, $type, $lendingType;
+    private Model $user, $account, $type, $lendingType, $repaymentType;
     private array $headers;
 
     public function setUp(): void
@@ -32,6 +32,7 @@ class DeleteOperationTest extends TestCase
         $this->account = Account::factory()->create(['user_id' => $this->user]);
         $this->type = OperationType::firstOrCreate(['name' => 'type']);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
+        $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'repayment' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -70,6 +71,40 @@ class DeleteOperationTest extends TestCase
         ]);
         $this->assertDatabaseMissing('lendings', [
             'id' => $operation->id,
+        ]);
+    }
+
+    public function test_delete_operation_with_repayment()
+    {
+
+        $loan = FinancialOperation::factory()
+            ->create(
+                [
+                    'account_id' => $this->account,
+                    'operation_type_id' => $this->lendingType,
+                    'date' => now()->format('d-m-Y')
+                ]);
+        Lending::factory()->create(['id' => $loan]);
+
+        $repayment = FinancialOperation::factory()
+            ->create(
+                [
+                    'account_id' => $this->account,
+                    'operation_type_id' => $this->repaymentType,
+                    'date' => $loan->date->addDay()
+                ]);
+        Lending::factory()->create(['id' => $repayment, 'previous_lending_id' => $loan]);
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->delete("/operations/$loan->id");
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('financial_operations', [
+            'id' => $loan->id,
+        ]);
+        $this->assertDatabaseMissing('financial_operations', [
+            'id' => $repayment->id,
         ]);
     }
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('id')->references('id')->on('financial_operations')->cascadeOnDelete();
             $table->date('expected_date_of_return')->nullable();
             $table->unsignedBigInteger('previous_lending_id')->unique()->nullable();
-            $table->foreign('previous_lending_id')->references('id')->on('lendings')->cascadeOnDelete();
+            $table->foreign('previous_lending_id')->references('id')->on('lendings');
         });
     }
 

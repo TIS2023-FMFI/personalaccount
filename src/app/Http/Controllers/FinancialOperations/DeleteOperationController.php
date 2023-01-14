@@ -53,7 +53,8 @@ class DeleteOperationController extends GeneralOperationController
     }
 
     /**
-     * Deletes the operation and its attachment file, if it has one.
+     * Deletes the operation.
+     * Also deletes its attachment file and its repayment, if it has any of those.
      *
      * @param FinancialOperation $operation
      * the operation to be deleted
@@ -62,6 +63,8 @@ class DeleteOperationController extends GeneralOperationController
     private function deleteOperation(FinancialOperation $operation)
     {
         $attachment = $operation->attachment;
+        if ($operation->isLending())
+            $operation->lending->deleteRepayment();
         if (! $operation->delete())
             throw new DatabaseException('The operation wasn\'t deleted.');
 

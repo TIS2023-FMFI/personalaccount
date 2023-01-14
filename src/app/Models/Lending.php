@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\DatabaseException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,6 +52,19 @@ class Lending extends Model
     ];
 
     /**
+     * Find a repayment associated with a loan.
+     *
+     * @param int $loanId
+     * the id of the loan for which to find a repayment
+     * @return Lending|null
+     * the repayment or null if none was found
+     */
+    public static function findRepayment(int $loanId)
+    {
+        return Lending::where('previous_lending_id', '=', $loanId)->first();
+    }
+
+    /**
      * Get the operation with which this lending is associated.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -81,15 +95,16 @@ class Lending extends Model
     }
 
     /**
-     * Find a repayment associated with a loan.
-     *
-     * @param int $loanId
-     * the id of the loan for which to find a repayment
-     * @return Lending|null
-     * the repayment or null if none was found
+     * If this lending is repaid, deletes the repayment's record in the 'financial operations' DB table.
+     * @return void
+     * @throws DatabaseException
      */
-    public static function findRepayment(int $loanId)
+    public function deleteRepayment()
     {
-        return Lending::where('previous_lending_id', '=', $loanId)->first();
+        $repayment = $this->repayment;
+        if (! $repayment)
+            return;
+        if (! $repayment->operation->delete())
+            throw new DatabaseException('The lending\'s repayment wasn\'t deleted.');
     }
 }
