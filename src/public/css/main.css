@@ -588,7 +588,7 @@ label, input {
     touch-action: manipulation;
 }
 label {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--primary);
 }
 
@@ -619,12 +619,60 @@ a:visited {
 .main_info {
     margin-top: 20px;
 }
-.operation-detail:hover, .operation-check:hover, .operation-edit:hover, .operation-delete:hover, .report-delete:hover{
+.operation-detail:hover, .operation-check:hover, .operation-edit:hover, .operation-delete:hover, .report-delete:hover, .operation-repayment:hover{
     cursor: pointer;
     background: transparent;
 }
-.operation-detail, .operation-check, .operation-edit, .operation-delete, .report-delete{
-
+.operation-detail, .operation-check, .operation-edit, .operation-delete, .report-delete, .operation-repayment{
     border: none;
     background: transparent;
+}
+.tooltip {
+    display: inline-block;
+}
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    background-color: white;
+    border: solid var(--primary) 1px;
+    font-weight: bold;
+    color: var(--primary);
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    position: absolute;
+    z-index: 1;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+.edit_type_category{
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    padding: 5px 0;
+    font-size: 20px;
+    border: none;
+    justify-content: center;
+}
+.edit_type_category div{
+    margin-right: 50px;
+}
+#operation-modal .modal{
+    width: fit-content;
+    min-width: 20%;
+}
+.detail_div{
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    padding: 5px 0;
+    font-size: 20px;
+    border: none;
+    flex-wrap: nowrap;
+}
+.detail_div div{
+    margin-right: 50px;
+    white-space: nowrap; 
 }

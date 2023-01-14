@@ -33,7 +33,7 @@
     </div>
 
     <div>
-        <button data-account-id="{{ $account->id }}" id="create_operation" type="button" title="Nová operácia">+</i></button>
+        <button data-account-id="{{ $account->id }}" data-csrf="{{ csrf_token() }}" id="create_operation" type="button" title="Nová operácia">+</i></button>
     </div>
 </div>
 
@@ -47,7 +47,7 @@
     <tr>
         <th>Poradie</th>
         <th>Názov</th>
-        <th>Dátum pridania</th>
+        <th>Dátum</th>
         <th>Typ</th>
         <th class="w-100">Skontrolované</th>
         <th class="align-right">Suma</th>
@@ -58,7 +58,7 @@
         <tr>
             <td>{{ ($operations->currentPage() - 1) * $operations->perPage() + $key + 1}}.</td>
             <td>{{ $operation->title }}</td>
-            <td>{{ $operation->date }}</td>
+            <td>{{ $operation->date->format('d.m.Y') }}</td>
             <td>{{ $operation->operationType->name }}</td>
             @if( $operation->checked )
                 <td>Áno</td>
@@ -72,11 +72,19 @@
             @endif
             <td>
                 <button type="button" data-operation-id="{{ $operation->id }}" class="operation-detail"><i  class="bi bi-info-circle" title="Detail operácie"></i></button>
-                @if( ! $operation->isLending() )
-                <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu" ></i>
+                @if( $operation->isRepayment() )
+                    <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
+                @elseif ( $operation->isLending() )
+                    <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
+                    @if (! $operation->lending->repayment)
+                        <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-repayment"><i class="bi bi-cash-coin" title="Splatiť pôžičku"></i>
+                    @endif
+                  <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
+                @else
+                    <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
+                    <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu"></i>
+                    <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
                 @endif
-                <button type="button" data-operation-id="{{ $operation->id }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
-                <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
             </td>
         </tr>
 
