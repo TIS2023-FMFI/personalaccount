@@ -85,7 +85,6 @@
                     <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu"></i>
                     <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
                 @endif
-
             </td>
         </tr>
 

@@ -99,15 +99,15 @@ class Account extends Model
      * Builds a query requesting financial operations which belong to this account
      * and whose date is in the specified interval.
      *
-     * @param Carbon $dateFrom
+     * @param Carbon $from
      * earliest date in the interval
-     * @param Carbon $dateTo
+     * @param Carbon $to
      * latest date in the interval
      * @return HasMany the result query
      */
-    public function operationsBetween(Carbon $dateFrom, Carbon $dateTo)
+    public function operationsBetween(Carbon $from, Carbon $to)
     {
-        return $this->operations()->whereBetween('date', [$dateFrom, $dateTo]);
+        return $this->operations()->whereBetween('date', [$from, $to]);
     }
 
     /**

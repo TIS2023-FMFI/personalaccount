@@ -30,7 +30,7 @@ class DeleteReportController extends Controller
     public function delete(SapReport $report)
     {
         try {
-            $this->deleteWithinTransaction($report);
+            $this->deleteReportWithinTransaction($report);
         } catch (Exception $e) {
             return response(trans('sap_reports.delete.failed'), 500);
         }
@@ -47,7 +47,7 @@ class DeleteReportController extends Controller
      * thrown if an error occurred
      * @return void
      */
-    private function deleteWithinTransaction(SapReport $report)
+    private function deleteReportWithinTransaction(SapReport $report)
     {
         $deleteRecordAndFileTransaction = new DBTransaction(
             fn () => $this->deleteReportRecordAndFile($report)

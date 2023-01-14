@@ -4,7 +4,6 @@ namespace App\Http\Controllers\FinancialOperations;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialOperations\CreateOperationRequest;
 use App\Models\Account;
 use App\Models\FinancialOperation;
 use App\Models\Lending;
@@ -160,7 +159,7 @@ class GeneralOperationController extends Controller
     ) {
         if ($loan && $repayment && $repayment->date->lt($loan->date))
             throw ValidationException::withMessages([
-                'date' => trans('validation.repayment_invalid_date')
+                'date' => trans('validation.repayment_date_invalid')
             ]);
     }
 }

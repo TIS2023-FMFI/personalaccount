@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Exceptions\DatabaseException;
 use App\Http\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\DB;
 
 class FinancialOperation extends Model
 {
@@ -30,13 +28,13 @@ class FinancialOperation extends Model
     protected $guarded = ['id'];
 
     /**
-     * Array of related tables which should be eager-loaded from the DB along with this model.
+     * The relationships to eager load.
      *
      * @var string[]
      */
     protected $with = [
         'operationType',
-        'lending'
+        'lending',
     ];
 
     /**
@@ -45,7 +43,7 @@ class FinancialOperation extends Model
      * @var array<int, string>
      */
     protected $casts = [
-        'date' => 'date'
+        'date' => 'date',
     ];
 
 
@@ -82,6 +80,18 @@ class FinancialOperation extends Model
     }
 
     /**
+     * Generates the name of the directory where attachments for a user should be stored.
+     *
+     * @param User $user
+     * @return string
+     * the generated name
+     */
+    public static function getAttachmentsDirectoryPath(User $user)
+    {
+        return "attachments/user_{$user->id}";
+    }
+
+    /**
      * Returns the account to which this operation belongs.
      *
      * @return BelongsTo
@@ -99,6 +109,16 @@ class FinancialOperation extends Model
     public function operationType()
     {
         return $this->belongsTo(OperationType::class);
+    }
+
+    /**
+     * Returns the lending record related to this operation, if it exists.
+     *
+     * @return HasOne
+     */
+    public function lending()
+    {
+        return $this->hasOne(Lending::class, 'id', 'id');
     }
 
     /**
@@ -131,28 +151,6 @@ class FinancialOperation extends Model
     public function isRepayment()
     {
         return $this->operationType->repayment;
-    }
-
-    /**
-     * Returns the lending record related to this operation, if it exists.
-     *
-     * @return HasOne
-     */
-    public function lending()
-    {
-        return $this->hasOne(Lending::class, 'id', 'id');
-    }
-
-    /**
-     * Generates the name of the directory where attachments for a user should be stored.
-     *
-     * @param $user
-     * @return string
-     * the generated name
-     */
-    public static function getAttachmentsDirectoryPath($user)
-    {
-        return "attachments/user_{$user->id}";
     }
 
     /**
