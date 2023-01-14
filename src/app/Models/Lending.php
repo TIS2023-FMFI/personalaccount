@@ -33,16 +33,6 @@ class Lending extends Model
     public $incrementing = false;
 
     /**
-     * The relationships to eager load.
-     *
-     * @var string[]
-     */
-    protected $with = [
-        'loan',
-        'repayment'
-    ];
-
-    /**
      * The attributes that should be cast.
      *
      * @var array<int, string>
