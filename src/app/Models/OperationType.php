@@ -40,7 +40,7 @@ class OperationType extends Model
 
     /**
      * Get the expense repayment type.
-     * 
+     *
      * @return OperationType
      */
     public static function getRepaymentExpense()
@@ -52,7 +52,7 @@ class OperationType extends Model
 
     /**
      * Get the income repayment type.
-     * 
+     *
      * @return OperationType
      */
     public static function getRepaymentIncome()

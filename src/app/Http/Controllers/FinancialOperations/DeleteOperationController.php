@@ -11,7 +11,6 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Manages deletion of financial operations.
@@ -29,7 +28,7 @@ class DeleteOperationController extends GeneralOperationController
     public function delete(FinancialOperation $operation)
     {
         try {
-            $this->runDeleteOperationTransaction($operation);
+            $this->deleteOperationWithinTransaction($operation);
         } catch (Exception $e) {
             return response(trans('financial_operations.delete.failure'), 500);
         }
@@ -43,7 +42,7 @@ class DeleteOperationController extends GeneralOperationController
      * the operation to be deleted
      * @throws Exception
      */
-    private function runDeleteOperationTransaction(FinancialOperation $operation)
+    private function deleteOperationWithinTransaction(FinancialOperation $operation)
     {
         $deleteOperationTransaction = new DBTransaction(
             fn () => $this->deleteOperation($operation)
@@ -53,7 +52,8 @@ class DeleteOperationController extends GeneralOperationController
     }
 
     /**
-     * Deletes the operation and its attachment file, if it has one.
+     * Deletes the operation.
+     * Also deletes its attachment file and its repayment, if it has any of those.
      *
      * @param FinancialOperation $operation
      * the operation to be deleted
@@ -62,6 +62,8 @@ class DeleteOperationController extends GeneralOperationController
     private function deleteOperation(FinancialOperation $operation)
     {
         $attachment = $operation->attachment;
+        if ($operation->isLending())
+            $operation->lending->deleteRepayment();
         if (! $operation->delete())
             throw new DatabaseException('The operation wasn\'t deleted.');
 

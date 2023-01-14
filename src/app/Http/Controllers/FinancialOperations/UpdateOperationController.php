@@ -8,12 +8,10 @@ use App\Http\Helpers\DBTransaction;
 use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\UpdateOperationRequest;
 use App\Models\FinancialOperation;
-use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -32,9 +30,7 @@ class UpdateOperationController extends GeneralOperationController
      */
     public function getFormData(FinancialOperation $operation)
     {
-        return [
-            'operation' => $operation
-        ];
+        return ['operation' => $operation];
     }
 
     /**
@@ -63,7 +59,7 @@ class UpdateOperationController extends GeneralOperationController
         } catch (Exception $e) {
             if ($e instanceof ValidationException)
                 throw $e;
-            
+
             return response(trans('financial_operations.update.failure'), 500);
         }
 
@@ -141,9 +137,12 @@ class UpdateOperationController extends GeneralOperationController
     private function updateOperationRecord(
         FinancialOperation $operation, array $data, string|null $newAttachment
     ) {
-        $recordData = ($newAttachment)
-                        ? array_merge($data, ['attachment' =>  $newAttachment])
-                        : $data;
+        $recordData = $data;
+
+        if ($newAttachment)
+            $recordData['attachment'] = $newAttachment;
+        else
+            unset($recordData['attachment']);
 
         if (!$operation->update($recordData))
             throw new DatabaseException('The operation wasn\'t updated.');
@@ -159,7 +158,7 @@ class UpdateOperationController extends GeneralOperationController
      * @return bool
      * true if the update is valid, false otherwise
      */
-    public function validateUpdate(FinancialOperation $operation, array $data)
+    private function validateUpdate(FinancialOperation $operation, array $data)
     {
         if ($operation->isRepayment())
             return false;

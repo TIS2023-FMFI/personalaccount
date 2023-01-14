@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\FinancialAccount;
+namespace Tests\Feature\FinancialOperations;
 
 use App\Models\Account;
 use App\Models\FinancialOperation;
@@ -14,7 +14,7 @@ use Tests\Util\HiddenMembersAccessor;
 /**
  * These tests must be run on a seeded database, as they generate plenty of models with foreign keys.
  */
-class FinancialAccountDetailTest extends TestCase
+class OperationsOverviewTest extends TestCase
 {
     use DatabaseTransactions;
 

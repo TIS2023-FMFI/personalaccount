@@ -148,12 +148,15 @@ return [
         'old_password' => 'Staré heslo',
         'new_password' => 'Nové heslo',
 
+        'from' => 'Od',
+        'to' => 'Do',
+
         'date' => 'Dátum',
         'operation_type_id' => 'Typ operácie',
         'subject' => 'Subjekt',
         'sum' => 'Suma',
         'attachment' => 'Príloha',
-        'expected_date_of_return' => 'Očakávaný dátum splatenia',
+        'expected_date_of_return' => 'Predpokladaný dátum splatenia',
         'previous_lending_id' => 'ID predchádzajúcej pôžičky',
 
         'title' => 'Názov',
