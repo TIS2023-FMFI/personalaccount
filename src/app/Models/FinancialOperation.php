@@ -30,7 +30,7 @@ class FinancialOperation extends Model
     protected $guarded = ['id'];
 
     /**
-     * Array of related tables which should be eager-loaded from the DB along with this model.
+     * The relationships to eager load.
      *
      * @var string[]
      */
@@ -45,7 +45,7 @@ class FinancialOperation extends Model
      * @var array<int, string>
      */
     protected $casts = [
-        'date' => 'date:d.m.Y',
+        'date' => 'date',
     ];
 
 

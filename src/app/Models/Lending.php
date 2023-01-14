@@ -33,6 +33,25 @@ class Lending extends Model
     public $incrementing = false;
 
     /**
+     * The relationships to eager load.
+     *
+     * @var string[]
+     */
+    protected $with = [
+        'loan',
+        'repayment'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<int, string>
+     */
+    protected $casts = [
+        'expected_date_of_return' => 'date',
+    ];
+
+    /**
      * Get the operation with which this lending is associated.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -53,6 +72,16 @@ class Lending extends Model
     }
 
     /**
+     * Get the loan with which this lending is associated.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function loan()
+    {
+        return $this->hasOne(FinancialOperation::class, 'id', 'previous_lending_id');
+    }
+
+    /**
      * Find a repayment associated with a loan.
      *
      * @param int $loanId
@@ -63,15 +92,5 @@ class Lending extends Model
     public static function findRepayment(int $loanId)
     {
         return Lending::where('previous_lending_id', '=', $loanId)->first();
-    }
-
-    /**
-     * Get the loan with which this lending is associated.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function loan()
-    {
-        return $this->hasOne(FinancialOperation::class, 'id', 'previous_lending_id');
     }
 }

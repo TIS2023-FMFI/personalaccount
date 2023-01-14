@@ -32,9 +32,7 @@ class UpdateOperationController extends GeneralOperationController
      */
     public function getFormData(FinancialOperation $operation)
     {
-        return [
-            'operation' => $operation
-        ];
+        return ['operation' => $operation];
     }
 
     /**
@@ -141,9 +139,12 @@ class UpdateOperationController extends GeneralOperationController
     private function updateOperationRecord(
         FinancialOperation $operation, array $data, string|null $newAttachment
     ) {
-        $recordData = ($newAttachment)
-                        ? array_merge($data, ['attachment' =>  $newAttachment])
-                        : $data;
+        $recordData = $data;
+        
+        if ($newAttachment)
+            $recordData['attachment'] = $newAttachment;
+        else
+            unset($recordData['attachment']);
 
         if (!$operation->update($recordData))
             throw new DatabaseException('The operation wasn\'t updated.');
