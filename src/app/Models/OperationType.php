@@ -33,14 +33,14 @@ class OperationType extends Model
      * @return Builder
      * the extended query builder
      */
-    public function scopeUserAssignable(Builder $query): Builder
+    public static function scopeUserAssignable(Builder $query): Builder
     {
         return $query->where('repayment', '=', false);
     }
 
     /**
      * Get the expense repayment type.
-     * 
+     *
      * @return OperationType
      */
     public static function getRepaymentExpense()
@@ -52,7 +52,7 @@ class OperationType extends Model
 
     /**
      * Get the income repayment type.
-     * 
+     *
      * @return OperationType
      */
     public static function getRepaymentIncome()

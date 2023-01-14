@@ -58,7 +58,7 @@ class FinancialOperation extends Model
      * @return Builder
      * the extended query builder
      */
-    public function scopeExpenses(Builder $query): Builder
+    public static function scopeExpenses(Builder $query): Builder
     {
         return $query
             ->join('operation_types', 'operation_type_id','=','operation_types.id')
@@ -74,11 +74,23 @@ class FinancialOperation extends Model
      * @return Builder
      * the extended query builder
      */
-    public function scopeIncomes(Builder $query): Builder
+    public static function scopeIncomes(Builder $query): Builder
     {
         return $query
             ->join('operation_types', 'operation_type_id','=','operation_types.id')
             ->where('expense', '=', false);
+    }
+
+    /**
+     * Generates the name of the directory where attachments for a user should be stored.
+     *
+     * @param User $user
+     * @return string
+     * the generated name
+     */
+    public static function getAttachmentsDirectoryPath(User $user)
+    {
+        return "attachments/user_{$user->id}";
     }
 
     /**
@@ -99,6 +111,16 @@ class FinancialOperation extends Model
     public function operationType()
     {
         return $this->belongsTo(OperationType::class);
+    }
+
+    /**
+     * Returns the lending record related to this operation, if it exists.
+     *
+     * @return HasOne
+     */
+    public function lending()
+    {
+        return $this->hasOne(Lending::class, 'id', 'id');
     }
 
     /**
@@ -131,28 +153,6 @@ class FinancialOperation extends Model
     public function isRepayment()
     {
         return $this->operationType->repayment;
-    }
-
-    /**
-     * Returns the lending record related to this operation, if it exists.
-     *
-     * @return HasOne
-     */
-    public function lending()
-    {
-        return $this->hasOne(Lending::class, 'id', 'id');
-    }
-
-    /**
-     * Generates the name of the directory where attachments for a user should be stored.
-     *
-     * @param $user
-     * @return string
-     * the generated name
-     */
-    public static function getAttachmentsDirectoryPath($user)
-    {
-        return "attachments/user_{$user->id}";
     }
 
     /**
