@@ -588,7 +588,7 @@ label, input {
     touch-action: manipulation;
 }
 label {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--primary);
 }
 
