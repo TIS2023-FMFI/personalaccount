@@ -1279,10 +1279,16 @@ $(document).ready(function(){
             yyyy = date.substring(0,4);
             $("#operation_date").html(dd+"."+mm+"."+yyyy);
             
-            let lending = response.operation.operation_type.lending
-            let return_of_lending = response.operation.operation_type.repayment
-
-            if ( lending == 1 && return_of_lending == 0) {
+            let lending_type = response.operation.operation_type.lending
+            let repayment_type = response.operation.operation_type.repayment
+            
+            if (lending_type == 1){
+                $("#previous-lending-button").css("display", "none");
+                if (repayment_type == 1){
+                    $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
+                    $("#previous-lending-button").css("display", "flex");
+                    $("#show-repayment-button").css("display", "none")
+                }else{
                     $("#operation_date_until_label").css("visibility", "visible")
                     return_date = response.operation.lending.expected_date_of_return
                     rdd = return_date.substring(8,10);
@@ -1290,22 +1296,21 @@ $(document).ready(function(){
                     ryyyy = return_date.substring(0,4);
                     $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
                     $("#operation_date_until").css("visibility", "visible");
-            } else {
+                    
+                    let repaid = response.operation.lending.repayment
+                    if (repaid != null){
+                        $("#show-repayment-button").data("repay-id", repaid.id);
+                        $("#show-repayment-button").css("display", "flex")
+                    }else{
+                        $("#show-repayment-button").css("display", "none")
+                    }
+
+                }
+
+            }else{
                 $("#operation_date_until").css("visibility", "hidden");
                 $("#operation_date_until_label").css("visibility", "hidden");
-            }
-
-            if (lending == 1 && return_of_lending == 1){
-                $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
-                $("#previous-lending-button").css("display", "flex");
-            }else{
                 $("#previous-lending-button").css("display", "none");
-            }
-            let repay = response.operation.lending.repayment
-            if (lending == 1 && repay != null){
-                $("#show-repayment-button").data("repay-id", repay.id);
-                $("#show-repayment-button").css("display", "flex")
-            }else{
                 $("#show-repayment-button").css("display", "none")
             }
 
@@ -1365,10 +1370,16 @@ $(document).ready(function(){
             yyyy = date.substring(0,4);
             $("#operation_date").html(dd+"."+mm+"."+yyyy);
             
-            let lending = response.operation.operation_type.lending
-            let return_of_lending = response.operation.operation_type.repayment
-
-            if ( lending == 1 && return_of_lending == 0) {
+            let lending_type = response.operation.operation_type.lending
+            let repayment_type = response.operation.operation_type.repayment
+            
+            if (lending_type == 1){
+                $("#previous-lending-button").css("display", "none");
+                if (repayment_type == 1){
+                    $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
+                    $("#previous-lending-button").css("display", "flex");
+                    $("#show-repayment-button").css("display", "none")
+                }else{
                     $("#operation_date_until_label").css("visibility", "visible")
                     return_date = response.operation.lending.expected_date_of_return
                     rdd = return_date.substring(8,10);
@@ -1376,23 +1387,21 @@ $(document).ready(function(){
                     ryyyy = return_date.substring(0,4);
                     $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
                     $("#operation_date_until").css("visibility", "visible");
-            } else {
+                    
+                    let repaid = response.operation.lending.repayment
+                    if (repaid != null){
+                        $("#show-repayment-button").data("repay-id", repaid.id);
+                        $("#show-repayment-button").css("display", "flex")
+                    }else{
+                        $("#show-repayment-button").css("display", "none")
+                    }
+
+                }
+
+            }else{
                 $("#operation_date_until").css("visibility", "hidden");
                 $("#operation_date_until_label").css("visibility", "hidden");
-            }
-
-            if (lending == 1 && return_of_lending == 1){
-                $("#previous-lending-button").css("display", "flex");
-            }else{
                 $("#previous-lending-button").css("display", "none");
-            }
-            let repay = response.operation.lending.repayment
-            if (lending == 1 && repay != null){
-
-                $("#show-repayment-button").data("repay-id", repay.id);
-
-                $("#show-repayment-button").css("display", "flex")
-            }else{
                 $("#show-repayment-button").css("display", "none")
             }
 
@@ -1453,10 +1462,16 @@ $(document).ready(function(){
             yyyy = date.substring(0,4);
             $("#operation_date").html(dd+"."+mm+"."+yyyy);
             
-            let lending = response.operation.operation_type.lending
-            let return_of_lending = response.operation.operation_type.repayment
-
-            if ( lending == 1 && return_of_lending == 0) {
+            let lending_type = response.operation.operation_type.lending
+            let repayment_type = response.operation.operation_type.repayment
+            
+            if (lending_type == 1){
+                $("#previous-lending-button").css("display", "none");
+                if (repayment_type == 1){
+                    $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
+                    $("#previous-lending-button").css("display", "flex");
+                    $("#show-repayment-button").css("display", "none")
+                }else{
                     $("#operation_date_until_label").css("visibility", "visible")
                     return_date = response.operation.lending.expected_date_of_return
                     rdd = return_date.substring(8,10);
@@ -1464,23 +1479,21 @@ $(document).ready(function(){
                     ryyyy = return_date.substring(0,4);
                     $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
                     $("#operation_date_until").css("visibility", "visible");
-            } else {
+                    
+                    let repaid = response.operation.lending.repayment
+                    if (repaid != null){
+                        $("#show-repayment-button").data("repay-id", repaid.id);
+                        $("#show-repayment-button").css("display", "flex")
+                    }else{
+                        $("#show-repayment-button").css("display", "none")
+                    }
+
+                }
+
+            }else{
                 $("#operation_date_until").css("visibility", "hidden");
                 $("#operation_date_until_label").css("visibility", "hidden");
-            }
-
-            if (lending == 1 && return_of_lending == 1){
-                $("#previous-lending-button").css("display", "flex");
-            }else{
                 $("#previous-lending-button").css("display", "none");
-            }
-            let repay = response.operation.lending.repayment
-            if (lending == 1 && repay != null){
-
-                $("#show-repayment-button").data("repay-id", repay.id);
-
-                $("#show-repayment-button").css("display", "flex")
-            }else{
                 $("#show-repayment-button").css("display", "none")
             }
 
