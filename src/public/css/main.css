@@ -647,3 +647,14 @@ a:visited {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+.edit_type_category{
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    padding: 5px 0;
+    font-size: 20px;
+    border: none;
+}
+.edit_type_category div{
+    margin-right: 50px;
+}

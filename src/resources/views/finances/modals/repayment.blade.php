@@ -3,7 +3,7 @@
   <div class="modal">
     <span class="close-modal"><i class="bi bi-x"></i></span>
 
-    <h2>Pridať účet</h2>
+    <h2>Splatenie pôžičky</h2>
 
     <form id="repay-lending-form">
       
