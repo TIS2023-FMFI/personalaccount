@@ -1289,16 +1289,32 @@ $(document).ready(function(){
                     rmm = return_date.substring(5,7);
                     ryyyy = return_date.substring(0,4);
                     $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
-                    $("#operation_date_until").css("visibility", "visible")
-                
+                    $("#operation_date_until").css("visibility", "visible");
             } else {
-                $("#operation_date_until").css("display", "none")
-                $("#operation_date_until_label").css("display", "none")
+                $("#operation_date_until").css("visibility", "hidden");
+                $("#operation_date_until_label").css("visibility", "hidden");
             }
+
+            if (lending == 1 && return_of_lending == 1){
+                $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
+                $("#previous-lending-button").css("display", "flex");
+            }else{
+                $("#previous-lending-button").css("display", "none");
+            }
+            let repay = response.operation.lending.repayment
+            if (lending == 1 && repay != null){
+                $("#show-repayment-button").data("repay-id", repay.id);
+                $("#show-repayment-button").css("display", "flex")
+            }else{
+                $("#show-repayment-button").css("display", "none")
+            }
+
             $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
             
             if (response.operation.attachment == null){
                 $("#operation-attachment-button").css("display", "none");
+            }else{
+                $("#operation-attachment-button").css("display", "flex");
             }
 
         }).fail(function(response) {
@@ -1316,6 +1332,182 @@ $(document).ready(function(){
                 })
             }
         })
+    })
+
+    $("#show-repayment-button").click(function(){
+        let operation_id = $(this).data("repay-id");
+
+        $(".modal-box").css("display", "none");
+        $("#operation-modal").css("display", "flex");
+        let csrf = $(this).data("csrf");
+
+        $.ajax({
+            url: "/operations/" + operation_id,
+            type: "GET",
+            data: {
+                "_token": csrf
+            }
+        }).done(function(response) {
+
+            if (response.operation.operation_type.expense == 0) {
+                $("#operation_main_type").html("Príjem");
+            } else {
+                $("#operation_main_type").html("Výdavok");
+            }
+
+            $("#operation_type").html(response.operation.operation_type.name);
+            $("#operation_name").html(response.operation.title);
+            $("#operation_subject").html(response.operation.subject);
+            $("#operation_sum").html(response.operation.sum + " €");
+            date = response.operation.date.substring(0,10);
+            dd = date.substring(8,10);
+            mm = date.substring(5,7);
+            yyyy = date.substring(0,4);
+            $("#operation_date").html(dd+"."+mm+"."+yyyy);
+            
+            let lending = response.operation.operation_type.lending
+            let return_of_lending = response.operation.operation_type.repayment
+
+            if ( lending == 1 && return_of_lending == 0) {
+                    $("#operation_date_until_label").css("visibility", "visible")
+                    return_date = response.operation.lending.expected_date_of_return
+                    rdd = return_date.substring(8,10);
+                    rmm = return_date.substring(5,7);
+                    ryyyy = return_date.substring(0,4);
+                    $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
+                    $("#operation_date_until").css("visibility", "visible");
+            } else {
+                $("#operation_date_until").css("visibility", "hidden");
+                $("#operation_date_until_label").css("visibility", "hidden");
+            }
+
+            if (lending == 1 && return_of_lending == 1){
+                $("#previous-lending-button").css("display", "flex");
+            }else{
+                $("#previous-lending-button").css("display", "none");
+            }
+            let repay = response.operation.lending.repayment
+            if (lending == 1 && repay != null){
+
+                $("#show-repayment-button").data("repay-id", repay.id);
+
+                $("#show-repayment-button").css("display", "flex")
+            }else{
+                $("#show-repayment-button").css("display", "none")
+            }
+
+            $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            
+            if (response.operation.attachment == null){
+                $("#operation-attachment-button").css("display", "none");
+            }else{
+                $("#operation-attachment-button").css("display", "flex");
+            }
+
+        }).fail(function(response) {
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
+                }
+            }else{   
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
+        })
+
+    })
+
+    $("#previous-lending-button").click(function(){
+        let operation_id = $(this).data("previous-id");
+
+        $(".modal-box").css("display", "none");
+        $("#operation-modal").css("display", "flex");
+        let csrf = $(this).data("csrf");
+
+        $.ajax({
+            url: "/operations/" + operation_id,
+            type: "GET",
+            data: {
+                "_token": csrf
+            }
+        }).done(function(response) {
+
+            if (response.operation.operation_type.expense == 0) {
+                $("#operation_main_type").html("Príjem");
+            } else {
+                $("#operation_main_type").html("Výdavok");
+            }
+
+            $("#operation_type").html(response.operation.operation_type.name);
+            $("#operation_name").html(response.operation.title);
+            $("#operation_subject").html(response.operation.subject);
+            $("#operation_sum").html(response.operation.sum + " €");
+            date = response.operation.date.substring(0,10);
+            dd = date.substring(8,10);
+            mm = date.substring(5,7);
+            yyyy = date.substring(0,4);
+            $("#operation_date").html(dd+"."+mm+"."+yyyy);
+            
+            let lending = response.operation.operation_type.lending
+            let return_of_lending = response.operation.operation_type.repayment
+
+            if ( lending == 1 && return_of_lending == 0) {
+                    $("#operation_date_until_label").css("visibility", "visible")
+                    return_date = response.operation.lending.expected_date_of_return
+                    rdd = return_date.substring(8,10);
+                    rmm = return_date.substring(5,7);
+                    ryyyy = return_date.substring(0,4);
+                    $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
+                    $("#operation_date_until").css("visibility", "visible");
+            } else {
+                $("#operation_date_until").css("visibility", "hidden");
+                $("#operation_date_until_label").css("visibility", "hidden");
+            }
+
+            if (lending == 1 && return_of_lending == 1){
+                $("#previous-lending-button").css("display", "flex");
+            }else{
+                $("#previous-lending-button").css("display", "none");
+            }
+            let repay = response.operation.lending.repayment
+            if (lending == 1 && repay != null){
+
+                $("#show-repayment-button").data("repay-id", repay.id);
+
+                $("#show-repayment-button").css("display", "flex")
+            }else{
+                $("#show-repayment-button").css("display", "none")
+            }
+
+            $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            
+            if (response.operation.attachment == null){
+                $("#operation-attachment-button").css("display", "none");
+            }else{
+                $("#operation-attachment-button").css("display", "flex");
+            }
+
+        }).fail(function(response) {
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.responseJSON.displayMessage
+                    })
+                }
+            }else{   
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
+        })
+
     })
 
     // --> Financial operations detail

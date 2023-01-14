@@ -38,8 +38,9 @@
         <p id="operation_date_until" style="visibility: hidden"></p>
       </div>
     </div>
-
-    <button type="button" id="operation-attachment-button"><i class="bi bi-download" title="Stiahnuť výkaz"></i> Doklad</button>
+    <button type="button" id="previous-lending-button">Ukázať pôžičku</button>
+    <button type="button" id="show-repayment-button">Ukázať operáciu splatenia</button>
+    <button type="button" id="operation-attachment-button"><i class="bi bi-download" title="Stiahnuť výkaz"></i>&nbsp;Doklad</button>
   </div>
 
 </div>
