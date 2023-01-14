@@ -69,13 +69,10 @@ class CreateOperationController extends GeneralOperationController
      */
     public function createRepayment(Lending $lending, CreateRepaymentRequest $request)
     {
-        if ($lending->repayment)
-            return response(trans('financial_operations.create.failure'), 500);
-        
         $lendingOperation = $lending->operation;
 
         if ($lendingOperation->isRepayment())
-            return response(trans('financial_operations.create.failure'), 500);    
+            return response(trans('financial_operations.create.failure'), 500); 
 
         $account = $lendingOperation->account;
         $data = $request->prepareValidatedOperationData($lendingOperation);

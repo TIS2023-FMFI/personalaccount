@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Account;
+use App\Models\OperationType;
 use Database\Seeders\AccountSeeder;
 use Database\Seeders\OperationTypeSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,13 +20,15 @@ class FinancialOperationFactory extends Factory
      */
     public function definition()
     {
+        $accounts = Account::all('id');
+        $operationTypes = OperationType::all('id');
         $checked = fake()->boolean(30);
 
         return [
-            'account_id' => mt_rand(1,AccountSeeder::$accountsCount),
+            'account_id' => $accounts->random()['id'],
             'title' => fake()->text(20),
             'date' => fake()->date,
-            'operation_type_id' => mt_rand(1,OperationTypeSeeder::$operationTypesCount),
+            'operation_type_id' => $operationTypes->random()['id'],
             'subject' => fake()->name,
             'sum' => fake()->randomFloat(2,1,1000),
             'attachment' => fake()->unique()->filePath(),

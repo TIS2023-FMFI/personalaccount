@@ -36,7 +36,7 @@ class FinancialOperation extends Model
      */
     protected $with = [
         'operationType',
-        'lending'
+        'lending',
     ];
 
     /**
