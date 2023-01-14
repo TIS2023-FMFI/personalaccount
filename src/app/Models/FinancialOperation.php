@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Exceptions\DatabaseException;
 use App\Http\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\DB;
 
 class FinancialOperation extends Model
 {
@@ -58,7 +56,7 @@ class FinancialOperation extends Model
      * @return Builder
      * the extended query builder
      */
-    public static function scopeExpenses(Builder $query): Builder
+    public function scopeExpenses(Builder $query): Builder
     {
         return $query
             ->join('operation_types', 'operation_type_id','=','operation_types.id')
@@ -74,7 +72,7 @@ class FinancialOperation extends Model
      * @return Builder
      * the extended query builder
      */
-    public static function scopeIncomes(Builder $query): Builder
+    public function scopeIncomes(Builder $query): Builder
     {
         return $query
             ->join('operation_types', 'operation_type_id','=','operation_types.id')

@@ -33,7 +33,7 @@ class OperationType extends Model
      * @return Builder
      * the extended query builder
      */
-    public static function scopeUserAssignable(Builder $query): Builder
+    public function scopeUserAssignable(Builder $query): Builder
     {
         return $query->where('repayment', '=', false);
     }

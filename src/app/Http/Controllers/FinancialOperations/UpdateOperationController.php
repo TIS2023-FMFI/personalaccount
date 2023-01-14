@@ -8,12 +8,10 @@ use App\Http\Helpers\DBTransaction;
 use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\UpdateOperationRequest;
 use App\Models\FinancialOperation;
-use App\Models\OperationType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -61,7 +59,7 @@ class UpdateOperationController extends GeneralOperationController
         } catch (Exception $e) {
             if ($e instanceof ValidationException)
                 throw $e;
-            
+
             return response(trans('financial_operations.update.failure'), 500);
         }
 
@@ -140,7 +138,7 @@ class UpdateOperationController extends GeneralOperationController
         FinancialOperation $operation, array $data, string|null $newAttachment
     ) {
         $recordData = $data;
-        
+
         if ($newAttachment)
             $recordData['attachment'] = $newAttachment;
         else
