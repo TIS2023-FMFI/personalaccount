@@ -21,18 +21,6 @@
       <div class="input-box">
         <div class="field">
           <select id="operation_choice" name="typ" id="add-operation-type">
-            <option value="default_opt">Vyberte typ operácie</option>
-
-            <option class="expense_opt" value="1">Náklady na služobnú cestu</option>
-            <option class="expense_opt" value="2">Malý nákup</option>
-            <option class="expense_opt" value="3">Nákup na faktúru</option>
-            <option class="expense_opt" value="4">Nákup z Marquetu</option>
-            <option class="expense_opt" value="5">Pôžička pre niekoho</option>
-
-            <option class="income_opt" value="6">Zo služby s faktúrou</option>
-            <option class="income_opt" value="7">Projektový grant</option>
-            <option class="income_opt" value="8">Pôžička od niekoho</option>
-            <option class="income_opt" value="9">Splatenie pôžičky od niekoho</option>
 
           </select>
           <label for="add-operation-type">Typ operácie</label>
@@ -72,7 +60,7 @@
         <div class="error-box" id="add-operation-date-errors"></div>
       </div>
 
-      <div class="input-box add-operation-expected-date" style="display:none">
+      <div class="input-box add-operation-expected-date" style="display: none">
         <div class="field">
           <input type="date" id="add-operation-expected-date">
           <label for="add-operation-expected-date">Predpokladaný dátum splatenia</label>

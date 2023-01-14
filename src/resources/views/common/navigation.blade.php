@@ -39,6 +39,7 @@
             @include('finances.modals.edit_operation')
             @include('finances.modals.check_operation')
             @include('finances.modals.delete_operation')
+            @include('finances.modals.repayment')
 
             @include('finances.modals.add_report')
 

@@ -45,7 +45,7 @@ class FinancialOperation extends Model
      * @var array<int, string>
      */
     protected $casts = [
-        'date' => 'date:d.m.Y',
+        'date' => 'date'
     ];
 
 

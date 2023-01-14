@@ -23,7 +23,7 @@
     <p id="operation_date"></p>
 
     <label for="operation_date_until" id="operation_date_until_label" ><b>Predpokladaný dátum splatenia:</b></label>
-    <p id="operation_date_until" style="visibility: hidden"></p>
+    <p id="operation_date_until" style="display: none"></p>
 
     <button type="button" onclick="" id="operation-attachment-button"><i class="bi bi-download" title="Stiahnuť výkaz"></i> Doklad</button>
   </div>

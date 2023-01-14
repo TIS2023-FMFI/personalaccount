@@ -671,8 +671,9 @@ $(document).ready(function(){
         var fileUpload = $("#report-file").get(0);  
         var files = fileUpload.files;  
         var fileData = new FormData(); 
-        fileData.append('sap_report', files[0] ?? '');  
-
+        if (files[0] != undefined){
+            fileData.append('sap_report', files[0] ?? '');  
+        }
         fileData.append('_token', csrf);
         
         $.ajax({
@@ -851,19 +852,32 @@ $(document).ready(function(){
             $("#operation_name").html(response.operation.title);
             $("#operation_subject").html(response.operation.subject);
             $("#operation_sum").html(response.operation.sum + " €");
-            $("#operation_date").html(response.operation.date);
+            date = response.operation.date.substring(0,10);
+            dd = date.substring(8,10);
+            mm = date.substring(5,7);
+            yyyy = date.substring(0,4);
+            $("#operation_date").html(dd+"."+mm+"."+yyyy);
             
+            let lending = response.operation.operation_type.lending
+            let return_of_lending = response.operation.operation_type.repayment
 
-            if (response.operation.operation_type.lending == 1) {
-                $("#operation_date_until").html(response.operation.lending.expected_date_of_return);
-                $("#operation_date_until_label").css("visibility","visible");
+            if ( lending == 1 && return_of_lending == 0) {
+                    $("#operation_date_until_label").css("display","flex");
+                    return_date = response.operation.lending.expected_date_of_return
+                    rdd = return_date.substring(8,10);
+                    rmm = return_date.substring(5,7);
+                    ryyyy = return_date.substring(0,4);
+                    $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
+                    $("#operation_date_until").css("display", "flex")
+                
             } else {
-                $("#operation_date_until").hide();
-                $("#operation_date_until_label").hide();
+                $("#operation_date_until").css("display", "none")
+                $("#operation_date_until_label").css("display", "none")
             }
             $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            
             if (response.operation.attachment == null){
-                $("#operation-attachment-button").hide();
+                $("#operation-attachment-button").css("display", "none");
             }
 
         }).fail(function(response) {
@@ -991,15 +1005,38 @@ $(document).ready(function(){
 
     $("#create_operation").click(function(){
         let account_id = $(this).data("account-id");
+        let csrf = $(this).data("csrf");
         $("#create-operation-form").data("account-id", account_id);
-        $("#create-operation-modal").css("display", "flex");    
+        $("#create-operation-modal").css("display", "flex");  
+
+        $.ajax({
+            url: "/accounts/" + account_id + "/operations/create",
+            type: "GET",
+            data: {
+                "_token": csrf,
+            }
+        }).done(function(response) {
+            $("#operation_choice").append($('<option>', {
+                value: "default_opt",
+                text: 'Vyberte typ operácie'
+            }));
+            response.operation_types.forEach(function(choice){
+                let expense = choice.expense ? "expense_opt" : "income_opt";
+                let lending = choice.lending ? "lending" : "not_lending";
+                let type = expense + " " + lending
+                $("#operation_choice").append($('<option>', {
+                    class: type,
+                    value: choice.id,
+                    text: choice.name
+                }));
+            })
+        }) 
     })
 
     $("#create-operation-form").on("submit", function(e) {
         e.preventDefault();
-
         $("#create-operation-button").attr("disabled", true);
-
+        
         let csrf = $("#create-operation-button").data("csrf");
         let account_id = $(this).data("account-id");
         let expense_income = $("input[name='operation_type']:checked").val();
@@ -1008,6 +1045,7 @@ $(document).ready(function(){
         let subject = $("#add-operation-subject").val();
         let sum = $("#add-operation-sum").val();
         let date = $("#add-operation-to").val();
+        let expected_date = $("#add-operation-expected-date").val();
 
         var fileUpload = $("#operation-file").get(0);  
         var files = fileUpload.files;  
@@ -1017,11 +1055,13 @@ $(document).ready(function(){
         fileData.append('_token', csrf);
         fileData.append('title', title);
         fileData.append('date', date);
+        fileData.append('expected_date_of_return', expected_date);
         fileData.append('operation_type_id', operation_type_id);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
-        fileData.append('attachment', files[0] ?? '');  
-
+        if (files[0] != undefined){
+            fileData.append('attachment', files[0] ?? '');  
+        }
         $.ajax({
             url: "/accounts/" + account_id + "/operations",
             type: "POST",
@@ -1057,6 +1097,12 @@ $(document).ready(function(){
                         $("#add-operation-to").css("border-color", "red");
                         errors.date.forEach(e => {
                             $("#add-operation-date-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                    if (typeof errors.expected_date_of_return != 'undefined') {
+                        $("#add-operation-expected-date").css("border-color", "red");
+                        errors.expected_date_of_return.forEach(e => {
+                            $("#add-operation-expected-date-errors").append("<p>" + e + "</p>");
                         });
                     }
                     if (typeof errors.operation_type_id != 'undefined') {
@@ -1110,6 +1156,7 @@ $(document).ready(function(){
             $("#add-operation-subject").val("");
             $("#add-operation-sum").val("");
             $("#add-operation-name").val("");
+            $("#add-operation-expected-date").val("");
         }
 
         $("#create-operation-button").attr("disabled", false);
@@ -1126,6 +1173,7 @@ $(document).ready(function(){
         $("#add-operation-subject-errors").css("border-color", "var(--primary)");
         $("#add-operation-sum-errors").css("border-color", "var(--primary)");
         $("#add-operation-title-errors").css("border-color", "var(--primary)");
+        $("#add-operation-expected-date").css("border-color", "var(--primary)");
 
         $("#operation-file").empty();
         $("#add-operation-to").empty();
@@ -1139,6 +1187,7 @@ $(document).ready(function(){
         $("#add-operation-subject-errors").empty();
         $("#add-operation-sum-errors").empty();
         $("#add-operation-title-errors").empty();
+        $("#add-operation-expected-date").empty();
     }
 
     // <-- Create operation form
@@ -1147,11 +1196,33 @@ $(document).ready(function(){
     // --> Edit operaton form
 
     $(".operation-edit").click(function(){
-        let account_id = $(this).data("account-id");
         let operation_id = $(this).data("operation-id");
-        $("#edit-operation-form").data("account-id", account_id);
+        let csrf = $("#edit-operation-button").data("csrf");
+
         $("#edit-operation-form").data("operation-id", operation_id);
         $("#edit-operation-modal").css("display", "flex");    
+
+        $.ajax({
+            url: "/operations/" + operation_id + "/update",
+            type: "GET",
+            data: {
+                "_token": csrf,
+            }
+        }).done(function(response) {
+
+            let expense = response.operation.operation_type.expense ? "Príjem" : "Výdavok";
+            $("#operation_edit_main_type").html(expense);
+            $("#operation_edit_type").html(response.operation.operation_type.name);
+            $("#edit-operation-name").val(response.operation.title);
+            $("#edit-operation-subject").val(response.operation.subject);
+            $("#edit-operation-sum").val(response.operation.sum);
+            let date = response.operation.date.substring(0,10);
+            $("#edit-operation-to").val(date);
+            if (response.operation.operation_type.lending == 1) {
+                $("#edit-operation-attachment").css("display", "none");
+            } 
+
+        })
 
     })
 
@@ -1162,8 +1233,6 @@ $(document).ready(function(){
 
         let csrf = $("#edit-operation-button").data("csrf");
         let operation_id = $("#edit-operation-form").data("operation-id");
-        let expense_income = $("input[name='edit_operation_type']:checked").val();
-        let operation_type_id = $("#operation_edit_choice").val();
         let title = $("#edit-operation-name").val();
         let subject = $("#edit-operation-subject").val();
         let sum = $("#edit-operation-sum").val();
@@ -1175,12 +1244,13 @@ $(document).ready(function(){
 
         fileData.append('title', title);
         fileData.append('date', date);
-        fileData.append('operation_type_id', operation_type_id);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
-        fileData.append('attachment', files[0] ?? '');  
+        if (files[0] != undefined){
+            fileData.append('attachment', files[0] ?? '');  
+        }
         fileData.append('_token', csrf);
-        fileData.append('_method', 'PUT');
+        fileData.append('_method', 'PATCH');
 
         $.ajax({
             url: "/operations/" + operation_id,
@@ -1204,13 +1274,14 @@ $(document).ready(function(){
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
+
                     if (typeof errors.attachment != 'undefined') {
                         $("#edit-operation-file").css("border-color", "red");
-
                         errors.attachment.forEach(e => {
                             $("#edit-operation-attachment-errors").append("<p>" + e + "</p>");
                         });
                     }
+
                     if (typeof errors.date != 'undefined') {
                         $("#edit-operation-to").css("border-color", "red");
                         errors.date.forEach(e => {
@@ -1300,6 +1371,80 @@ $(document).ready(function(){
     }
 
     // <-- Edit operaton form
+
+    // --> Repay lending form
+
+    $(".operation-repayment").click(function(){
+        let operation_id = $(this).data("operation-id");
+        $("#repay-lending-modal > .modal > #repay-lending-form").data("operation-id", operation_id);
+        $("#repay-lending-modal").css("display", "flex");
+    })
+
+    $("#repay-lending-form").on("submit", function(e) {
+        e.preventDefault();
+
+        $("#repay-lending-button").attr("disabled", true);
+
+        let date = $("#repay-lending-date").val();
+        let csrf = $("#repay-lending-button").data("csrf");
+        let operation_id = $(this).data("operation-id");
+
+        $.ajax({
+            url: "/operations/" + operation_id + "/repayment",
+            type: "POST",
+            data: {
+                "_token": csrf,
+                'date': date
+            }
+        }).done(function(response) {
+            let message = jQuery.parseJSON(response);
+
+            Toast.fire({
+                icon: 'success',
+                title: message.displayMessage
+            })
+            $(".modal-box").css("display", "none");
+
+            location.reload();
+            $.fn.repaymentClearForm(true);
+        }).fail(function(response) {
+            $.fn.repaymentClearForm();
+            if (typeof response.responseJSON != 'undefined'){
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    if (typeof errors.date != 'undefined') {
+                        $("#repayment-operation-date").css("border-color", "red");
+                        errors.date.forEach(e => {
+                            $("#repayment-operation-date-errors").append("<p>" + e + "</p>");
+                        });
+                    }else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.responseJSON.displayMessage
+                        })
+                    }
+                }
+            }else{
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                })
+            }
+        })
+
+    });
+
+    $.fn.repaymentClearForm = function(isDone = false){ 
+        if (isDone) {
+            $("#repayment-operation-date").val("");
+        }
+
+        $("#repayment-operation-date").css("border-color", "var(--primary)");
+        $("#repayment-operation-date").empty();
+    }
+
+    // <-- Repay lending form
+
     function updateSelectOptions(operation_type){
         switch(operation_type){
             case 'income':
@@ -1322,25 +1467,14 @@ $(document).ready(function(){
     }
 
     $(".operation_type").change(function(){
-        updateSelectOptions($(this).val())
+        updateSelectOptions($(this).val());
     });
-
-    // 5 -> lending to
-    // 8 -> lending from
-    // 9 -> return of lending
+    
+    // 3 -> lending to
+    // 10 -> lending from
     function updateOperationForm(operation_category){
-        if(operation_category == "9"){
-            $(".add-operation-name").css("display","none");
-            $(".add-operation-subject").css("display","none");
-            $(".add-operation-sum").css("display","none");
-            $(".add-operation-to").css("display","flex");
-            $(".add-operation-expected-date").css("display","none");
-            $(".operation-file").css("display","none");
-            $(".choose-lending").css("display","flex");
-            return;
-        }
-        if(operation_category == "5" ||
-            operation_category == "8"){
+        if(operation_category == "3" ||
+            operation_category == "10"){
             $(".add-operation-name").css("display","flex");
             $(".add-operation-subject").css("display","flex");
             $(".add-operation-sum").css("display","flex");
@@ -1360,10 +1494,8 @@ $(document).ready(function(){
 
     }
 
-
-    // 5 -> lending to
-    // 8 -> lending from
-    // 9 -> return of lending
+    // 3 -> lending to
+    // 10 -> lending from
     $("#operation_choice").change(function(){
         updateOperationForm($(this).val());
     })
