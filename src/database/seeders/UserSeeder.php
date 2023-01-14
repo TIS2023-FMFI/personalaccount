@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->create([ 'email' => 'a@b.c' ]);
+        User::firstOrCreate([ 'email' => 'a@b.c' ]);
 
         User::factory()->count($this::$userCount)->create();
     }
