@@ -44,12 +44,12 @@ class User extends Authenticatable
      *
      * Note: This method also clears the password_change_required flag.
      *
-     * @param mixed $password
+     * @param string $password
      * the plain-text password that should be set as the new password
      * @return bool
      * true on success, false otherwise
      */
-    public function setPassword($password)
+    public function setPassword(string $password)
     {
         $this->password = Hash::make($password);
         $this->password_change_required = false;

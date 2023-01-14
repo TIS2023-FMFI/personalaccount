@@ -42,7 +42,7 @@ class UploadReportController extends Controller
         $report = $request->file('sap_report');
 
         try {
-            $this->uploadReportFile($account, $report);
+            $this->uploadReportWithinTransaction($account, $report);
         } catch (Exception $e) {
             return response(trans('sap_reports.upload.failed'), 500);
         }
@@ -61,7 +61,7 @@ class UploadReportController extends Controller
      * thrown if an error occurred
      * @return void
      */
-    private function uploadReportFile(Account $account, UploadedFile $report)
+    private function uploadReportWithinTransaction(Account $account, UploadedFile $report)
     {
         $accountOwner = User::findOrFail($account->user_id);
         $reportPath = $this->saveReportFileToUserStorage($accountOwner, $report);
