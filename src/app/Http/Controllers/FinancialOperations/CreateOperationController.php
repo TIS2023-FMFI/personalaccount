@@ -25,7 +25,7 @@ class CreateOperationController extends GeneralOperationController
     /**
      * Prepares the data necessary to populate the form handling operation creation.
      *
-     * @param Account $operation
+     * @param Account $account
      * the account with which the new operation will be associated
      * @return array
      * an array containing the supported operation types
@@ -33,7 +33,8 @@ class CreateOperationController extends GeneralOperationController
     public function getFormData(Account $account)
     {
         return [
-            'operation_types' => OperationType::userAssignable()->get(),
+            'operation_types' => OperationType::all(),
+            'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->get()
         ];
     }
 

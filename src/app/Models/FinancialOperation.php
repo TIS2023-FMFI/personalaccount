@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class FinancialOperation extends Model
 {
@@ -77,6 +78,27 @@ class FinancialOperation extends Model
         return $query
             ->join('operation_types', 'operation_type_id','=','operation_types.id')
             ->where('expense', '=', false);
+    }
+
+    /**
+     * Extends a query asking for financial operations so that it demands only
+     * operations which represent unrepaid lendings.
+     *
+     * @param Builder $query
+     * the builder whose query to extend
+     * @return Builder
+     * the extended query builder
+     */
+    public function scopeUnrepaidLendings(Builder $query): Builder
+    {
+        return $query
+            ->join('lendings', 'financial_operations.id','=','lendings.id')
+            ->whereRaw('previous_lending_id is null')
+            ->whereNotExists(function($query) {
+                $query->select(DB::raw(1))
+                    ->fromRaw('lendings as repay')
+                    ->whereRaw('repay.previous_lending_id = financial_operations.id');
+            });
     }
 
     /**

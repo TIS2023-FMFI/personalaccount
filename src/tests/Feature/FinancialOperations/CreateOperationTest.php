@@ -38,15 +38,13 @@ class CreateOperationTest extends TestCase
     }
 
     public function test_create_operation_form_data(){
-        /*$op = FinancialOperation::factory()
+        $lending = FinancialOperation::factory()
                     ->create([
                         'account_id' => $this->account,
                         'operation_type_id' => $this->lendingType
                     ]);
-        Lending::factory()->create(['id' => $op]);
+        Lending::factory()->create(['id' => $lending]);
 
-        $exp = [$op->id];
-*/
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->headers)
                             ->get(
@@ -55,12 +53,8 @@ class CreateOperationTest extends TestCase
                             );
 
         $response->assertStatus(200);
-        $response
-            ->assertJsonPath('operation_types', OperationType::where('repayment', '=', false)->get()->toArray());
-
-        /*foreach ($response['unrepaid_lendings'] as $lending) {
-            in_array($lending['id'], $exp);
-        }*/
+        $response->assertJsonPath('operation_types', OperationType::all()->toArray());
+        $this->assertEquals($response['unrepaid_lendings'][0]['id'], $lending->id);
     }
 
     public function test_create_operation(){
