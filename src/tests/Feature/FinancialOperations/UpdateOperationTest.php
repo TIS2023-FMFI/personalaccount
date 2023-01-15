@@ -49,8 +49,6 @@ class UpdateOperationTest extends TestCase
                     ]);
         Lending::factory()->create(['id' => $op]);
 
-        /*$exp = [$op->id];*/
-
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->headers)
                             ->get(
@@ -61,9 +59,6 @@ class UpdateOperationTest extends TestCase
         $response
             ->assertJsonPath('operation.id', $op->id);
 
-        /*foreach ($response['unrepaid_lendings'] as $lending) {
-            in_array($lending['id'], $exp);
-        }*/
     }
 
     public function test_update_operation(){

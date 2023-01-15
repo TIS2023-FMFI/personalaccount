@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,20 +22,6 @@ class OperationType extends Model
      * @var string[]
      */
     protected $guarded = ['id'];
-
-    /**
-     * Extends a query asking for operation types so that it demands only
-     * the types which can be assigned to operations directly by users.
-     *
-     * @param Builder $query
-     * the builder whose query to extend
-     * @return Builder
-     * the extended query builder
-     */
-    /*public function scopeUserAssignable(Builder $query): Builder
-    {
-        return $query->where('repayment', '=', false);
-    }*/
 
     /**
      * Get the expense repayment type.
