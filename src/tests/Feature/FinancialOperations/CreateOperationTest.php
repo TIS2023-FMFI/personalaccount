@@ -57,6 +57,58 @@ class CreateOperationTest extends TestCase
         $this->assertEquals($response['unrepaid_lendings'][0]['id'], $lending->id);
     }
 
+    public function test_create_operation_form_data_with_multiple_lendings(){
+
+        for ($i = 0; $i<5; $i++)
+        {
+            $lending = FinancialOperation::factory()
+                ->create([
+                    'account_id' => $this->account,
+                    'operation_type_id' => $this->lendingType
+                ]);
+            Lending::factory()->create(['id' => $lending]);
+        }
+
+        $response = $this->actingAs($this->user)
+            ->withHeaders($this->headers)
+            ->get(
+                '/accounts/' . $this->account->id
+                . '/operations/create'
+            );
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('operation_types', OperationType::all()->toArray());
+        $this->assertCount(5, $response['unrepaid_lendings']);
+    }
+
+    public function test_create_operation_form_data_with_repayment(){
+
+        $loan = FinancialOperation::factory()
+            ->create([
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
+        Lending::factory()->create(['id' => $loan]);
+
+        $repayment = FinancialOperation::factory()
+            ->create([
+                'account_id' => $this->account,
+                'operation_type_id' => $this->repaymentType
+            ]);
+        Lending::factory()->create(['id' => $repayment, 'previous_lending_id' => $loan]);
+
+        $response = $this->actingAs($this->user)
+            ->withHeaders($this->headers)
+            ->get(
+                '/accounts/' . $this->account->id
+                . '/operations/create'
+            );
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('operation_types', OperationType::all()->toArray());
+        $this->assertEmpty($response['unrepaid_lendings']);
+    }
+
     public function test_create_operation(){
 
         $operationData = [
