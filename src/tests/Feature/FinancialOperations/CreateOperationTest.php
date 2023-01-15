@@ -53,7 +53,8 @@ class CreateOperationTest extends TestCase
                             );
 
         $response->assertStatus(200);
-        $response->assertJsonPath('operation_types', OperationType::all()->toArray());
+        $response
+            ->assertJsonPath('operation_types', OperationType::where('repayment', '=', false)->get()->toArray());
         $this->assertEquals($response['unrepaid_lendings'][0]['id'], $lending->id);
     }
 
@@ -77,7 +78,6 @@ class CreateOperationTest extends TestCase
             );
 
         $response->assertStatus(200);
-        $response->assertJsonPath('operation_types', OperationType::all()->toArray());
         $this->assertCount(5, $response['unrepaid_lendings']);
     }
 
@@ -105,7 +105,6 @@ class CreateOperationTest extends TestCase
             );
 
         $response->assertStatus(200);
-        $response->assertJsonPath('operation_types', OperationType::all()->toArray());
         $this->assertEmpty($response['unrepaid_lendings']);
     }
 

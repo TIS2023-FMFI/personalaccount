@@ -33,8 +33,8 @@ class CreateOperationController extends GeneralOperationController
     public function getFormData(Account $account)
     {
         return [
-            'operation_types' => OperationType::all(),
-            'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->get()
+            'operation_types' => OperationType::userAssignable()->get(),
+            'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->where('account_id', '=', $account->id)->get()
         ];
     }
 
