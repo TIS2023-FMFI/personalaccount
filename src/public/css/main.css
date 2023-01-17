@@ -394,6 +394,7 @@ footer {
     flex-direction: column;
     align-items: center;
     position: relative;
+    min-width: 550px;
 }
 .modal p {
     font-size: 18px;

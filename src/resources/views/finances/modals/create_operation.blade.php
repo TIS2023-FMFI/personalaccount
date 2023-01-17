@@ -16,9 +16,13 @@
             <input class="operation_type" id="expense_choice" name="operation_type" type="radio" value="expense">&ensp;
             <label class="operation_type" for="expense_choice"><i>Výdavok</i></label>
           </div>
+          <div>
+            <input class="operation_type" id="loan_choice" name="operation_type" type="radio" value="loan">&ensp;
+            <label class="operation_type" for="loan_choice"><i>Splatenie pôžičky</i></label>
+          </div>
       </div>
 
-      <div class="input-box">
+      <div class="input-box add-operation-choice">
         <div class="field">
           <select id="operation_choice" name="typ" id="add-operation-type">
 

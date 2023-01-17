@@ -1627,6 +1627,40 @@ $(document).ready(function(){
     });
     // <-- Check/Uncheck operation
 
+
+
+
+
+    $('input[type=radio][name=operation_type]').change(function() {
+        if (this.value == 'loan') {
+            $(".choose-lending").show();
+            $(".add-operation-expected-date").show();
+
+            $(".operation-file").hide();
+            $(".add-operation-to").hide();
+            $(".add-operation-sum").hide();
+            $(".add-operation-subject").hide();
+            $(".add-operation-name").hide();
+            $(".add-operation-choice").hide();
+        } else {
+            $(".choose-lending").hide();
+            $(".add-operation-expected-date").hide();
+
+            $(".operation-file").show();
+            $(".add-operation-to").show();
+            $(".add-operation-sum").show();
+            $(".add-operation-subject").show();
+            $(".add-operation-name").show();
+            $(".add-operation-choice").show();
+        }
+    });
+
+
+
+
+
+
+
     // --> Create operaton form
 
     $("#create_operation").click(function(){
@@ -1642,6 +1676,7 @@ $(document).ready(function(){
                 "_token": csrf,
             }
         }).done(function(response) {
+            console.log(response);
             $("#operation_choice").append($('<option>', {
                 value: "default_opt",
                 text: 'Vyberte typ operácie'
