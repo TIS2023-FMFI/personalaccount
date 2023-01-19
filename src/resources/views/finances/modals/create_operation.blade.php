@@ -85,12 +85,6 @@
           <select id="lending-choice" name="lending">
             <option value="default_opt">Vyberte pôžičku</option>
 
-            <option value="1">Pôžička 1</option>
-            <option value="2">Pôžička 2</option>
-            <option value="3">Pôžička 3</option>
-            <option value="4">Pôžička 4</option>
-            <option value="5">Pôžička 5</option>
-
           </select>
           <label for="lending_choice">Pôžička na splatenie</label>
         </div>

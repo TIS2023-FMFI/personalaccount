@@ -1634,10 +1634,10 @@ $(document).ready(function(){
     $('input[type=radio][name=operation_type]').change(function() {
         if (this.value == 'loan') {
             $(".choose-lending").show();
-            $(".add-operation-expected-date").show();
+            $(".add-operation-expected-date").hide();
 
             $(".operation-file").hide();
-            $(".add-operation-to").hide();
+            $(".add-operation-to").show();
             $(".add-operation-sum").hide();
             $(".add-operation-subject").hide();
             $(".add-operation-name").hide();
@@ -1656,12 +1656,7 @@ $(document).ready(function(){
     });
 
 
-
-
-
-
-
-    // --> Create operaton form
+    // --> Create operation form
 
     $("#create_operation").click(function(){
         let account_id = $(this).data("account-id");
@@ -1676,7 +1671,6 @@ $(document).ready(function(){
                 "_token": csrf,
             }
         }).done(function(response) {
-            console.log(response);
             $("#operation_choice").append($('<option>', {
                 value: "default_opt",
                 text: 'Vyberte typ operácie'
@@ -1689,9 +1683,20 @@ $(document).ready(function(){
                     class: type,
                     value: choice.id,
                     text: choice.name
-                }));
+                }));                
             })
-        }) 
+            if (response.unrepaid_lendings.length != 0){
+                response.unrepaid_lendings.forEach(function(unrepaid_lending){
+                    let lendind_id = unrepaid_lending.lending.id
+                    let lending_title = unrepaid_lending.title
+                    $("#lending-choice").append($('<option>',{
+                        value: lendind_id,
+                        text: lending_title
+                    }))
+                })
+            }
+        })
+
     })
 
     $("#create-operation-form").on("submit", function(e) {
@@ -1707,6 +1712,7 @@ $(document).ready(function(){
         let sum = $("#add-operation-sum").val();
         let date = $("#add-operation-to").val();
         let expected_date = $("#add-operation-expected-date").val();
+        let lending_id = $("#lending-choice").val();
 
         var fileUpload = $("#operation-file").get(0);  
         var files = fileUpload.files;  
@@ -1723,89 +1729,134 @@ $(document).ready(function(){
         if (files[0] != undefined){
             fileData.append('attachment', files[0] ?? '');  
         }
-        $.ajax({
-            url: "/accounts/" + account_id + "/operations",
-            type: "POST",
-            contentType: false,
-            processData: false,
-            data: fileData
 
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
+        if ($('input[type=radio][name=operation_type]:checked').val() != 'loan') {
+            $.ajax({
+                url: "/accounts/" + account_id + "/operations",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: fileData
 
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
+            }).done(function(response) {
+                let message = jQuery.parseJSON(response);
 
-            $(".modal-box").css("display", "none");
+                Toast.fire({
+                    icon: 'success',
+                    title: message.displayMessage
+                })
+                location.reload();
 
-            $.fn.createOperationClearForm(true);
-        }).fail(function(response) {
-            $.fn.createOperationClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-                    if (typeof errors.attachment != 'undefined') {
-                        $("#operation-file").css("border-color", "red");
+                $(".modal-box").css("display", "none");
 
-                        errors.attachment.forEach(e => {
-                            $("#add-operation-attachment-errors").append("<p>" + e + "</p>");
-                        });
+                $.fn.createOperationClearForm(true);
+            }).fail(function(response) {
+                $.fn.createOperationClearForm();
+                if (typeof response.responseJSON != 'undefined'){
+                    if (response.status === 422) {
+                        let errors = response.responseJSON.errors;
+                        if (typeof errors.attachment != 'undefined') {
+                            $("#operation-file").css("border-color", "red");
+
+                            errors.attachment.forEach(e => {
+                                $("#add-operation-attachment-errors").append("<p>" + e + "</p>");
+                            });
+                        }
+                        if (typeof errors.date != 'undefined') {
+                            $("#add-operation-to").css("border-color", "red");
+                            errors.date.forEach(e => {
+                                $("#add-operation-date-errors").append("<p>" + e + "</p>");
+                            });
+                        }
+                        if (typeof errors.expected_date_of_return != 'undefined') {
+                            $("#add-operation-expected-date").css("border-color", "red");
+                            errors.expected_date_of_return.forEach(e => {
+                                $("#add-operation-expected-date-errors").append("<p>" + e + "</p>");
+                            });
+                        }
+                        if (typeof errors.operation_type_id != 'undefined') {
+                            $("#add-operation-type").css("border-color", "red");
+                            $("#add-operation-type-errors").append("<p>Neplatný typ operácie.</p>");
+                        }
+                        if (typeof errors.subject != 'undefined') {
+                            $("#add-operation-subject").css("border-color", "red");
+
+                            errors.subject.forEach(e => {
+                                $("#add-operation-subject-errors").append("<p>" + e + "</p>");
+                            });
+                        }            
+                        if (typeof errors.sum != 'undefined') {
+                            $("#add-operation-sum").css("border-color", "red");
+
+                            errors.sum.forEach(e => {
+                                $("#add-operation-sum-errors").append("<p>" + e + "</p>");
+                            });
+                        }                
+                        if (typeof errors.title != 'undefined') {
+                            $("#add-operation-name").css("border-color", "red");
+
+                            errors.title.forEach(e => {
+                                $("#add-operation-title-errors").append("<p>" + e + "</p>");
+                            });
+                        }
+                        
+                    } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.responseJSON.displayMessage
+                        })
                     }
-                    if (typeof errors.date != 'undefined') {
-                        $("#add-operation-to").css("border-color", "red");
-                        errors.date.forEach(e => {
-                            $("#add-operation-date-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    if (typeof errors.expected_date_of_return != 'undefined') {
-                        $("#add-operation-expected-date").css("border-color", "red");
-                        errors.expected_date_of_return.forEach(e => {
-                            $("#add-operation-expected-date-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    if (typeof errors.operation_type_id != 'undefined') {
-                        $("#add-operation-type").css("border-color", "red");
-                        $("#add-operation-type-errors").append("<p>Neplatný typ operácie.</p>");
-                    }
-                    if (typeof errors.subject != 'undefined') {
-                        $("#add-operation-subject").css("border-color", "red");
-
-                        errors.subject.forEach(e => {
-                            $("#add-operation-subject-errors").append("<p>" + e + "</p>");
-                        });
-                    }            
-                    if (typeof errors.sum != 'undefined') {
-                        $("#add-operation-sum").css("border-color", "red");
-
-                        errors.sum.forEach(e => {
-                            $("#add-operation-sum-errors").append("<p>" + e + "</p>");
-                        });
-                    }                
-                    if (typeof errors.title != 'undefined') {
-                        $("#add-operation-name").css("border-color", "red");
-
-                        errors.title.forEach(e => {
-                            $("#add-operation-title-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    
-                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                }else{   
                     Toast.fire({
                         icon: 'error',
-                        title: response.responseJSON.displayMessage
+                        title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                     })
                 }
-            }else{   
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
+            })
+        }else{
+            $.ajax({
+                url: "/operations/" + lending_id + "/repayment",
+                type: "POST",
+                data: {
+                    "_token": csrf,
+                    'date': date
+                }
+            }).done(function(response) {
+                let message = jQuery.parseJSON(response);
 
+                Toast.fire({
+                    icon: 'success',
+                    title: message.displayMessage
+                })
+                $(".modal-box").css("display", "none");
+
+                location.reload();
+                $.fn.createOperationClearForm(true);
+            }).fail(function(response) {
+                $.fn.createOperationClearForm();
+                if (typeof response.responseJSON != 'undefined'){
+                    if (response.status === 422) {
+                        let errors = response.responseJSON.errors;
+                        if (typeof errors.date != 'undefined') {
+                            $("#add-operation-to").css("border-color", "red");
+                            errors.date.forEach(e => {
+                                $("#add-operation-date-errors").append("<p>" + e + "</p>");
+                            });
+                        }
+                    } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.responseJSON.displayMessage
+                        })
+                    }
+                }else{   
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+                    })
+                }
+            })
+        }
     });
 
     $.fn.createOperationClearForm = function(isDone = false){ 
