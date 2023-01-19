@@ -445,8 +445,6 @@ $(document).ready(function(){
         $("#add-account-sap-id").empty();
         $("#add-account-sap-id-errors").empty();
         $("#add-account-name-errors").empty();
-
-
     }
     // <-- Create financial account form
 
@@ -827,91 +825,7 @@ $(document).ready(function(){
             $('#create-account-form').submit();
         }
     });
-    // Create financial account form -->
-    $("#create-account-form").on("submit", function(e) {
-        e.preventDefault();
-
-        $("#create-account-button").attr("disabled", true);
-
-        let title = $("#add-account-name").val();
-        let sapId = $("#add-account-sap-id").val();
-        let csrf = $("#create-account-button").data("csrf");
-
-        $.ajax({
-            url: "/accounts",
-            type: "POST",
-            data: {
-                "_token": csrf,
-                'title': title,
-                'sap_id': sapId
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-             location.reload()
-            $(".modal-box").css("display", "none");
-
-            $.fn.createAccountClearForm(true);
-        }).fail(function(response) {
-            $.fn.createAccountClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-
-                    if (typeof errors.title != 'undefined') {
-                        $("#add-account-name").css("border-color", "red");
-
-                        errors.title.forEach(e => {
-                            $("#add-account-name-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    if (typeof errors.sap_id != 'undefined') {
-                        $("#add-account-sap-id").css("border-color", "red");
-                        errors.sap_id.forEach(e => {
-                            $("#add-account-sap-id-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    
-                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    $.fn.createAccountClearForm = function(isDone = false){ 
-
-        if (isDone) {
-            $("#add-account-name").val("");
-            $("#add-account-sap-id").val("");
-        }
-
-        $("#create-account-button").attr("disabled", false);
-
-        $("#add-account-name").css("border-color", "var(--primary)");
-        $("#add-account-sap-id").css("border-color", "var(--primary)");
-
-        $("#add-account-name").empty();
-        $("#add-account-sap-id").empty();
-        $("#add-account-sap-id-errors").empty();
-        $("#add-account-name-errors").empty();
-
-
-    }
-    // <-- Create financial account form
+   
 
     // Edit financial account form -->
 
@@ -1262,7 +1176,6 @@ $(document).ready(function(){
                 "_token": csrf
             }
         }).done(function(response) {
-
             if (response.operation.operation_type.expense == 0) {
                 $("#operation_main_type").html("Príjem");
             } else {
@@ -1287,16 +1200,24 @@ $(document).ready(function(){
                 if (repayment_type == 1){
                     $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
                     $("#previous-lending-button").css("display", "flex");
-                    $("#show-repayment-button").css("display", "none")
+                    $("#show-repayment-button").css("display", "none");
+                    $("#operation_date_until").css("visibility", "hidden");
+                    $("#operation_date_until_label").css("visibility", "hidden");
                 }else{
-                    $("#operation_date_until_label").css("visibility", "visible")
                     return_date = response.operation.lending.expected_date_of_return
-                    rdd = return_date.substring(8,10);
-                    rmm = return_date.substring(5,7);
-                    ryyyy = return_date.substring(0,4);
-                    $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
-                    $("#operation_date_until").css("visibility", "visible");
-                    
+                    if(return_date != null){
+                        $("#operation_date_until_label").css("visibility", "visible")
+
+                        rdd = return_date.substring(8,10);
+                        rmm = return_date.substring(5,7);
+                        ryyyy = return_date.substring(0,4);
+                        $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
+                        $("#operation_date_until").css("visibility", "visible");
+                        
+                    }else{
+                        $("#operation_date_until").css("visibility", "hidden");
+                        $("#operation_date_until_label").css("visibility", "hidden");
+                    }
                     let repaid = response.operation.lending.repayment
                     if (repaid != null){
                         $("#show-repayment-button").data("repay-id", repaid.id);
@@ -1637,6 +1558,7 @@ $(document).ready(function(){
             $(".add-operation-expected-date").hide();
 
             $(".operation-file").hide();
+            $("#operation-date-label").html("Dátum splatenia pôžičky");
             $(".add-operation-to").show();
             $(".add-operation-sum").hide();
             $(".add-operation-subject").hide();
@@ -1647,6 +1569,7 @@ $(document).ready(function(){
             $(".add-operation-expected-date").hide();
 
             $(".operation-file").show();
+            $("#operation-date-label").html("Dátum");
             $(".add-operation-to").show();
             $(".add-operation-sum").show();
             $(".add-operation-subject").show();
@@ -2101,6 +2024,7 @@ $(document).ready(function(){
         let csrf = $("#repay-lending-button").data("csrf");
         let operation_id = $(this).data("operation-id");
 
+
         $.ajax({
             url: "/operations/" + operation_id + "/repayment",
             type: "POST",
@@ -2110,7 +2034,6 @@ $(document).ready(function(){
             }
         }).done(function(response) {
             let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
                 title: message.displayMessage
@@ -2120,6 +2043,7 @@ $(document).ready(function(){
             location.reload();
             $.fn.repaymentClearForm(true);
         }).fail(function(response) {
+
             $.fn.repaymentClearForm();
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
@@ -2127,7 +2051,7 @@ $(document).ready(function(){
                     if (typeof errors.date != 'undefined') {
                         $("#repayment-operation-date").css("border-color", "red");
                         errors.date.forEach(e => {
-                            $("#repayment-operation-date-errors").append("<p>" + e + "</p>");
+                            $("#repay-lending-date-errors").append("<p>" + e + "</p>");
                         });
                     }else if (typeof response.responseJSON.displayMessage != 'undefined') {
                         Toast.fire({
@@ -2151,8 +2075,13 @@ $(document).ready(function(){
             $("#repayment-operation-date").val("");
         }
 
+        $("#repay-lending-button").attr("disabled", false);
+
         $("#repayment-operation-date").css("border-color", "var(--primary)");
         $("#repayment-operation-date").empty();
+        $("#repay-lending-date-errors").css("border-color", "var(--primary)");
+        $("#repay-lending-date-errors").empty();
+
     }
 
     // <-- Repay lending form

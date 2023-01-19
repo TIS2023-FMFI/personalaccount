@@ -59,7 +59,7 @@
       <div class="input-box add-operation-to">
         <div class="field">
           <input type="date" id="add-operation-to">
-          <label for="add-operation-to">Dátum</label>
+          <label id="operation-date-label" for="add-operation-to">Dátum</label>
         </div>
         <div class="error-box" id="add-operation-date-errors"></div>
       </div>
