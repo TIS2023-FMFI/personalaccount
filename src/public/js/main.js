@@ -1194,15 +1194,27 @@ $(document).ready(function(){
             
             let lending_type = response.operation.operation_type.lending
             let repayment_type = response.operation.operation_type.repayment
-            
             if (lending_type == 1){
                 $("#previous-lending-button").css("display", "none");
                 if (repayment_type == 1){
                     $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
                     $("#previous-lending-button").css("display", "flex");
                     $("#show-repayment-button").css("display", "none");
-                    $("#operation_date_until").css("visibility", "hidden");
-                    $("#operation_date_until_label").css("visibility", "hidden");
+                    return_date = response.operation.lending.expected_date_of_return
+                    if(return_date != null){
+
+                        rdd = return_date.substring(8,10);
+                        rmm = return_date.substring(5,7);
+                        ryyyy = return_date.substring(0,4);
+                        $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
+
+                        $("#operation_date_until_label").css("visibility", "visible")
+                        $("#operation_date_until").css("visibility", "visible");
+                        
+                    }else{
+                        $("#operation_date_until").css("visibility", "hidden");
+                        $("#operation_date_until_label").css("visibility", "hidden");
+                    }
                 }else{
                     return_date = response.operation.lending.expected_date_of_return
                     if(return_date != null){
@@ -1291,39 +1303,27 @@ $(document).ready(function(){
             yyyy = date.substring(0,4);
             $("#operation_date").html(dd+"."+mm+"."+yyyy);
             
-            let lending_type = response.operation.operation_type.lending
             let repayment_type = response.operation.operation_type.repayment
-            
-            if (lending_type == 1){
-                $("#previous-lending-button").css("display", "none");
-                if (repayment_type == 1){
-                    $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
-                    $("#previous-lending-button").css("display", "flex");
-                    $("#show-repayment-button").css("display", "none")
-                }else{
-                    $("#operation_date_until_label").css("visibility", "visible")
-                    return_date = response.operation.lending.expected_date_of_return
-                    rdd = return_date.substring(8,10);
-                    rmm = return_date.substring(5,7);
-                    ryyyy = return_date.substring(0,4);
-                    $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
-                    $("#operation_date_until").css("visibility", "visible");
-                    
-                    let repaid = response.operation.lending.repayment
-                    if (repaid != null){
-                        $("#show-repayment-button").data("repay-id", repaid.id);
-                        $("#show-repayment-button").css("display", "flex")
-                    }else{
-                        $("#show-repayment-button").css("display", "none")
-                    }
 
-                }
-
-            }else{
+            $("#previous-lending-button").css("display", "none");
+            if (repayment_type == 1){
+                $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
+                $("#previous-lending-button").css("display", "flex");
+                $("#show-repayment-button").css("display", "none")
                 $("#operation_date_until").css("visibility", "hidden");
                 $("#operation_date_until_label").css("visibility", "hidden");
-                $("#previous-lending-button").css("display", "none");
-                $("#show-repayment-button").css("display", "none")
+
+            }else{
+                $("#operation_date_until_label").css("visibility", "hidden")
+                $("#operation_date_until_label").css("visibility", "hidden");
+
+                let repaid = response.operation.lending.repayment
+                if (repaid != null){
+                    $("#show-repayment-button").data("repay-id", repaid.id);
+                    $("#show-repayment-button").css("display", "flex")
+                }else{
+                    $("#show-repayment-button").css("display", "none")
+                }
             }
 
             $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
@@ -1366,7 +1366,6 @@ $(document).ready(function(){
                 "_token": csrf
             }
         }).done(function(response) {
-
             if (response.operation.operation_type.expense == 0) {
                 $("#operation_main_type").html("Príjem");
             } else {
@@ -1383,40 +1382,37 @@ $(document).ready(function(){
             yyyy = date.substring(0,4);
             $("#operation_date").html(dd+"."+mm+"."+yyyy);
             
-            let lending_type = response.operation.operation_type.lending
             let repayment_type = response.operation.operation_type.repayment
-            
-            if (lending_type == 1){
-                $("#previous-lending-button").css("display", "none");
-                if (repayment_type == 1){
-                    $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
-                    $("#previous-lending-button").css("display", "flex");
-                    $("#show-repayment-button").css("display", "none")
-                }else{
-                    $("#operation_date_until_label").css("visibility", "visible")
-                    return_date = response.operation.lending.expected_date_of_return
+
+            $("#previous-lending-button").css("display", "none");
+            if (repayment_type == 1){
+                $("#previous-lending-button").data("previous-id", response.operation.lending.previous_lending_id);
+                $("#previous-lending-button").css("display", "flex");
+                $("#show-repayment-button").css("display", "none")
+            }else{
+                return_date = response.operation.lending.expected_date_of_return
+                if (return_date != null){
                     rdd = return_date.substring(8,10);
                     rmm = return_date.substring(5,7);
                     ryyyy = return_date.substring(0,4);
                     $("#operation_date_until").html(rdd+"."+rmm+"."+ryyyy);
                     $("#operation_date_until").css("visibility", "visible");
-                    
-                    let repaid = response.operation.lending.repayment
-                    if (repaid != null){
-                        $("#show-repayment-button").data("repay-id", repaid.id);
-                        $("#show-repayment-button").css("display", "flex")
-                    }else{
-                        $("#show-repayment-button").css("display", "none")
-                    }
-
+                    $("#operation_date_until_label").css("visibility", "visible");
+                }else{
+                    $("#operation_date_until").css("visibility", "hidden");
+                    $("#operation_date_until_label").css("visibility", "hidden");
+                }
+                let repaid = response.operation.lending.repayment
+                if (repaid != null){
+                    $("#show-repayment-button").data("repay-id", repaid.id);
+                    $("#show-repayment-button").css("display", "flex")
+                }else{
+                    $("#show-repayment-button").css("display", "none")
                 }
 
-            }else{
-                $("#operation_date_until").css("visibility", "hidden");
-                $("#operation_date_until_label").css("visibility", "hidden");
-                $("#previous-lending-button").css("display", "none");
-                $("#show-repayment-button").css("display", "none")
             }
+
+            
 
             $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
             
