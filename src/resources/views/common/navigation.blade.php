@@ -47,3 +47,5 @@
             @include('finances.modals.edit_account')
             @include('finances.modals.delete_account')
             @include('finances.modals.delete_report')
+
+            @include('finances.modals.loader')
