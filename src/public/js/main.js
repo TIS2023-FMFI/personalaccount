@@ -1164,7 +1164,6 @@ $(document).ready(function(){
     // <-- Financial operations detail
 
     $(".operation-detail").click(function(){
-        $("#operation-modal").css("display", "flex");
 
         let operation_id = $(this).data("operation-id");
         let csrf = $(this).data("csrf");
@@ -1174,6 +1173,14 @@ $(document).ready(function(){
             type: "GET",
             data: {
                 "_token": csrf
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#operation-modal").css("display", "flex");
             }
         }).done(function(response) {
             if (response.operation.operation_type.expense == 0) {
@@ -1276,7 +1283,6 @@ $(document).ready(function(){
         let operation_id = $(this).data("repay-id");
 
         $(".modal-box").css("display", "none");
-        $("#operation-modal").css("display", "flex");
         let csrf = $(this).data("csrf");
 
         $.ajax({
@@ -1284,6 +1290,14 @@ $(document).ready(function(){
             type: "GET",
             data: {
                 "_token": csrf
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#operation-modal").css("display", "flex");
             }
         }).done(function(response) {
 
@@ -1356,7 +1370,6 @@ $(document).ready(function(){
         let operation_id = $(this).data("previous-id");
 
         $(".modal-box").css("display", "none");
-        $("#operation-modal").css("display", "flex");
         let csrf = $(this).data("csrf");
 
         $.ajax({
@@ -1364,6 +1377,14 @@ $(document).ready(function(){
             type: "GET",
             data: {
                 "_token": csrf
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#operation-modal").css("display", "flex");
             }
         }).done(function(response) {
             if (response.operation.operation_type.expense == 0) {
@@ -1581,13 +1602,20 @@ $(document).ready(function(){
         let account_id = $(this).data("account-id");
         let csrf = $(this).data("csrf");
         $("#create-operation-form").data("account-id", account_id);
-        $("#create-operation-modal").css("display", "flex");  
 
         $.ajax({
             url: "/accounts/" + account_id + "/operations/create",
             type: "GET",
             data: {
                 "_token": csrf,
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#create-operation-modal").css("display", "none");  
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#create-operation-modal").css("display", "flex");  
             }
         }).done(function(response) {
             $("#operation_choice").append($('<option>', {
@@ -1831,13 +1859,20 @@ $(document).ready(function(){
         let csrf = $("#edit-operation-button").data("csrf");
 
         $("#edit-operation-form").data("operation-id", operation_id);
-        $("#edit-operation-modal").css("display", "flex");    
 
         $.ajax({
             url: "/operations/" + operation_id + "/update",
             type: "GET",
             data: {
                 "_token": csrf,
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#edit-operation-modal").css("display", "none");    
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#edit-operation-modal").css("display", "flex");    
             }
         }).done(function(response) {
 
