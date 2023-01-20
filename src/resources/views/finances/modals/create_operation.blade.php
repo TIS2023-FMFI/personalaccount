@@ -16,9 +16,13 @@
             <input class="operation_type" id="expense_choice" name="operation_type" type="radio" value="expense">&ensp;
             <label class="operation_type" for="expense_choice"><i>Výdavok</i></label>
           </div>
+          <div>
+            <input class="operation_type" id="loan_choice" name="operation_type" type="radio" value="loan">&ensp;
+            <label class="operation_type" for="loan_choice"><i>Splatenie pôžičky</i></label>
+          </div>
       </div>
 
-      <div class="input-box">
+      <div class="input-box add-operation-choice">
         <div class="field">
           <select id="operation_choice" name="typ" id="add-operation-type">
 
@@ -55,7 +59,7 @@
       <div class="input-box add-operation-to">
         <div class="field">
           <input type="date" id="add-operation-to">
-          <label for="add-operation-to">Dátum</label>
+          <label id="operation-date-label" for="add-operation-to">Dátum</label>
         </div>
         <div class="error-box" id="add-operation-date-errors"></div>
       </div>
@@ -80,12 +84,6 @@
         <div class="field">
           <select id="lending-choice" name="lending">
             <option value="default_opt">Vyberte pôžičku</option>
-
-            <option value="1">Pôžička 1</option>
-            <option value="2">Pôžička 2</option>
-            <option value="3">Pôžička 3</option>
-            <option value="4">Pôžička 4</option>
-            <option value="5">Pôžička 5</option>
 
           </select>
           <label for="lending_choice">Pôžička na splatenie</label>

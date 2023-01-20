@@ -15,6 +15,6 @@ return [
         'failure' => 'Operáciu sa nám neporadilo odstrániť, prosím, skúste to neskôr.'
     ],
     
-    'repayment_invalid_date' => 'Dátum splatenia pôžičky nemôže byť skorší ako dátum jej poskytnutia.',
+    'repayment_date_invalid' => 'Dátum splatenia pôžičky nemôže byť skorší ako dátum jej poskytnutia.',
 
 ];

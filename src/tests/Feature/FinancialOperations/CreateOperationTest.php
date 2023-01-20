@@ -38,15 +38,13 @@ class CreateOperationTest extends TestCase
     }
 
     public function test_create_operation_form_data(){
-        /*$op = FinancialOperation::factory()
+        $lending = FinancialOperation::factory()
                     ->create([
                         'account_id' => $this->account,
                         'operation_type_id' => $this->lendingType
                     ]);
-        Lending::factory()->create(['id' => $op]);
+        Lending::factory()->create(['id' => $lending]);
 
-        $exp = [$op->id];
-*/
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->headers)
                             ->get(
@@ -57,10 +55,57 @@ class CreateOperationTest extends TestCase
         $response->assertStatus(200);
         $response
             ->assertJsonPath('operation_types', OperationType::where('repayment', '=', false)->get()->toArray());
+        $this->assertEquals($response['unrepaid_lendings'][0]['id'], $lending->id);
+    }
 
-        /*foreach ($response['unrepaid_lendings'] as $lending) {
-            in_array($lending['id'], $exp);
-        }*/
+    public function test_create_operation_form_data_with_multiple_lendings(){
+
+        for ($i = 0; $i<5; $i++)
+        {
+            $lending = FinancialOperation::factory()
+                ->create([
+                    'account_id' => $this->account,
+                    'operation_type_id' => $this->lendingType
+                ]);
+            Lending::factory()->create(['id' => $lending]);
+        }
+
+        $response = $this->actingAs($this->user)
+            ->withHeaders($this->headers)
+            ->get(
+                '/accounts/' . $this->account->id
+                . '/operations/create'
+            );
+
+        $response->assertStatus(200);
+        $this->assertCount(5, $response['unrepaid_lendings']);
+    }
+
+    public function test_create_operation_form_data_with_repayment(){
+
+        $loan = FinancialOperation::factory()
+            ->create([
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
+        Lending::factory()->create(['id' => $loan]);
+
+        $repayment = FinancialOperation::factory()
+            ->create([
+                'account_id' => $this->account,
+                'operation_type_id' => $this->repaymentType
+            ]);
+        Lending::factory()->create(['id' => $repayment, 'previous_lending_id' => $loan]);
+
+        $response = $this->actingAs($this->user)
+            ->withHeaders($this->headers)
+            ->get(
+                '/accounts/' . $this->account->id
+                . '/operations/create'
+            );
+
+        $response->assertStatus(200);
+        $this->assertEmpty($response['unrepaid_lendings']);
     }
 
     public function test_create_operation(){
@@ -235,7 +280,7 @@ class CreateOperationTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonPath(
                 'errors.date.0',
-                trans('validation.repayment_date_invalid')
+                trans('financial_operations.repayment_date_invalid')
             );
     }
 
