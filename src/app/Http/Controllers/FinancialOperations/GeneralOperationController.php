@@ -159,7 +159,7 @@ class GeneralOperationController extends Controller
     ) {
         if ($loan && $repayment && $repayment->date->lt($loan->date))
             throw ValidationException::withMessages([
-                'date' => trans('validation.repayment_date_invalid')
+                'date' => trans('financial_operations.repayment_date_invalid')
             ]);
     }
 }
