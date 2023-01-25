@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->string('title');
             $table->string('sap_id');
+            $table->unique(['user_id', 'sap_id']);
         });
     }
 

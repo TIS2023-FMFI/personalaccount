@@ -147,4 +147,47 @@ class CreateAccountTest extends TestCase
             );
     }
 
+    public function test_request_failure_when_sap_id_is_duplicate()
+    {
+        $user = User::create([ 'email' => 'new@b.c' ]);
+
+        $this->assertCount(0, $user->accounts);
+
+        $response = $this->actingAs($user)
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
+                                '/accounts',
+                                [
+                                    'title' => 'title',
+                                    'sap_id' => 'ID-123',
+                                ]
+                            );
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('accounts', [
+            'user_id' => $user->id,
+            'title' => 'title',
+            'sap_id' => 'ID-123'
+        ]);
+
+        $response = $this->actingAs($user)
+                            ->withHeaders($this->ajaxHeaders)
+                            ->post(
+                                '/accounts',
+                                [
+                                    'title' => 'new title',
+                                    'sap_id' => 'ID-123',
+                                ]
+                            );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'errors.sap_id.0',
+                trans('validation.unique', [ 'attribute' => $this->sapIdAttr ])
+            );
+
+        $user->refresh();
+        $this->assertCount(1, $user->accounts);
+    }
 }

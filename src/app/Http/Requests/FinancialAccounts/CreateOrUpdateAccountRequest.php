@@ -3,6 +3,7 @@
 namespace App\Http\Requests\FinancialAccounts;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * A request to create new or update an existing financial account.
@@ -24,6 +25,7 @@ class CreateOrUpdateAccountRequest extends FormRequest
                 'required',
                 'max:255',
                 'regex:/^[A-Z0-9]+([\-\/][A-Z0-9]+)*$/',
+                Rule::unique('accounts')->where('user_id', $this->user()->id)
             ]
         ];
     }

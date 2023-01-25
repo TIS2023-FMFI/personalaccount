@@ -57,8 +57,8 @@ class FinancialAccountOverviewTest extends TestCase
         $accounts = $response->viewData('accounts');
 
         $this->assertCount(2,$accounts);
-        $this->assertEquals(10,$accounts[0]->getBalance());
-        $this->assertEquals(-10,$accounts[1]->getBalance());
+        $this->assertEquals(10,$accounts->find($account1->id)->getBalance());
+        $this->assertEquals(-10,$accounts->find($account2->id)->getBalance());
     }
 
 }
