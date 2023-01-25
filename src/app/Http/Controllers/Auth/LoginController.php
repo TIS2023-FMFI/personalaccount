@@ -54,7 +54,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
  
             return redirect()
-                    ->intended(RouteServiceProvider::HOME);
+                    ->intended(RouteServiceProvider::$home);
         }
  
         return back()
@@ -81,7 +81,7 @@ class LoginController extends Controller
             Auth::login($token->user);
             $token->invalidate();
  
-            return redirect(RouteServiceProvider::HOME);
+            return redirect(RouteServiceProvider::$home);
         }
 
         return view('auth.login_link_invalid');
