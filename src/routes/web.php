@@ -72,7 +72,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      * Financial Accounts
      */
 
-    Route::redirect('/', route('home'));
+    Route::permanentRedirect('/', 'accounts');
     Route::get('/accounts', [AccountsOverviewController::class, 'show'])
         ->name('home');
 
