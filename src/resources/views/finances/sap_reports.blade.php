@@ -7,7 +7,7 @@
 
 <div class="flex-between">
     <div class="main_info">
-        <a href="/accounts" class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad</a>
+        <a href="accounts" class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad</a>
         <h1>{{ $account->title }}</h1>
         <label for="sap-id-detail-sap"><b>SAP ID:</b></label>
         <p id="sap-id-detail-sap">{{ $account->sap_id }}</p>    </div>

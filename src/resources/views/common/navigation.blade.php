@@ -15,7 +15,7 @@
     <body>
         <nav>
             <div>
-                <a href="/accounts"><i class="bi bi-credit-card-fill"></i> BudgetMaster</a>
+                <a href="accounts"><i class="bi bi-credit-card-fill"></i> BudgetMaster</a>
             </div>
             <div class="dropdown">
                 <button class="dropbtn">{{ Auth::User()->email }}<i class="bi bi-caret-down-fill"></i></button>

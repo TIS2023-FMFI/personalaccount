@@ -680,7 +680,6 @@ $(document).ready(function(){
         })
     });
 
-    // <-- add SAP report form
     $.fn.createReportClearForm = function(isDone = false){ 
 
         if (isDone) {
@@ -695,8 +694,7 @@ $(document).ready(function(){
         $("#operation-file").empty();
         $("#add-sap-report-errors").empty();
     }
-
-    // <-- SAP reports forms
+    // <-- add SAP report form
 
     // --> delete SAP report form
 
@@ -749,40 +747,8 @@ $(document).ready(function(){
     });
 
     // <-- delete SAP report form
-
+    // <-- SAP reports forms
     // <-- SAP reports
-
-
-    // --> Financial operations
-
-    // --> Financial operations export
-
-    $("#operations-export").click(function(){
-        
-        let account_id = $(this).data("account-id");
-        let date_from = $('#filter-operations-from').val();
-        let date_to = $('#filter-operations-to').val();
-        let url ='accounts/'+account_id+'/operations/export';
-
-        if (date_from != "" || date_to != ""){
-            url += '?';
-        }
-        if (date_from != ""){
-            url += 'from=' + date_from
-        }
-        if (date_to != ""){
-            if (date_from != ""){
-                url += '&';
-            }
-            url += 'to=' + date_to
-        }
-        window.location.href = url;
-
-    });
-
-    // <-- Financial operations export
-
-    // <-- Financial operations detail
 
     // Financial accounts filter operations-->
     
@@ -818,323 +784,9 @@ $(document).ready(function(){
         }
     })
 
-    // Financial accounts forms -->
-    
-    $("#create-account-form").keypress(e => {
-        if (e.which === 13) {
-            $('#create-account-form').submit();
-        }
-    });
-   
+    // Financial operations -->
 
-    // Edit financial account form -->
-
-    $("#edit-account-form").on("submit", function(e) {
-        e.preventDefault();
-        
-        let account_id =  $(this).data("id");
-    
-        let title = $("#edit-account-name").val();
-        let sapId = $("#edit-account-sap-id").val();
-
-        let csrf = $("#edit-account-button").data("csrf");
-
-        $.ajax({
-            url: "accounts/" + account_id,
-            type: "PUT",
-            data: {
-                "_token": csrf,
-                'title': title,
-                'sap_id': sapId
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-            $(".modal-box").css("display", "none");
-
-            $.fn.editAccountClearForm(true);
-        }).fail(function(response) {
-            $.fn.editAccountClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-
-                    if (typeof errors.title != 'undefined') {
-                        $("#edit-account-name").css("border-color", "red");
-
-                        errors.title.forEach(e => {
-                            $("#edit-account-name-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    if (typeof errors.sap_id != 'undefined') {
-                        $("#edit-account-sap-id").css("border-color", "red");
-                        errors.sap_id.forEach(e => {
-                            $("#edit-account-sap-id-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    
-                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{    
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    $.fn.editAccountClearForm = function(isDone = false){ 
-
-        if (isDone) {
-            $("#edit-account-name").val("");
-            $("#edit-account-sap-id").val("");
-        }
-
-        $("#edit-account-name").css("border-color", "var(--primary)");
-        $("#edit-account-sap-id").css("border-color", "var(--primary)");
-
-        $("#edit-account-name").empty();
-        $("#edit-account-sap-id").empty();
-        $("#edit-account-sap-id-errors").empty();
-        $("#edit-account-name-errors").empty();
-    }
-
-    // <-- Edit financial account form
-
-    // Delete financial account form -->
-
-    $("#delete-account-form").on("submit", function(e) {
-        e.preventDefault();
-
-        let account_id =  $(this).data("id");
-
-        let csrf = $("#create-account-button").data("csrf");
-
-        $.ajax({
-            url: "accounts/" + account_id,
-            type: "DELETE",
-            data: {
-                "_token": csrf
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-            $(".modal-box").css("display", "none");
-
-            $.fn.createAccountClearForm(true);
-        }).fail(function(response) {
-            $.fn.createAccountClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{    
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    // <-- Delete financial account form
-    // <-- Financial accounts forms
-    // <-- Financial accounts
-
-    // --> SAP reports
-
-    $("#reports-filter").click(function(){
-        
-        let account_id = $(this).data("account-id");
-        let date_from = $('#filter-reports-from').val();
-        let date_to = $('#filter-reports-to').val();
-        let url ='accounts/'+account_id+'/sap-reports';
-
-        if (date_from != "" || date_to != ""){
-            url += '?';
-        }
-        if (date_from != ""){
-            url += 'from=' + date_from
-        }
-        if (date_to != ""){
-            if (date_from != ""){
-                url += '&';
-            }
-            url += 'to=' + date_to
-        }
-        window.location.href = url;
-
-    });
-
-    // --> SAP reports forms
-
-    // --> add SAP report form
-    $("#add-sap-report").click(function(){
-        let account_id = $(this).data("account-id");
-        $("#add-report-modal").css("display","flex");
-        $("#add-report-modal > .modal > #create-report-form").data("account-id", account_id);
-    })
-
-    $("#create-report-form").on("submit", function(e){
-        e.preventDefault();
-
-        $("#create-report-button").attr("disabled", true);
-
-        let account_id =  $(this).data("account-id");
-        let csrf = $("#create-report-button").data("csrf");
-
-        var fileUpload = $("#report-file").get(0);  
-        var files = fileUpload.files;  
-        var fileData = new FormData(); 
-        if (files[0] != undefined){
-            fileData.append('sap_report', files[0] ?? '');  
-        }
-        fileData.append('_token', csrf);
-        
-        $.ajax({
-            url: "accounts/" + account_id + '/sap-reports',
-            type: "POST",
-            contentType: false, // Not to set any content header  
-            processData: false, // Not to process data  
-            data: fileData
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-
-            $(".modal-box").css("display", "none");
-
-            $.fn.createReportClearForm(true);
-        }).fail(function(response) {
-            $.fn.createReportClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-
-                    if (typeof errors.sap_report != 'undefined') {
-                        $("#operation-file").css("border-color", "red");
-
-                        errors.sap_report.forEach(e => {
-                            $("#add-sap-report-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    
-                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{   
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-
-        })
-    });
-
-    // <-- add SAP report form
-    $.fn.createReportClearForm = function(isDone = false){ 
-
-        if (isDone) {
-            $("#operation-file").val("");
-        }
-
-        $("#create-report-button").attr("disabled", false);
-
-        $("#operation-file").css("border-color", "var(--primary)");
-        $("#add-sap-report-errors").css("border-color", "var(--primary)");
-
-        $("#operation-file").empty();
-        $("#add-sap-report-errors").empty();
-    }
-
-    // <-- SAP reports forms
-
-    // --> delete SAP report form
-
-    $(".report-delete").click(function(){
-        let report_id = $(this).data("report-id");
-        $("#delete-report-form").data("report-id", report_id);
-        $("#delete-report-modal").css("display", "flex");
-        $("#delete-report-modal").css("display", "flex");
-    });
-
-    $("#delete-report-form").on("submit", function(e) {
-        e.preventDefault();
-
-        let report_id =  $(this).data("report-id");
-
-        let csrf = $("#delete-report-button").data("csrf");
-
-        $.ajax({
-            url: "sap-reports/" + report_id,
-            type: "DELETE",
-            data: {
-                "_token": csrf
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-            $(".modal-box").css("display", "none");
-
-        }).fail(function(response) {
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{   
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    // <-- delete SAP report form
-
-    // <-- SAP reports
-
-
-    // --> Financial operations
-
-    // --> Financial operations export
+    // Financial operations export -->
 
     $("#operations-export").click(function(){
         
@@ -1161,7 +813,7 @@ $(document).ready(function(){
 
     // <-- Financial operations export
 
-    // <-- Financial operations detail
+    // Financial operations detail -->
 
     $(".operation-detail").click(function(){
 
@@ -1461,11 +1113,11 @@ $(document).ready(function(){
 
     })
 
-    // --> Financial operations detail
+    // <-- Financial operations detail
 
-    // --> Financial operations forms
+    // Financial operations forms -->
 
-    // --> Delete operation form
+    // Delete operation form -->
 
     $(".operation-delete").click(function(){
         let operation_id = $(this).data("operation-id");
@@ -1517,7 +1169,7 @@ $(document).ready(function(){
 
     // <-- Delete operation form
 
-    // --> Check/Uncheck operation
+    // Check/Uncheck operation -->
 
     $(".operation-check").click(function(){
         let operation_id = $(this).data("operation-id");
