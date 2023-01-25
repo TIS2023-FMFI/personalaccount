@@ -72,7 +72,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      * Financial Accounts
      */
 
-    Route::get('/', [AccountsOverviewController::class, 'show'])
+    Route::get('/accounts', [AccountsOverviewController::class, 'show'])
         ->name('home');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
