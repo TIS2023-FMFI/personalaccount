@@ -152,7 +152,7 @@ class LoginTest extends TestCase
 
         $response
             ->assertStatus(302)
-            ->assertLocation(RouteServiceProvider::$home);
+            ->assertLocation(route('home'));
 
         $this->assertAuthenticatedAs($user);
     }

@@ -73,7 +73,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      */
 
     Route::get('/', [AccountsOverviewController::class, 'show'])
-        ->name('accounts_overview');
+        ->name('home');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts', [CreateAccountController::class, 'create']);
