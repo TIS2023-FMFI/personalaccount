@@ -99,7 +99,6 @@ $(document).ready(function(){
             url: "register",
             type: "POST",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
                 "email": email
@@ -178,7 +177,6 @@ $(document).ready(function(){
             url: "change-password",
             type: "POST",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
                 "old_password": old,
@@ -267,7 +265,6 @@ $(document).ready(function(){
             url: "forgot-password",
             type: "POST",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
                 "email": email
@@ -383,7 +380,6 @@ $(document).ready(function(){
             url: "accounts",
             type: "POST",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
                 'title': title,
@@ -472,7 +468,6 @@ $(document).ready(function(){
             url: "accounts/" + account_id,
             type: "PUT",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
                 'title': title,
@@ -557,7 +552,6 @@ $(document).ready(function(){
             url: "accounts/" + account_id,
             type: "DELETE",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf
             }
@@ -650,7 +644,6 @@ $(document).ready(function(){
             contentType: false, // Not to set any content header  
             processData: false, // Not to process data 
             dataType: "json",
-            accepts: { json: "application/json" },
             data: fileData
         }).done(function(response) {
             let message = jQuery.parseJSON(response);
@@ -730,7 +723,6 @@ $(document).ready(function(){
             url: "sap-reports/" + report_id,
             type: "DELETE",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf
             }
@@ -840,7 +832,6 @@ $(document).ready(function(){
             url: "operations/" + operation_id,
             type: "GET",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf
             },
@@ -1154,7 +1145,6 @@ $(document).ready(function(){
             url: "operations/" + operation_id,
             type: "DELETE",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf
             }
@@ -1212,7 +1202,6 @@ $(document).ready(function(){
             url: "operations/" + operation_id,
             type: "PATCH",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 '_token': csrf,
                 'checked': operation_checked    
@@ -1281,7 +1270,6 @@ $(document).ready(function(){
             url: "accounts/" + account_id + "/operations/create",
             type: "GET",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
             },
@@ -1360,7 +1348,6 @@ $(document).ready(function(){
                 contentType: false,
                 processData: false,
                 dataType: "json",
-                accepts: { json: "application/json" },
                 data: fileData
 
             }).done(function(response) {
@@ -1542,7 +1529,6 @@ $(document).ready(function(){
             url: "operations/" + operation_id + "/update",
             type: "GET",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
             },
@@ -1604,7 +1590,6 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
             dataType: "json",
-            accepts: { json: "application/json" },
             data: fileData
         }).done(function(response) {
             let message = jQuery.parseJSON(response);
@@ -1742,7 +1727,6 @@ $(document).ready(function(){
             url: "operations/" + operation_id + "/repayment",
             type: "POST",
             dataType: "json",
-            accepts: { json: "application/json" },
             data: {
                 "_token": csrf,
                 'date': date
