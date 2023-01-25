@@ -24,7 +24,7 @@ class FinancialAccountOverviewTest extends TestCase
     public function test_correct_view(){
 
         $user = User::firstOrCreate(['email' => 'a@b.c']);
-        $response = $this->actingAs($user)->get('/');
+        $response = $this->actingAs($user)->get('/accounts');
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.index');
@@ -49,7 +49,7 @@ class FinancialAccountOverviewTest extends TestCase
             'operation_type_id' => $expenseType,
             'sum' => 10]);
 
-        $response = $this->actingAs($user)->get('/');
+        $response = $this->actingAs($user)->get('/accounts');
         $response
             ->assertStatus(200)
             ->assertViewIs('finances.index');
