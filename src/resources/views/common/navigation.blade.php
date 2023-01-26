@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="sk">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -9,20 +9,21 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @include('common.app_root_script')
         <script src={{ asset('js/main.js') }} rel="stylesheet"></script>
         <title>BudgetMaster</title>
     </head>
     <body>
         <nav>
             <div>
-                <a href="accounts"><i class="bi bi-credit-card-fill"></i> BudgetMaster</a>
+                <a href={{ route('home') }}><i class="bi bi-credit-card-fill"></i> BudgetMaster</a>
             </div>
             <div class="dropdown">
                 <button class="dropbtn">{{ Auth::User()->email }}<i class="bi bi-caret-down-fill"></i></button>
                 <div class="dropdown-content">
                     <a class="change-pass">Zmena hesla</a>
                     <a class="create-user">Vytvoriť používateľa</a>
-                    <form method="POST" action="logout">
+                    <form method="POST" action={{ route('logout') }}>
                         @csrf
                         <button type="submit" id="logout-button">Odhlásiť sa</button>
                     </form>

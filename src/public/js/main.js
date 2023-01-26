@@ -31,7 +31,7 @@ $(document).ready(function(){
         let csrf = $("#first-user-button").data("csrf");
 
         $.ajax({
-            url: "register",
+            url: root + "/register",
             type: "POST",
             data: {
                 "_token": csrf,
@@ -96,7 +96,7 @@ $(document).ready(function(){
         let csrf = $("#create-user-button").data("csrf");
 
         $.ajax({
-            url: "register",
+            url: root + "/register",
             type: "POST",
             dataType: "json",
             data: {
@@ -174,7 +174,7 @@ $(document).ready(function(){
         let csrf = $("#change-pass-button").data("csrf");
 
         $.ajax({
-            url: "change-password",
+            url: root + "/change-password",
             type: "POST",
             dataType: "json",
             data: {
@@ -262,7 +262,7 @@ $(document).ready(function(){
         let csrf = $("#forgot-pass-button").data("csrf");
 
         $.ajax({
-            url: "forgot-password",
+            url: root + "/forgot-password",
             type: "POST",
             dataType: "json",
             data: {
@@ -377,7 +377,7 @@ $(document).ready(function(){
         let csrf = $("#create-account-button").data("csrf");
 
         $.ajax({
-            url: "accounts",
+            url: root + "/accounts",
             type: "POST",
             dataType: "json",
             data: {
@@ -465,7 +465,7 @@ $(document).ready(function(){
         let csrf = $("#edit-account-button").data("csrf");
 
         $.ajax({
-            url: "accounts/" + account_id,
+            url: root + "/accounts/" + account_id,
             type: "PUT",
             dataType: "json",
             data: {
@@ -549,7 +549,7 @@ $(document).ready(function(){
         let csrf = $("#create-account-button").data("csrf");
 
         $.ajax({
-            url: "accounts/" + account_id,
+            url: root + "/accounts/" + account_id,
             type: "DELETE",
             dataType: "json",
             data: {
@@ -596,7 +596,7 @@ $(document).ready(function(){
         let account_id = $(this).data("account-id");
         let date_from = $('#filter-reports-from').val();
         let date_to = $('#filter-reports-to').val();
-        let url ='accounts/'+account_id+'/sap-reports';
+        let url = root + '/accounts/'+account_id+'/sap-reports';
 
         if (date_from != "" || date_to != ""){
             url += '?';
@@ -639,7 +639,7 @@ $(document).ready(function(){
         fileData.append('_token', csrf);
         
         $.ajax({
-            url: "accounts/" + account_id + '/sap-reports',
+            url: root + "/accounts/" + account_id + '/sap-reports',
             type: "POST",
             contentType: false, // Not to set any content header  
             processData: false, // Not to process data 
@@ -720,7 +720,7 @@ $(document).ready(function(){
         let csrf = $("#delete-report-button").data("csrf");
 
         $.ajax({
-            url: "sap-reports/" + report_id,
+            url: root + "/sap-reports/" + report_id,
             type: "DELETE",
             dataType: "json",
             data: {
@@ -765,7 +765,7 @@ $(document).ready(function(){
         let date_from = $('#filter-operations-from').val();
         let date_to = $('#filter-operations-to').val();
         let error = $(this).data("date-errors");
-        let url ='accounts/'+account_id+'/operations';
+        let url = root + '/accounts/'+account_id+'/operations';
 
         if (date_from != "" || date_to != ""){
             url += '?';
@@ -801,7 +801,7 @@ $(document).ready(function(){
         let account_id = $(this).data("account-id");
         let date_from = $('#filter-operations-from').val();
         let date_to = $('#filter-operations-to').val();
-        let url ='accounts/'+account_id+'/operations/export';
+        let url = root + '/accounts/'+account_id+'/operations/export';
 
         if (date_from != "" || date_to != ""){
             url += '?';
@@ -829,7 +829,7 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "GET",
             dataType: "json",
             data: {
@@ -947,7 +947,7 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "GET",
             data: {
                 "_token": csrf
@@ -1034,7 +1034,7 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "GET",
             data: {
                 "_token": csrf
@@ -1142,7 +1142,7 @@ $(document).ready(function(){
         let csrf = $("#delete-operation-button").data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "DELETE",
             dataType: "json",
             data: {
@@ -1199,7 +1199,7 @@ $(document).ready(function(){
         let csrf = $("#check-operation-button").data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "PATCH",
             dataType: "json",
             data: {
@@ -1267,7 +1267,7 @@ $(document).ready(function(){
         $("#create-operation-form").data("account-id", account_id);
 
         $.ajax({
-            url: "accounts/" + account_id + "/operations/create",
+            url: root + "/accounts/" + account_id + "/operations/create",
             type: "GET",
             dataType: "json",
             data: {
@@ -1343,7 +1343,7 @@ $(document).ready(function(){
 
         if ($('input[type=radio][name=operation_type]:checked').val() != 'loan') {
             $.ajax({
-                url: "accounts/" + account_id + "/operations",
+                url: root + "/accounts/" + account_id + "/operations",
                 type: "POST",
                 contentType: false,
                 processData: false,
@@ -1427,7 +1427,7 @@ $(document).ready(function(){
             })
         }else{
             $.ajax({
-                url: "operations/" + lending_id + "/repayment",
+                url: root + "/operations/" + lending_id + "/repayment",
                 type: "POST",
                 data: {
                     "_token": csrf,
@@ -1526,7 +1526,7 @@ $(document).ready(function(){
         $("#edit-operation-form").data("operation-id", operation_id);
 
         $.ajax({
-            url: "operations/" + operation_id + "/update",
+            url: root + "/operations/" + operation_id + "/update",
             type: "GET",
             dataType: "json",
             data: {
@@ -1585,7 +1585,7 @@ $(document).ready(function(){
         fileData.append('_method', 'PATCH');
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "POST",
             contentType: false,
             processData: false,
@@ -1724,7 +1724,7 @@ $(document).ready(function(){
 
 
         $.ajax({
-            url: "operations/" + operation_id + "/repayment",
+            url: root + "/operations/" + operation_id + "/repayment",
             type: "POST",
             dataType: "json",
             data: {

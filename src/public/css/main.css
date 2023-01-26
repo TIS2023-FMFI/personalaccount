@@ -329,7 +329,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("/account/images/background.jpg");
+    background-image: url("../images/background.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -492,7 +492,7 @@ select {
     padding: 5px 0;
     -webkit-appearance: none;
     appearance: none;
-    background-image: url("/account/images/caret-down.svg");
+    background-image: url("../images/caret-down.svg");
     background-size: 24px;
     background-repeat: no-repeat;
     background-position: calc(100% - 8px) center;  

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="sk">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -9,6 +9,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @include('common.app_root_script')
         <script src={{ asset('js/main.js') }} rel="stylesheet"></script>
         <title>Prihlásenie</title>
     </head>
@@ -18,13 +19,13 @@
 
                 <h1>Prihlásenie</h1>
 
-                <form method="POST" action="login" id="login-form">
+                <form method="POST" action="" id="login-form">
                     @csrf
                     
                     <div class="input-box">
                         @if ($errors->has('email'))
                             <div class="field">
-                                <input type="text" name="email" id="login-email" style="border-color: red;">
+                                <input type="text" name="email" id="login-email" value="{{ old('email') }}" style="border-color: red;">
                                 <label for="login-email">E-mailová adresa</label>
                             </div>
                             <div class="error-box">
@@ -32,7 +33,7 @@
                             </div>
                         @else
                             <div class="field">
-                                <input type="text" name="email" id="login-email">
+                                <input type="text" name="email" id="login-email" value="{{ old('email') }}">
                                 <label for="login-email">E-mailová adresa</label>
                             </div>
                         @endif
@@ -56,7 +57,7 @@
                     </div>
 
                     <button type="submit">Prihlásiť sa</button>
-                    <a href="/forgot-password">Zabudli ste heslo?</a>
+                    <a href={{ route('forgot-password') }}>Zabudli ste heslo?</a>
 
                 </form>
             </div>
