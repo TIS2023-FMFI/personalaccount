@@ -68,10 +68,14 @@ class LoginLink extends Mailable
      */
     public function content()
     {
+        $formattedValidUntil =
+            $this->validUntil->format('d. m. Y H:i:s ')
+            . $this->validUntil->getTimezone()->getName();
+        
         return new Content(
             view: 'emails.login_link',
             with: [
-                'validUntil' => $this->validUntil,
+                'validUntil' => $formattedValidUntil,
                 'url' => $this->url,
             ]
         );
