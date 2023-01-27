@@ -39,11 +39,7 @@ class LoginLink extends Mailable
     public function __construct(string $token, DateTimeInterface $validUntil)
     {
         $this->validUntil = $validUntil;
-        $this->url = URL::temporarySignedRoute(
-            'login-using-token',
-            $validUntil,
-            [ 'token' => $token ]
-        );
+        $this->url = env('APP_URL') . '/login/' . $token;
     }
 
     /**

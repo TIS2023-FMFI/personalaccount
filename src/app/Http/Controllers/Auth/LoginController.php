@@ -77,7 +77,7 @@ class LoginController extends Controller
     {
         $token = LoginToken::where('token', $token)->first();
  
-        if ($token && $request->hasValidSignature() && $token->isValid()) {
+        if ($token && $token->isValid()) {
             Auth::login($token->user);
             $token->invalidate();
  
