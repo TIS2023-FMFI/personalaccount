@@ -108,7 +108,7 @@ class ForgotPasswordController extends Controller
      */
     private function sendLoginLinkToUser(User $user, LoginToken $token)
     {
-        Mail::to($user->email)->queue(
+        Mail::to($user->email)->send(
             new LoginLink($token->token, $token->valid_until)
         );
     }
