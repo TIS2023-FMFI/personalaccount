@@ -7,12 +7,12 @@
         <link rel="icon" type="image/x-icon" href={{ asset('images/credit-card-fill.svg') }}>
         <link href={{ asset('css/main.css') }} rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-        <title>Chyba!</title>
+        <title>Chyba</title>
     </head>
     <body>
         <div class="login-box">
             <div class="error_div">
-                <span>Táto stránka neexistuje alebo bola presunutá!</span>
+                <span>Táto stránka neexistuje alebo bola presunutá.</span>
             </div>
         </div>
     </body>
