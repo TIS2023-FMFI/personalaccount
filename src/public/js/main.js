@@ -104,11 +104,9 @@ $(document).ready(function(){
                 "email": email
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
 
             $(".modal-box").css("display", "none");
@@ -184,11 +182,9 @@ $(document).ready(function(){
                 "new_password_confirmation": new2
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
 
             $(".modal-box").css("display", "none");
@@ -270,11 +266,9 @@ $(document).ready(function(){
                 "email": email
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
 
             $.fn.forgotPassClearForm(true);
@@ -386,11 +380,9 @@ $(document).ready(function(){
                 'sap_id': sapId
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
              location.reload()
             $(".modal-box").css("display", "none");
@@ -474,11 +466,9 @@ $(document).ready(function(){
                 'sap_id': sapId
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -556,11 +546,9 @@ $(document).ready(function(){
                 "_token": csrf
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -646,11 +634,9 @@ $(document).ready(function(){
             dataType: "json",
             data: fileData
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
 
@@ -727,11 +713,9 @@ $(document).ready(function(){
                 "_token": csrf
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -1149,11 +1133,9 @@ $(document).ready(function(){
                 "_token": csrf
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
 
@@ -1207,11 +1189,9 @@ $(document).ready(function(){
                 'checked': operation_checked    
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -1351,11 +1331,9 @@ $(document).ready(function(){
                 data: fileData
 
             }).done(function(response) {
-                let message = jQuery.parseJSON(response);
-
                 Toast.fire({
                     icon: 'success',
-                    title: message.displayMessage
+                    title: response.displayMessage
                 })
                 location.reload();
 
@@ -1592,11 +1570,9 @@ $(document).ready(function(){
             dataType: "json",
             data: fileData
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -1732,10 +1708,9 @@ $(document).ready(function(){
                 'date': date
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             $(".modal-box").css("display", "none");
 

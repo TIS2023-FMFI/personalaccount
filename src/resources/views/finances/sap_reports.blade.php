@@ -44,7 +44,7 @@
             <td>{{ $key+1 }}.</td>
             <td>{{ $report->exported_or_uploaded_on->format('d.m.Y') }}</td>
             <td class="sap-icons">
-                <a href="/sap-reports/{{ $report->id }}/raw"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
+                <a href="{{ route('sap-report-raw', [ $report->id ]) }}"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
                 <button type="button" data-report-id="{{ $report->id }}" class="report-delete"><i  class="bi bi-trash3" title="Zmazať výkaz"></i></button>
             </td>
         </tr>

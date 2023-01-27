@@ -127,7 +127,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         ->middleware('can:view,account');
 
     Route::get('/sap-reports/{report}/raw', [ReportDetailController::class, 'download'])
-        ->middleware('can:view,report');
+        ->middleware('can:view,report')
+        ->name('sap-report-raw');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts/{account}/sap-reports', [UploadReportController::class, 'upload'])
