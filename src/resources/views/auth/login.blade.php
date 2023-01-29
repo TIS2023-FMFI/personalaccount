@@ -43,7 +43,7 @@
                         @if ($errors->has('password'))
                             <div class="field">
                                 <input type="password" name="password" style="border-color: red;">
-                                <label for="login-email">Prihlasovacie heslo</label>
+                                <label for="login-email">Heslo</label>
                             </div>
                             <div class="error-box">
                                 <p>{{ $errors->first('password') }}</p>
@@ -51,7 +51,7 @@
                         @else 
                             <div class="field">
                                 <input type="password" name="password">
-                                <label for="login-email">Prihlasovacie heslo</label>
+                                <label for="login-email">Heslo</label>
                             </div>
                         @endif
                     </div>
