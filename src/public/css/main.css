@@ -489,7 +489,7 @@ select {
     border-bottom: 2px solid var(--primary);
     background-color: white;
     font-size: 18px;
-    padding: 5px 0;
+    padding: 5px 40px 0 0;
     -webkit-appearance: none;
     appearance: none;
     background-image: url("../images/caret-down.svg");
