@@ -1247,6 +1247,11 @@ $(document).ready(function(){
                     text: choice.name
                 }));                
             })
+
+            $("#lending-choice").append($('<option>', {
+                value: "default_opt",
+                text: 'Vyberte pôžičku'
+            }));
             if (response.unrepaid_lendings.length != 0){
                 response.unrepaid_lendings.forEach(function(unrepaid_lending){
                     let lendind_id = unrepaid_lending.lending.id

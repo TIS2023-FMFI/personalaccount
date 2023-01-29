@@ -83,7 +83,6 @@
       <div class="input-box choose-lending" style="display:none">
         <div class="field">
           <select id="lending-choice" name="lending">
-            <option value="default_opt">Vyberte pôžičku</option>
 
           </select>
           <label for="lending_choice">Pôžička na splatenie</label>
