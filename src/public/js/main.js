@@ -1214,6 +1214,9 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
         $("#create-operation-form").data("account-id", account_id);
 
+        $("#operation_choice").empty();
+        $("#lending-choice").empty();
+
         $.ajax({
             url: root + "/accounts/" + account_id + "/operations/create",
             type: "GET",
