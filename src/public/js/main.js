@@ -1494,7 +1494,7 @@ $(document).ready(function(){
             }
         }).done(function(response) {
 
-            let expense = response.operation.operation_type.expense ? "Príjem" : "Výdavok";
+            let expense = response.operation.operation_type.expense ? "Výdavok" : "Príjem";
             $("#operation_edit_main_type").html(expense);
             $("#operation_edit_type").html(response.operation.operation_type.name);
             $("#edit-operation-name").val(response.operation.title);
