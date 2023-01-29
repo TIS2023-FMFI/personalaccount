@@ -72,8 +72,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
      * Financial Accounts
      */
 
-    Route::get('/', [AccountsOverviewController::class, 'show'])
-        ->name('accounts_overview');
+    Route::permanentRedirect('/', 'accounts');
+    Route::get('/accounts', [AccountsOverviewController::class, 'show'])
+        ->name('home');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts', [CreateAccountController::class, 'create']);
@@ -126,7 +127,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         ->middleware('can:view,account');
 
     Route::get('/sap-reports/{report}/raw', [ReportDetailController::class, 'download'])
-        ->middleware('can:view,report');
+        ->middleware('can:view,report')
+        ->name('sap-report-raw');
 
     Route::middleware(['ajax', 'jsonify'])->group(function () {
         Route::post('/accounts/{account}/sap-reports', [UploadReportController::class, 'upload'])

@@ -8,7 +8,6 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\URL;
 
 /**
  * An email containing a login link.
@@ -39,11 +38,7 @@ class LoginLink extends Mailable
     public function __construct(string $token, DateTimeInterface $validUntil)
     {
         $this->validUntil = $validUntil;
-        $this->url = URL::temporarySignedRoute(
-            'login-using-token',
-            $validUntil,
-            [ 'token' => $token ]
-        );
+        $this->url = env('APP_URL') . '/login/' . $token;
     }
 
     /**
@@ -68,10 +63,14 @@ class LoginLink extends Mailable
      */
     public function content()
     {
+        $formattedValidUntil =
+            $this->validUntil->format('d. m. Y H:i:s ')
+            . $this->validUntil->getTimezone()->getName();
+        
         return new Content(
             view: 'emails.login_link',
             with: [
-                'validUntil' => $this->validUntil,
+                'validUntil' => $formattedValidUntil,
                 'url' => $this->url,
             ]
         );

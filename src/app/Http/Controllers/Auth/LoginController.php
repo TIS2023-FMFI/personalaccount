@@ -54,7 +54,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
  
             return redirect()
-                    ->intended(RouteServiceProvider::HOME);
+                    ->intended(route('home'));
         }
  
         return back()
@@ -77,11 +77,11 @@ class LoginController extends Controller
     {
         $token = LoginToken::where('token', $token)->first();
  
-        if ($token && $request->hasValidSignature() && $token->isValid()) {
+        if ($token && $token->isValid()) {
             Auth::login($token->user);
             $token->invalidate();
  
-            return redirect(RouteServiceProvider::HOME);
+            return redirect(route('home'));
         }
 
         return view('auth.login_link_invalid');

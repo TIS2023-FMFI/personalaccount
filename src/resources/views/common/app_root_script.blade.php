@@ -1,0 +1,1 @@
+<script>const root = "{{ env('APP_ROOT') }}";</script>

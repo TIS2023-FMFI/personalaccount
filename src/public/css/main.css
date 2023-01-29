@@ -329,7 +329,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url("/account/images/background.jpg");
+    background-image: url("../images/background.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -489,10 +489,10 @@ select {
     border-bottom: 2px solid var(--primary);
     background-color: white;
     font-size: 18px;
-    padding: 5px 0;
+    padding: 5px 40px 0 0;
     -webkit-appearance: none;
     appearance: none;
-    background-image: url("/account/images/caret-down.svg");
+    background-image: url("../images/caret-down.svg");
     background-size: 24px;
     background-repeat: no-repeat;
     background-position: calc(100% - 8px) center;  
@@ -540,13 +540,6 @@ form {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
     background-color: white;
     border-radius: 15px;
     padding: 40px;

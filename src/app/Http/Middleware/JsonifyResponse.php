@@ -43,11 +43,10 @@ class JsonifyResponse
      */
     private function jsonifyResponse(Response $response)
     {
-        return response()
-                    ->json(
-                        [ 'displayMessage' => $response->content() ],
-                        $response->status(),
-                        $response->headers->all()
-                    );
+        $data = [ 'displayMessage' => $response->content() ];
+        $headers = $response->headers->all();
+        unset($headers['content-type']);
+
+        return response()->json($data, $response->status(), $headers);
     }
 }

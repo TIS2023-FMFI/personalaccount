@@ -8,7 +8,7 @@ return [
             Dobrý deň,
             
             nedávno ste nás žiadali o zaslanie prihlasovacej linky za účelom prihlásenia sa do Vášho účtu v aplikácii :appName.
-            Vygenerovanú linku môžete nájsť nižšie, avšak dbajte na to, že jej platnosť končí :validUntil.
+            Vygenerovanú linku môžete nájsť nižšie, pričom jej platnosť končí :validUntil.
             
             :url
             

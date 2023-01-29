@@ -15,14 +15,6 @@ $(document).ready(function(){
     // <-- Initialize Toast
 
     // Authorization forms -->
-
-    // Submit login on enter
-    $("#login-form").keypress(e => {
-        if (e.which === 13) {
-            $('#login-form').submit();
-        }
-    });
-
     // Create first user form -->
     $("#first-user-form").on("submit", function(e) {
         e.preventDefault();
@@ -31,14 +23,14 @@ $(document).ready(function(){
         let csrf = $("#first-user-button").data("csrf");
 
         $.ajax({
-            url: "register",
+            url: root + "/register",
             type: "POST",
             data: {
                 "_token": csrf,
                 "email": email
             }
         }).done(function(response) {
-            window.location.href = 'login';
+            window.location.href = root + '/login';
         }).fail(function(response) {
             $.fn.createFirstUserClearForm();
 
@@ -73,15 +65,9 @@ $(document).ready(function(){
             $("#first-user-email").val("");
         }
 
-        $("#create-user-email").css("border-color", "var(--primary)");
-        $("#create-user-email-errors").empty();
+        $("#first-user-email").css("border-color", "var(--primary)");
+        $("#first-user-email-errors").empty();
     }
-
-    $("#first-user-form").keypress(e => {
-        if (e.which === 13) {
-            $('#first-user-form').submit();
-        }
-    });
     // <-- Create first user form
     
     // Create user form -->
@@ -96,18 +82,17 @@ $(document).ready(function(){
         let csrf = $("#create-user-button").data("csrf");
 
         $.ajax({
-            url: "register",
+            url: root + "/register",
             type: "POST",
+            dataType: "json",
             data: {
                 "_token": csrf,
                 "email": email
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
 
             $(".modal-box").css("display", "none");
@@ -150,12 +135,6 @@ $(document).ready(function(){
         $("#create-user-email").css("border-color", "var(--primary)");
         $("#create-user-email-errors").empty();
     }
-
-    $("#create-user-form").keypress(e => {
-        if (e.which === 13) {
-            $('#create-user-form').submit();
-        }
-    });
     // <-- Create user form
 
     // Change password form -->
@@ -173,8 +152,9 @@ $(document).ready(function(){
         let csrf = $("#change-pass-button").data("csrf");
 
         $.ajax({
-            url: "change-password",
+            url: root + "/change-password",
             type: "POST",
+            dataType: "json",
             data: {
                 "_token": csrf,
                 "old_password": old,
@@ -182,11 +162,9 @@ $(document).ready(function(){
                 "new_password_confirmation": new2
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
 
             $(".modal-box").css("display", "none");
@@ -244,12 +222,6 @@ $(document).ready(function(){
         $("#change-pass-new1-errors").empty();
         $("#change-pass-new2-errors").empty();
     }
-
-    $("#change-pass-form").keypress(e => {
-        if (e.which === 13) {
-            $('#change-pass-form').submit();
-        }
-    });
     // <-- Change password form
 
     // Forgotten password form -->
@@ -260,18 +232,17 @@ $(document).ready(function(){
         let csrf = $("#forgot-pass-button").data("csrf");
 
         $.ajax({
-            url: "forgot-password",
+            url: root + "/forgot-password",
             type: "POST",
+            dataType: "json",
             data: {
                 "_token": csrf,
                 "email": email
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
 
             $.fn.forgotPassClearForm(true);
@@ -314,12 +285,6 @@ $(document).ready(function(){
         $("#forgot-pass-email").css("border-color", "var(--primary)");
         $("#forgot-pass-email-errors").empty();
     }
-
-    $("#forgot-pass-form").keypress(e => {
-        if (e.which === 13) {
-            $('#forgot-pass-form').submit();
-        }
-    });
     // <-- Forgotten password form
     // <-- Authorization forms
 
@@ -360,7 +325,7 @@ $(document).ready(function(){
 
     $(".account").click(function(){
         var account_id = $(this).data("id");
-        window.location.href = 'accounts/'+account_id+'/operations';
+        window.location.href = root + '/accounts/'+account_id+'/operations';
     });
   
     // Create financial account form -->
@@ -374,19 +339,18 @@ $(document).ready(function(){
         let csrf = $("#create-account-button").data("csrf");
 
         $.ajax({
-            url: "accounts",
+            url: root + "/accounts",
             type: "POST",
+            dataType: "json",
             data: {
                 "_token": csrf,
                 'title': title,
                 'sap_id': sapId
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
              location.reload()
             $(".modal-box").css("display", "none");
@@ -461,19 +425,18 @@ $(document).ready(function(){
         let csrf = $("#edit-account-button").data("csrf");
 
         $.ajax({
-            url: "accounts/" + account_id,
+            url: root + "/accounts/" + account_id,
             type: "PUT",
+            dataType: "json",
             data: {
                 "_token": csrf,
                 'title': title,
                 'sap_id': sapId
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -544,17 +507,16 @@ $(document).ready(function(){
         let csrf = $("#create-account-button").data("csrf");
 
         $.ajax({
-            url: "accounts/" + account_id,
+            url: root + "/accounts/" + account_id,
             type: "DELETE",
+            dataType: "json",
             data: {
                 "_token": csrf
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -590,7 +552,7 @@ $(document).ready(function(){
         let account_id = $(this).data("account-id");
         let date_from = $('#filter-reports-from').val();
         let date_to = $('#filter-reports-to').val();
-        let url ='accounts/'+account_id+'/sap-reports';
+        let url = root + '/accounts/'+account_id+'/sap-reports';
 
         if (date_from != "" || date_to != ""){
             url += '?';
@@ -633,17 +595,16 @@ $(document).ready(function(){
         fileData.append('_token', csrf);
         
         $.ajax({
-            url: "accounts/" + account_id + '/sap-reports',
+            url: root + "/accounts/" + account_id + '/sap-reports',
             type: "POST",
             contentType: false, // Not to set any content header  
-            processData: false, // Not to process data  
+            processData: false, // Not to process data 
+            dataType: "json",
             data: fileData
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
 
@@ -680,7 +641,6 @@ $(document).ready(function(){
         })
     });
 
-    // <-- add SAP report form
     $.fn.createReportClearForm = function(isDone = false){ 
 
         if (isDone) {
@@ -695,8 +655,7 @@ $(document).ready(function(){
         $("#operation-file").empty();
         $("#add-sap-report-errors").empty();
     }
-
-    // <-- SAP reports forms
+    // <-- add SAP report form
 
     // --> delete SAP report form
 
@@ -715,17 +674,16 @@ $(document).ready(function(){
         let csrf = $("#delete-report-button").data("csrf");
 
         $.ajax({
-            url: "sap-reports/" + report_id,
+            url: root + "/sap-reports/" + report_id,
             type: "DELETE",
+            dataType: "json",
             data: {
                 "_token": csrf
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -749,40 +707,8 @@ $(document).ready(function(){
     });
 
     // <-- delete SAP report form
-
+    // <-- SAP reports forms
     // <-- SAP reports
-
-
-    // --> Financial operations
-
-    // --> Financial operations export
-
-    $("#operations-export").click(function(){
-        
-        let account_id = $(this).data("account-id");
-        let date_from = $('#filter-operations-from').val();
-        let date_to = $('#filter-operations-to').val();
-        let url ='accounts/'+account_id+'/operations/export';
-
-        if (date_from != "" || date_to != ""){
-            url += '?';
-        }
-        if (date_from != ""){
-            url += 'from=' + date_from
-        }
-        if (date_to != ""){
-            if (date_from != ""){
-                url += '&';
-            }
-            url += 'to=' + date_to
-        }
-        window.location.href = url;
-
-    });
-
-    // <-- Financial operations export
-
-    // <-- Financial operations detail
 
     // Financial accounts filter operations-->
     
@@ -791,7 +717,7 @@ $(document).ready(function(){
         let date_from = $('#filter-operations-from').val();
         let date_to = $('#filter-operations-to').val();
         let error = $(this).data("date-errors");
-        let url ='accounts/'+account_id+'/operations';
+        let url = root + '/accounts/'+account_id+'/operations';
 
         if (date_from != "" || date_to != ""){
             url += '?';
@@ -812,336 +738,22 @@ $(document).ready(function(){
     $(".toggle-button").change(function(){
         let account_id = $(this).data("account-id");
         if($(this).attr('checked')){
-            window.location.href = 'accounts/'+account_id+'/operations';
+            window.location.href = root + '/accounts/'+account_id+'/operations';
         }else{
-            window.location.href = 'accounts/'+account_id+'/sap-reports';
+            window.location.href = root + '/accounts/'+account_id+'/sap-reports';
         }
     })
 
-    // Financial accounts forms -->
-    
-    $("#create-account-form").keypress(e => {
-        if (e.which === 13) {
-            $('#create-account-form').submit();
-        }
-    });
-   
+    // Financial operations -->
 
-    // Edit financial account form -->
-
-    $("#edit-account-form").on("submit", function(e) {
-        e.preventDefault();
-        
-        let account_id =  $(this).data("id");
-    
-        let title = $("#edit-account-name").val();
-        let sapId = $("#edit-account-sap-id").val();
-
-        let csrf = $("#edit-account-button").data("csrf");
-
-        $.ajax({
-            url: "accounts/" + account_id,
-            type: "PUT",
-            data: {
-                "_token": csrf,
-                'title': title,
-                'sap_id': sapId
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-            $(".modal-box").css("display", "none");
-
-            $.fn.editAccountClearForm(true);
-        }).fail(function(response) {
-            $.fn.editAccountClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-
-                    if (typeof errors.title != 'undefined') {
-                        $("#edit-account-name").css("border-color", "red");
-
-                        errors.title.forEach(e => {
-                            $("#edit-account-name-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    if (typeof errors.sap_id != 'undefined') {
-                        $("#edit-account-sap-id").css("border-color", "red");
-                        errors.sap_id.forEach(e => {
-                            $("#edit-account-sap-id-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    
-                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{    
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    $.fn.editAccountClearForm = function(isDone = false){ 
-
-        if (isDone) {
-            $("#edit-account-name").val("");
-            $("#edit-account-sap-id").val("");
-        }
-
-        $("#edit-account-name").css("border-color", "var(--primary)");
-        $("#edit-account-sap-id").css("border-color", "var(--primary)");
-
-        $("#edit-account-name").empty();
-        $("#edit-account-sap-id").empty();
-        $("#edit-account-sap-id-errors").empty();
-        $("#edit-account-name-errors").empty();
-    }
-
-    // <-- Edit financial account form
-
-    // Delete financial account form -->
-
-    $("#delete-account-form").on("submit", function(e) {
-        e.preventDefault();
-
-        let account_id =  $(this).data("id");
-
-        let csrf = $("#create-account-button").data("csrf");
-
-        $.ajax({
-            url: "accounts/" + account_id,
-            type: "DELETE",
-            data: {
-                "_token": csrf
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-            $(".modal-box").css("display", "none");
-
-            $.fn.createAccountClearForm(true);
-        }).fail(function(response) {
-            $.fn.createAccountClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{    
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    // <-- Delete financial account form
-    // <-- Financial accounts forms
-    // <-- Financial accounts
-
-    // --> SAP reports
-
-    $("#reports-filter").click(function(){
-        
-        let account_id = $(this).data("account-id");
-        let date_from = $('#filter-reports-from').val();
-        let date_to = $('#filter-reports-to').val();
-        let url ='accounts/'+account_id+'/sap-reports';
-
-        if (date_from != "" || date_to != ""){
-            url += '?';
-        }
-        if (date_from != ""){
-            url += 'from=' + date_from
-        }
-        if (date_to != ""){
-            if (date_from != ""){
-                url += '&';
-            }
-            url += 'to=' + date_to
-        }
-        window.location.href = url;
-
-    });
-
-    // --> SAP reports forms
-
-    // --> add SAP report form
-    $("#add-sap-report").click(function(){
-        let account_id = $(this).data("account-id");
-        $("#add-report-modal").css("display","flex");
-        $("#add-report-modal > .modal > #create-report-form").data("account-id", account_id);
-    })
-
-    $("#create-report-form").on("submit", function(e){
-        e.preventDefault();
-
-        $("#create-report-button").attr("disabled", true);
-
-        let account_id =  $(this).data("account-id");
-        let csrf = $("#create-report-button").data("csrf");
-
-        var fileUpload = $("#report-file").get(0);  
-        var files = fileUpload.files;  
-        var fileData = new FormData(); 
-        if (files[0] != undefined){
-            fileData.append('sap_report', files[0] ?? '');  
-        }
-        fileData.append('_token', csrf);
-        
-        $.ajax({
-            url: "accounts/" + account_id + '/sap-reports',
-            type: "POST",
-            contentType: false, // Not to set any content header  
-            processData: false, // Not to process data  
-            data: fileData
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-
-            $(".modal-box").css("display", "none");
-
-            $.fn.createReportClearForm(true);
-        }).fail(function(response) {
-            $.fn.createReportClearForm();
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-
-                    if (typeof errors.sap_report != 'undefined') {
-                        $("#operation-file").css("border-color", "red");
-
-                        errors.sap_report.forEach(e => {
-                            $("#add-sap-report-errors").append("<p>" + e + "</p>");
-                        });
-                    }
-                    
-                } else if (typeof response.responseJSON.displayMessage != 'undefined') {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{   
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-
-        })
-    });
-
-    // <-- add SAP report form
-    $.fn.createReportClearForm = function(isDone = false){ 
-
-        if (isDone) {
-            $("#operation-file").val("");
-        }
-
-        $("#create-report-button").attr("disabled", false);
-
-        $("#operation-file").css("border-color", "var(--primary)");
-        $("#add-sap-report-errors").css("border-color", "var(--primary)");
-
-        $("#operation-file").empty();
-        $("#add-sap-report-errors").empty();
-    }
-
-    // <-- SAP reports forms
-
-    // --> delete SAP report form
-
-    $(".report-delete").click(function(){
-        let report_id = $(this).data("report-id");
-        $("#delete-report-form").data("report-id", report_id);
-        $("#delete-report-modal").css("display", "flex");
-        $("#delete-report-modal").css("display", "flex");
-    });
-
-    $("#delete-report-form").on("submit", function(e) {
-        e.preventDefault();
-
-        let report_id =  $(this).data("report-id");
-
-        let csrf = $("#delete-report-button").data("csrf");
-
-        $.ajax({
-            url: "sap-reports/" + report_id,
-            type: "DELETE",
-            data: {
-                "_token": csrf
-            }
-        }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
-            Toast.fire({
-                icon: 'success',
-                title: message.displayMessage
-            })
-            location.reload();
-            $(".modal-box").css("display", "none");
-
-        }).fail(function(response) {
-            if (typeof response.responseJSON != 'undefined'){
-                if (response.status === 422) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: response.responseJSON.displayMessage
-                    })
-                }
-            }else{   
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                })
-            }
-        })
-
-    });
-
-    // <-- delete SAP report form
-
-    // <-- SAP reports
-
-
-    // --> Financial operations
-
-    // --> Financial operations export
+    // Financial operations export -->
 
     $("#operations-export").click(function(){
         
         let account_id = $(this).data("account-id");
         let date_from = $('#filter-operations-from').val();
         let date_to = $('#filter-operations-to').val();
-        let url ='accounts/'+account_id+'/operations/export';
+        let url = root + '/accounts/'+account_id+'/operations/export';
 
         if (date_from != "" || date_to != ""){
             url += '?';
@@ -1161,7 +773,7 @@ $(document).ready(function(){
 
     // <-- Financial operations export
 
-    // <-- Financial operations detail
+    // Financial operations detail -->
 
     $(".operation-detail").click(function(){
 
@@ -1169,8 +781,9 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "GET",
+            dataType: "json",
             data: {
                 "_token": csrf
             },
@@ -1254,7 +867,7 @@ $(document).ready(function(){
                 $("#show-repayment-button").css("display", "none")
             }
 
-            $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            $("#operation-attachment-button").attr("onclick", 'location.href="'+ root +'/operations/'+ operation_id +'/attachment"')
             
             if (response.operation.attachment == null){
                 $("#operation-attachment-button").css("display", "none");
@@ -1286,7 +899,7 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "GET",
             data: {
                 "_token": csrf
@@ -1340,7 +953,7 @@ $(document).ready(function(){
                 }
             }
 
-            $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            $("#operation-attachment-button").attr("onclick", 'location.href="'+ root +'/operations/'+ operation_id +'/attachment"')
             
             if (response.operation.attachment == null){
                 $("#operation-attachment-button").css("display", "none");
@@ -1373,7 +986,7 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "GET",
             data: {
                 "_token": csrf
@@ -1435,7 +1048,7 @@ $(document).ready(function(){
 
             
 
-            $("#operation-attachment-button").attr("onclick", 'location.href="/operations/'+ operation_id +'/attachment"')
+            $("#operation-attachment-button").attr("onclick", 'location.href="'+ root +'/operations/'+ operation_id +'/attachment"')
             
             if (response.operation.attachment == null){
                 $("#operation-attachment-button").css("display", "none");
@@ -1461,11 +1074,11 @@ $(document).ready(function(){
 
     })
 
-    // --> Financial operations detail
+    // <-- Financial operations detail
 
-    // --> Financial operations forms
+    // Financial operations forms -->
 
-    // --> Delete operation form
+    // Delete operation form -->
 
     $(".operation-delete").click(function(){
         let operation_id = $(this).data("operation-id");
@@ -1481,17 +1094,16 @@ $(document).ready(function(){
         let csrf = $("#delete-operation-button").data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "DELETE",
+            dataType: "json",
             data: {
                 "_token": csrf
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
 
@@ -1517,7 +1129,7 @@ $(document).ready(function(){
 
     // <-- Delete operation form
 
-    // --> Check/Uncheck operation
+    // Check/Uncheck operation -->
 
     $(".operation-check").click(function(){
         let operation_id = $(this).data("operation-id");
@@ -1537,18 +1149,17 @@ $(document).ready(function(){
         let csrf = $("#check-operation-button").data("csrf");
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "PATCH",
+            dataType: "json",
             data: {
                 '_token': csrf,
                 'checked': operation_checked    
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -1603,9 +1214,13 @@ $(document).ready(function(){
         let csrf = $(this).data("csrf");
         $("#create-operation-form").data("account-id", account_id);
 
+        $("#operation_choice").empty();
+        $("#lending-choice").empty();
+
         $.ajax({
-            url: "accounts/" + account_id + "/operations/create",
+            url: root + "/accounts/" + account_id + "/operations/create",
             type: "GET",
+            dataType: "json",
             data: {
                 "_token": csrf,
             },
@@ -1632,6 +1247,11 @@ $(document).ready(function(){
                     text: choice.name
                 }));                
             })
+
+            $("#lending-choice").append($('<option>', {
+                value: "default_opt",
+                text: 'Vyberte pôžičku'
+            }));
             if (response.unrepaid_lendings.length != 0){
                 response.unrepaid_lendings.forEach(function(unrepaid_lending){
                     let lendind_id = unrepaid_lending.lending.id
@@ -1679,18 +1299,16 @@ $(document).ready(function(){
 
         if ($('input[type=radio][name=operation_type]:checked').val() != 'loan') {
             $.ajax({
-                url: "accounts/" + account_id + "/operations",
+                url: root + "/accounts/" + account_id + "/operations",
                 type: "POST",
                 contentType: false,
                 processData: false,
+                dataType: "json",
                 data: fileData
-
             }).done(function(response) {
-                let message = jQuery.parseJSON(response);
-
                 Toast.fire({
                     icon: 'success',
-                    title: message.displayMessage
+                    title: response.displayMessage
                 })
                 location.reload();
 
@@ -1762,18 +1380,17 @@ $(document).ready(function(){
             })
         }else{
             $.ajax({
-                url: "operations/" + lending_id + "/repayment",
+                url: root + "/operations/" + lending_id + "/repayment",
                 type: "POST",
+                dataType: "json",
                 data: {
                     "_token": csrf,
                     'date': date
                 }
             }).done(function(response) {
-                let message = jQuery.parseJSON(response);
-
                 Toast.fire({
                     icon: 'success',
-                    title: message.displayMessage
+                    title: response.displayMessage
                 })
                 $(".modal-box").css("display", "none");
 
@@ -1861,8 +1478,9 @@ $(document).ready(function(){
         $("#edit-operation-form").data("operation-id", operation_id);
 
         $.ajax({
-            url: "operations/" + operation_id + "/update",
+            url: root + "/operations/" + operation_id + "/update",
             type: "GET",
+            dataType: "json",
             data: {
                 "_token": csrf,
             },
@@ -1876,7 +1494,7 @@ $(document).ready(function(){
             }
         }).done(function(response) {
 
-            let expense = response.operation.operation_type.expense ? "Príjem" : "Výdavok";
+            let expense = response.operation.operation_type.expense ? "Výdavok" : "Príjem";
             $("#operation_edit_main_type").html(expense);
             $("#operation_edit_type").html(response.operation.operation_type.name);
             $("#edit-operation-name").val(response.operation.title);
@@ -1919,17 +1537,16 @@ $(document).ready(function(){
         fileData.append('_method', 'PATCH');
 
         $.ajax({
-            url: "operations/" + operation_id,
+            url: root + "/operations/" + operation_id,
             type: "POST",
             contentType: false,
             processData: false,
+            dataType: "json",
             data: fileData
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
-
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             location.reload();
             $(".modal-box").css("display", "none");
@@ -2057,17 +1674,17 @@ $(document).ready(function(){
 
 
         $.ajax({
-            url: "operations/" + operation_id + "/repayment",
+            url: root + "/operations/" + operation_id + "/repayment",
             type: "POST",
+            dataType: "json",
             data: {
                 "_token": csrf,
                 'date': date
             }
         }).done(function(response) {
-            let message = jQuery.parseJSON(response);
             Toast.fire({
                 icon: 'success',
-                title: message.displayMessage
+                title: response.displayMessage
             })
             $(".modal-box").css("display", "none");
 
