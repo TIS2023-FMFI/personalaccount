@@ -1297,7 +1297,6 @@ $(document).ready(function(){
                 processData: false,
                 dataType: "json",
                 data: fileData
-
             }).done(function(response) {
                 Toast.fire({
                     icon: 'success',
@@ -1375,16 +1374,15 @@ $(document).ready(function(){
             $.ajax({
                 url: root + "/operations/" + lending_id + "/repayment",
                 type: "POST",
+                dataType: "json",
                 data: {
                     "_token": csrf,
                     'date': date
                 }
             }).done(function(response) {
-                let message = jQuery.parseJSON(response);
-
                 Toast.fire({
                     icon: 'success',
-                    title: message.displayMessage
+                    title: response.displayMessage
                 })
                 $(".modal-box").css("display", "none");
 
