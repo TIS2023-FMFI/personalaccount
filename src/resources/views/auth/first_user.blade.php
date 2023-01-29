@@ -22,13 +22,14 @@
 
                 <form id="first-user-form">
                     
-                <div class="input-box">
-                    <div class="field">
-                    <input type="email" id="first-user-email">
-                        <label for="first-user-email">E-mailová adresa</label>
+                    <div class="input-box">
+                        <div class="field">
+                        <input type="email" id="first-user-email">
+                            <label for="first-user-email">E-mailová adresa</label>
+                        </div>
+                        <div class="error-box" id="first-user-email-errors"></div>
                     </div>
-                    <div class="error-box" id="first-user-email-errors"></div>
-                </div>
+                    
                     <button type="submit" data-csrf="{{ csrf_token() }}" id="first-user-button">Vytvoriť</button>
                 </form>
             </div>

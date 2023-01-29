@@ -135,12 +135,6 @@ $(document).ready(function(){
         $("#create-user-email").css("border-color", "var(--primary)");
         $("#create-user-email-errors").empty();
     }
-
-    $("#create-user-form").keypress(e => {
-        if (e.which === 13) {
-            $('#create-user-form').submit();
-        }
-    });
     // <-- Create user form
 
     // Change password form -->
@@ -228,12 +222,6 @@ $(document).ready(function(){
         $("#change-pass-new1-errors").empty();
         $("#change-pass-new2-errors").empty();
     }
-
-    $("#change-pass-form").keypress(e => {
-        if (e.which === 13) {
-            $('#change-pass-form').submit();
-        }
-    });
     // <-- Change password form
 
     // Forgotten password form -->
@@ -297,12 +285,6 @@ $(document).ready(function(){
         $("#forgot-pass-email").css("border-color", "var(--primary)");
         $("#forgot-pass-email-errors").empty();
     }
-
-    $("#forgot-pass-form").keypress(e => {
-        if (e.which === 13) {
-            $('#forgot-pass-form').submit();
-        }
-    });
     // <-- Forgotten password form
     // <-- Authorization forms
 
