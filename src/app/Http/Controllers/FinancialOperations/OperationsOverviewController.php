@@ -73,7 +73,8 @@ class OperationsOverviewController extends Controller
 
         return response()->streamDownload(
             fn () => $this->generateCsvFile($operations),
-            $filename
+            $filename,
+            ['content-type' => 'text/csv']
         );
     }
 
