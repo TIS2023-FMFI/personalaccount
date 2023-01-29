@@ -41,17 +41,19 @@
                     
                     <div class="input-box">
                         @if ($errors->has('password'))
-                            <div class="field">
-                                <input type="password" name="password" style="border-color: red;">
-                                <label for="login-email">Heslo</label>
+                            <div class="field" style="position: relative;">
+                                <input type="password" name="password" style="border-color: red;" id="login-pass">
+                                <i class="bi bi-eye show-pass" id="show-login-pass"></i>
+                                <label for="login-pass">Heslo</label>
                             </div>
                             <div class="error-box">
                                 <p>{{ $errors->first('password') }}</p>
                             </div>
                         @else 
-                            <div class="field">
-                                <input type="password" name="password">
-                                <label for="login-email">Heslo</label>
+                            <div class="field" style="position: relative;">
+                                <input type="password" name="password" id="login-pass">
+                                <i class="bi bi-eye show-pass" id="show-login-pass"></i>
+                                <label for="login-pass">Heslo</label>
                             </div>
                         @endif
                     </div>

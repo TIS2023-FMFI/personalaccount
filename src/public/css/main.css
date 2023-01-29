@@ -686,3 +686,14 @@ a:visited {
     min-width: fit-content;
     width: fit-content;
 }
+.show-pass {
+    position: absolute;
+    top: 20px;
+    font-size: 22px;
+    right: 10px;
+    cursor: pointer;
+}
+#login-pass {
+    padding-right: 15%;
+    width: 85%;
+}
