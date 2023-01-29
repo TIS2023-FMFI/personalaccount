@@ -29,7 +29,6 @@
                     </div>
                     <div class="error-box" id="first-user-email-errors"></div>
                 </div>
-                    
                     <button type="submit" data-csrf="{{ csrf_token() }}" id="first-user-button">Vytvoriť</button>
                 </form>
             </div>

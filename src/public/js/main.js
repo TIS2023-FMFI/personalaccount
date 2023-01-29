@@ -15,14 +15,6 @@ $(document).ready(function(){
     // <-- Initialize Toast
 
     // Authorization forms -->
-
-    // Submit login on enter
-    $("#login-form").keypress(e => {
-        if (e.which === 13) {
-            $('#login-form').submit();
-        }
-    });
-
     // Create first user form -->
     $("#first-user-form").on("submit", function(e) {
         e.preventDefault();
@@ -73,15 +65,9 @@ $(document).ready(function(){
             $("#first-user-email").val("");
         }
 
-        $("#create-user-email").css("border-color", "var(--primary)");
-        $("#create-user-email-errors").empty();
+        $("#first-user-email").css("border-color", "var(--primary)");
+        $("#first-user-email-errors").empty();
     }
-
-    $("#first-user-form").keypress(e => {
-        if (e.which === 13) {
-            $('#first-user-form').submit();
-        }
-    });
     // <-- Create first user form
     
     // Create user form -->

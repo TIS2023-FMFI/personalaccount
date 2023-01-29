@@ -120,6 +120,6 @@ class ForgotPasswordTest extends TestCase
                 trans('auth.login-link.sending.success')
             );
 
-        Mail::assertQueued(LoginLink::class);
+        Mail::assertSent(LoginLink::class);
     }
 }
