@@ -25,7 +25,7 @@
     <div>
         <label>Od:</label><input type="date" id="filter-reports-from" value="<?php echo $from ?>"></input>
         <label>Do:</label><input type="date" id="filter-reports-to" value="<?php echo $to ?>"></input>
-        <button data-account-id="{{ $account->id }}" type="button" id="reports-filter">Zobraziť</button>
+        <button data-account-id="{{ $account->id }}" type="button" id="reports-filter">Filtrovať</button>
     </div>
     <div>
         <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button" title="Nový výkaz">+</i></button>
