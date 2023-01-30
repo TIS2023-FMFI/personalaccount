@@ -18,7 +18,7 @@
 
             <div class="modal">
 
-                <h2>Vytvoriť používateľa</h2>
+                <h2>Nový používateľ</h2>
 
                 <form id="first-user-form">
                     

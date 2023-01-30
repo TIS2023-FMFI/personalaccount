@@ -69,6 +69,7 @@ nav div:first-child a {
     z-index: 1;
     right: 0;
     border-radius: 0 0 0 15px;
+    overflow: hidden;
 }
 .dropdown-content a {
     color: black;
@@ -685,4 +686,27 @@ a:visited {
 #loader-modal .modal{
     min-width: fit-content;
     width: fit-content;
+}
+.show-pass {
+    position: absolute;
+    top: 20px;
+    font-size: 22px;
+    right: 10px;
+    cursor: pointer;
+}
+#login-pass {
+    padding-right: 40px;
+    width: calc(100% - 40px);
+}
+#change-pass-old {
+    padding-right: 40px;
+    width: calc(100% - 40px);
+}
+#change-pass-new1 {
+    padding-right: 40px;
+    width: calc(100% - 40px);
+}
+#change-pass-new2 {
+    padding-right: 40px;
+    width: calc(100% - 40px);
 }

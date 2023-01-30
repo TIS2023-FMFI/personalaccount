@@ -3,7 +3,7 @@
   <div class="modal">
     <span class="close-modal"><i class="bi bi-x"></i></span>
 
-    <h2>Vytvoriť používateľa</h2>
+    <h2>Nový používateľ</h2>
 
     <form id="create-user-form">
 
