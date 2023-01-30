@@ -204,7 +204,7 @@ class FinancialOperation extends Model
     public function getSumString()
     {
         $sumString = sprintf('%.2f', $this->sum);
-        if ($this->isExpense()) return "$sumString-";
+        if ($this->isExpense()) return "-$sumString";
         return $sumString;
     }
 
