@@ -184,7 +184,6 @@ class FinancialOperation extends Model
     public function getExportData()
     {
         return [
-            $this->id,
             $this->account->sap_id,
             $this->title,
             $this->date->format('d.m.Y'),
@@ -205,7 +204,7 @@ class FinancialOperation extends Model
     public function getSumString()
     {
         $sumString = sprintf('%.2f', $this->sum);
-        if ($this->isExpense()) return "$sumString-";
+        if ($this->isExpense()) return "-$sumString";
         return $sumString;
     }
 
@@ -219,7 +218,7 @@ class FinancialOperation extends Model
     public function getCheckedString()
     {
         if ($this->isLending()) return '';
-        return $this->checked ? 'TRUE' : 'FALSE';
+        return $this->checked ? 'Áno' : 'Nie';
     }
 
     /**

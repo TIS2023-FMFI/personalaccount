@@ -107,6 +107,26 @@ class UpdateOperationTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_cannot_update_return_date_to_be_earlier_than_operation_date(){
+
+        $loan = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType
+            ]);
+        $lending = Lending::factory()->create(['id' => $loan]);
+
+        $patchData = [
+            'date' => $loan->date,
+            'expected_date_of_return' => $loan->date->subDay()
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$loan->id", $patchData);
+
+        $response->assertStatus(422);
+    }
+
     public function test_cannot_update_nonexisting_operation(){
 
         $patchData = [
