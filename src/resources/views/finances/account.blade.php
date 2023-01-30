@@ -60,14 +60,12 @@
             <td>{{ $operation->title }}</td>
             <td>{{ $operation->date->format('d.m.Y') }}</td>
             <td>{{ $operation->operationType->name }}</td>
-            @if( $operation->checked )
+            @if( $operation->isLending() ) 
+                <td>-</td>
+            @elseif( $operation->checked )
                 <td>Áno</td>
             @else
-                @if( $operation->isLending() ) 
-                    <td>-</td>
-                @else
-                    <td>Nie</td>
-                @endif
+                <td>Nie</td>
             @endif
             @if( $operation->isExpense())
                 <td class="align-right" style="color: red;">-{{ $operation->sum }}€</td>
