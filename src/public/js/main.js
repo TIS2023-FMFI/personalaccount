@@ -1244,13 +1244,29 @@ $(document).ready(function(){
         }
     });
 
+    function defaultCreateOperationFormFields(){
+        $('input[type=radio][name=operation_type][value="income"]').prop("checked", true)
+        $(".choose-lending").hide();
+        $(".add-operation-expected-date").hide();
+        $(".operation-file").show();
+        $("#operation-date-label").html("Dátum");
+        $(".add-operation-to").show();
+        $(".add-operation-sum").show();
+        $(".add-operation-subject").show();
+        $(".add-operation-name").show();
+        $(".add-operation-choice").show();
+        $(".lending_detail_div").css("display", "none")
+        $("#lending_detail").css("display", "none")
+        $("#lending-choice").val("default_opt");  
+    }
+
     // --> Create operation form
 
     $("#create_operation").click(function(){
         let account_id = $(this).data("account-id");
         let csrf = $(this).data("csrf");
         $("#create-operation-form").data("account-id", account_id);
-
+        defaultCreateOperationFormFields();
         $(".lending_detail_div").css("display", "none")
         $("#lending_detail").css("display", "none")
 
@@ -1556,8 +1572,11 @@ $(document).ready(function(){
                 if (response.operation.lending.expected_date_of_return != null){
                     let expected_date = response.operation.lending.expected_date_of_return.substring(0,10);
                     $("#edit-operation-expected-date").val(expected_date);
+                }else{
+                    $("#edit-operation-expected-date").val('');
                 }
                 $(".add-operation-expected-date").css("display", "flex");
+
 
             } 
 
@@ -1592,12 +1611,17 @@ $(document).ready(function(){
             yyyy = date.substring(0,4);
             $("#lending_operation_date").html(dd+"."+mm+"."+yyyy);
 
-            date = response.operation.lending.expected_date_of_return.substring(0,10);
-            ldd = date.substring(8,10);
-            lmm = date.substring(5,7);
-            lyyyy = date.substring(0,4);
+            if (response.operation.lending.expected_date_of_return != null){
+                date = response.operation.lending.expected_date_of_return.substring(0,10);
+                ldd = date.substring(8,10);
+                lmm = date.substring(5,7);
+                lyyyy = date.substring(0,4);
+    
+                $("#lending_operation_date_until").html(ldd+"."+lmm+"."+lyyyy);
+            }else{
+                $("#lending_operation_date_until_label").css('display', 'none')
 
-            $("#lending_operation_date_until").html(ldd+"."+lmm+"."+lyyyy);
+            }
 
             $(".lending_detail_div").css("display", "flex")
             $("#lending_detail").css("display", "flex")

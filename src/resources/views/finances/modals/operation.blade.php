@@ -6,11 +6,11 @@
 
     <div class="detail_div">
       <div>
-        <label for="operation_main_type"><b>Typ:</b></label>
+        <label for="operation_main_type"><b>Kategória:</b></label>
         <p id="operation_main_type"></p>  
       </div>
       <div>
-        <label for="operation_type"><b>Kategória:</b></label>
+        <label for="operation_type"><b>Typ:</b></label>
         <p id="operation_type"></p>
       </div>
     </div>
