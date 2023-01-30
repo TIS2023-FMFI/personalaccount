@@ -1550,12 +1550,14 @@ $(document).ready(function(){
             $(".operation-file").css("display", "flex")
             $("#edit-operation-to").val(date);
             $(".add-operation-expected-date").css("display", "none");
-
             if (response.operation.operation_type.lending == 1) {
+                
                 $(".operation-file").css("display", "none");
-                let expected_date = response.operation.lending.expected_date_of_return.substring(0,10);
-                $("#edit-operation-expected-date").val(expected_date);
-                $(".add-operation-expected-date").css("display", "flex");
+                if (response.operation.lending.expected_date_of_return != null){
+                    let expected_date = response.operation.lending.expected_date_of_return.substring(0,10);
+                    $("#edit-operation-expected-date").val(expected_date);
+                    $(".add-operation-expected-date").css("display", "flex");
+                }
             } 
 
         })
@@ -1588,6 +1590,7 @@ $(document).ready(function(){
             mm = date.substring(5,7);
             yyyy = date.substring(0,4);
             $("#lending_operation_date").html(dd+"."+mm+"."+yyyy);
+
             date = response.operation.lending.expected_date_of_return.substring(0,10);
             ldd = date.substring(8,10);
             lmm = date.substring(5,7);
