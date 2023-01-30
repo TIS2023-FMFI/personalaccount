@@ -90,7 +90,7 @@
         <div class="error-box" id="lending-choice-errors"></div>
       </div>
 
-      <p id="lending_detail">Detaily pôžičky:</p>
+      <p id="lending_detail">Detail pôžičky</p>
 
       <div class="lending_detail_div">
         <div>

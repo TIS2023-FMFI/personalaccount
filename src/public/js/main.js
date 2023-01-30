@@ -1226,6 +1226,8 @@ $(document).ready(function(){
             $(".lending_detail_div").css("display", "none")
             $("#lending_detail").css("display", "none")
             $("#lending-choice").val("default_opt");
+            $("#create-operation-button").attr("disabled", false)
+
         } else {
             $(".choose-lending").hide();
             $(".add-operation-expected-date").hide();
@@ -1241,6 +1243,8 @@ $(document).ready(function(){
             $(".lending_detail_div").css("display", "none")
             $("#lending_detail").css("display", "none")
             $("#lending-choice").val("default_opt");
+            $("#create-operation-button").attr("disabled", false)
+
         }
     });
 
@@ -1435,47 +1439,54 @@ $(document).ready(function(){
                 }
             })
         }else{
-            $.ajax({
-                url: root + "/operations/" + lending_id + "/repayment",
-                type: "POST",
-                dataType: "json",
-                data: {
-                    "_token": csrf,
-                    'date': date
-                }
-            }).done(function(response) {
-                Toast.fire({
-                    icon: 'success',
-                    title: response.displayMessage
-                })
-                $(".modal-box").css("display", "none");
+            let option = $("#lending-choice").val()
+            if(option != "default_opt"){
+                $("#create-operation-button").attr("disabled", false)
 
-                location.reload();
-                $.fn.createOperationClearForm(true);
-            }).fail(function(response) {
-                $.fn.createOperationClearForm();
-                if (typeof response.responseJSON != 'undefined'){
-                    if (response.status === 422) {
-                        let errors = response.responseJSON.errors;
-                        if (typeof errors.date != 'undefined') {
-                            $("#add-operation-to").css("border-color", "red");
-                            errors.date.forEach(e => {
-                                $("#add-operation-date-errors").append("<p>" + e + "</p>");
-                            });
+                $.ajax({
+                    url: root + "/operations/" + lending_id + "/repayment",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        "_token": csrf,
+                        'date': date
+                    }
+                }).done(function(response) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: response.displayMessage
+                    })
+                    $(".modal-box").css("display", "none");
+
+                    location.reload();
+                    $.fn.createOperationClearForm(true);
+                }).fail(function(response) {
+                    $.fn.createOperationClearForm();
+                    if (typeof response.responseJSON != 'undefined'){
+                        if (response.status === 422) {
+                            let errors = response.responseJSON.errors;
+                            if (typeof errors.date != 'undefined') {
+                                $("#add-operation-to").css("border-color", "red");
+                                errors.date.forEach(e => {
+                                    $("#add-operation-date-errors").append("<p>" + e + "</p>");
+                                });
+                            }
+                        } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                            Toast.fire({
+                                icon: 'error',
+                                title: response.responseJSON.displayMessage
+                            })
                         }
-                    } else if (typeof response.responseJSON.displayMessage != 'undefined') {
+                    }else{   
                         Toast.fire({
                             icon: 'error',
-                            title: response.responseJSON.displayMessage
+                            title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                         })
                     }
-                }else{   
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
-                    })
-                }
-            })
+                })
+            }else{
+                $("#create-operation-button").attr("disabled", true)
+            }
         }
     });
 
@@ -1587,45 +1598,54 @@ $(document).ready(function(){
     $("#lending-choice").change(function(){
         let lending_id = $(this).val()
         let csrf = $("#create-operation-button").data("csrf");
+        let option = $("#lending-choice").val()
 
-        $.ajax({
-            url: root + "/operations/" + lending_id,
-            type: "GET",
-            dataType: "json",
-            data: {
-                "_token": csrf
-            },
-            beforeSend: function() {
-                $("#loader-modal").css("display", "flex");
-            },
-            complete: function() {
-                $("#loader-modal").css("display", "none");
-            }
-        }).done(function(response) {
-            $("#lending_operation_name").html(response.operation.title);
-            $("#lending_operation_subject").html(response.operation.subject);
-            $("#lending_operation_sum").html(response.operation.sum + " €");
-            date = response.operation.date.substring(0,10);
-            dd = date.substring(8,10);
-            mm = date.substring(5,7);
-            yyyy = date.substring(0,4);
-            $("#lending_operation_date").html(dd+"."+mm+"."+yyyy);
+        if (option != "default_opt"){
+            $("#create-operation-button").attr("disabled", false)
 
-            if (response.operation.lending.expected_date_of_return != null){
-                date = response.operation.lending.expected_date_of_return.substring(0,10);
-                ldd = date.substring(8,10);
-                lmm = date.substring(5,7);
-                lyyyy = date.substring(0,4);
-    
-                $("#lending_operation_date_until").html(ldd+"."+lmm+"."+lyyyy);
-            }else{
-                $("#lending_operation_date_until_label").css('display', 'none')
+            $.ajax({
+                url: root + "/operations/" + lending_id,
+                type: "GET",
+                dataType: "json",
+                data: {
+                    "_token": csrf
+                },
+                beforeSend: function() {
+                    $("#loader-modal").css("display", "flex");
+                },
+                complete: function() {
+                    $("#loader-modal").css("display", "none");
+                }
+            }).done(function(response) {
+                $("#lending_operation_name").html(response.operation.title);
+                $("#lending_operation_subject").html(response.operation.subject);
+                $("#lending_operation_sum").html(response.operation.sum + " €");
+                date = response.operation.date.substring(0,10);
+                dd = date.substring(8,10);
+                mm = date.substring(5,7);
+                yyyy = date.substring(0,4);
+                $("#lending_operation_date").html(dd+"."+mm+"."+yyyy);
 
-            }
+                if (response.operation.lending.expected_date_of_return != null){
+                    date = response.operation.lending.expected_date_of_return.substring(0,10);
+                    ldd = date.substring(8,10);
+                    lmm = date.substring(5,7);
+                    lyyyy = date.substring(0,4);
+        
+                    $("#lending_operation_date_until").html(ldd+"."+lmm+"."+lyyyy);
+                }else{
+                    $("#lending_operation_date_until_label").css('display', 'none')
 
-            $(".lending_detail_div").css("display", "flex")
-            $("#lending_detail").css("display", "flex")
-        })
+                }
+
+                $(".lending_detail_div").css("display", "flex")
+                $("#lending_detail").css("display", "flex")
+            })
+        }else{
+            $(".lending_detail_div").css("display", "none")
+            $("#lending_detail").css("display", "none")
+            $("#create-operation-button").attr("disabled", true)
+        }
 
     })
 
@@ -1641,6 +1661,7 @@ $(document).ready(function(){
         let subject = $("#edit-operation-subject").val();
         let sum = $("#edit-operation-sum").val();
         let date = $("#edit-operation-to").val();
+        let expected_date = $("#edit-operation-expected-date").val();
 
         var fileUpload = $("#edit-operation-file").get(0);  
         var files = fileUpload.files;  
@@ -1648,6 +1669,7 @@ $(document).ready(function(){
 
         fileData.append('title', title);
         fileData.append('date', date);
+        fileData.append('expected_date_of_return', expected_date);
         fileData.append('subject', subject);
         fileData.append('sum', sum);
         if (files[0] != undefined){
