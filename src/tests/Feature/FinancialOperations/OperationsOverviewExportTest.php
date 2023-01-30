@@ -66,9 +66,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;01.01.2000;income;subject;100.00;FALSE;',
-            $operation->id,
-            $this->account->sap_id);
+        $expected = "{$this->account->sap_id};title;01.01.2000;income;subject;100.00;Nie;";
 
         $this->assertEquals($expected,$rows[1]);
     }
@@ -95,9 +93,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;01.01.2000;expense;subject;100.00-;FALSE;',
-            $operation->id,
-            $this->account->sap_id);
+        $expected = "{$this->account->sap_id};title;01.01.2000;expense;subject;-100.00;Nie;";
 
         $this->assertEquals($expected,$rows[1]);
     }
@@ -124,9 +120,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;01.01.2000;income;subject;100.00;TRUE;99',
-            $operation->id,
-            $this->account->sap_id);
+        $expected = "{$this->account->sap_id};title;01.01.2000;income;subject;100.00;Áno;99";
 
         $this->assertEquals($expected,$rows[1]);
     }
@@ -153,9 +147,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = sprintf('%d;%s;title;01.01.2000;lending;subject;100.00;;',
-            $operation->id,
-            $this->account->sap_id);
+        $expected = "{$this->account->sap_id};title;01.01.2000;lending;subject;100.00;;";
 
         $this->assertEquals($expected,$rows[1]);
     }
