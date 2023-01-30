@@ -26,7 +26,7 @@ class UpdateOperationRequest extends FormRequest
             'sum' => ['filled', 'numeric', 'min:0'],
             'attachment' => ['nullable', File::types(['txt','pdf'])],
             'checked' => ['nullable', 'boolean'],
-            'expected_date_of_return' => ['nullable', 'date'],
+            'expected_date_of_return' => ['nullable', 'date', 'after_or_equal:date']
         ];
     }
 }
