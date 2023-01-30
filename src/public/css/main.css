@@ -698,3 +698,15 @@ a:visited {
     padding-right: 40px;
     width: calc(100% - 40px);
 }
+#change-pass-old {
+    padding-right: 40px;
+    width: calc(100% - 40px);
+}
+#change-pass-new1 {
+    padding-right: 40px;
+    width: calc(100% - 40px);
+}
+#change-pass-new2 {
+    padding-right: 40px;
+    width: calc(100% - 40px);
+}
