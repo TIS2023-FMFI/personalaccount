@@ -717,16 +717,20 @@ a:visited {
 #login-pass {
     padding-right: 40px;
     width: calc(100% - 40px);
+    box-sizing: content-box;
 }
 #change-pass-old {
     padding-right: 40px;
     width: calc(100% - 40px);
+    box-sizing: content-box;
 }
 #change-pass-new1 {
     padding-right: 40px;
     width: calc(100% - 40px);
+    box-sizing: content-box;
 }
 #change-pass-new2 {
     padding-right: 40px;
     width: calc(100% - 40px);
+    box-sizing: content-box;
 }

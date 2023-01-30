@@ -1,4 +1,8 @@
+@if(isset($open) && $open)
+<div id="change-pass-modal" class="modal-box" style="display: flex;">
+@else
 <div id="change-pass-modal" class="modal-box">
+@endif
 
   <div class="modal">
 
