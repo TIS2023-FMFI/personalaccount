@@ -4,7 +4,6 @@ namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialAccounts\CreateAccountRequest;
 use App\Http\Requests\FinancialAccounts\UpdateAccountRequest;
 use App\Models\Account;
 

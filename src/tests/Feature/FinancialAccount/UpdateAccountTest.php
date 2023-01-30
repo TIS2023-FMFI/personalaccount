@@ -4,8 +4,6 @@ namespace Tests\Feature\FinancialAccount;
 
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UpdateAccountTest extends TestCase
@@ -84,7 +82,7 @@ class UpdateAccountTest extends TestCase
         $this->assertEquals($updated['sap_id'], $this->account->sap_id);
     }
 
-    public function test_that_user_can_update_title_only()
+    public function test_that_user_can_update_account_title_only()
     {
         $updated =$this->account->getAttributes();
         $updated['title'] .= ' new';
