@@ -90,6 +90,37 @@
         <div class="error-box" id="lending-choice-errors"></div>
       </div>
 
+      <p id="lending_detail">Detaily pôžičky:</p>
+
+      <div class="lending_detail_div">
+        <div>
+          <label for="lending_operation_name"><b>Názov:</b></label>
+          <p id="lending_operation_name"></p>
+        </div>
+      </div>
+
+      <div class="lending_detail_div">
+        <div>
+          <label for="lending_operation_subject"><b>Subjekt:</b></label>
+          <p id="lending_operation_subject"></p>
+        </div>
+        <div>
+          <label for="lending_operation_sum"><b>Suma:</b></label>
+          <p id="lending_operation_sum"></p>
+        </div>
+      </div>
+
+      <div class="lending_detail_div">
+        <div>
+          <label for="lending_operation_date"><b>Dátum:</b></label>
+          <p id="lending_operation_date"></p>
+        </div>
+        <div>
+          <label for="lending_operation_date_until" id="lending_operation_date_until_label"><b>Predpokladaný dátum splatenia:</b></label>
+          <p id="lending_operation_date_until"></p>
+        </div>
+      </div>
+
       <button type="submit" data-csrf="{{ csrf_token() }}"  id="create-operation-button">Uložiť</button>
 
     </form>

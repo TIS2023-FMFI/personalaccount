@@ -1210,10 +1210,6 @@ $(document).ready(function(){
     });
     // <-- Check/Uncheck operation
 
-
-
-
-
     $('input[type=radio][name=operation_type]').change(function() {
         if (this.value == 'loan') {
             $(".choose-lending").show();
@@ -1226,6 +1222,10 @@ $(document).ready(function(){
             $(".add-operation-subject").hide();
             $(".add-operation-name").hide();
             $(".add-operation-choice").hide();
+
+            $(".lending_detail_div").css("display", "none")
+            $("#lending_detail").css("display", "none")
+            $("#lending-choice").val("default_opt");
         } else {
             $(".choose-lending").hide();
             $(".add-operation-expected-date").hide();
@@ -1237,9 +1237,12 @@ $(document).ready(function(){
             $(".add-operation-subject").show();
             $(".add-operation-name").show();
             $(".add-operation-choice").show();
+
+            $(".lending_detail_div").css("display", "none")
+            $("#lending_detail").css("display", "none")
+            $("#lending-choice").val("default_opt");
         }
     });
-
 
     // --> Create operation form
 
@@ -1247,6 +1250,9 @@ $(document).ready(function(){
         let account_id = $(this).data("account-id");
         let csrf = $(this).data("csrf");
         $("#create-operation-form").data("account-id", account_id);
+
+        $(".lending_detail_div").css("display", "none")
+        $("#lending_detail").css("display", "none")
 
         $("#operation_choice").empty();
         $("#lending-choice").empty();
@@ -1503,7 +1509,7 @@ $(document).ready(function(){
     // <-- Create operation form
 
 
-    // --> Edit operaton form
+    // --> Edit operation form
 
     $(".operation-edit").click(function(){
         let operation_id = $(this).data("operation-id");
@@ -1529,20 +1535,72 @@ $(document).ready(function(){
         }).done(function(response) {
 
             let expense = response.operation.operation_type.expense ? "Výdavok" : "Príjem";
+
             $("#operation_edit_main_type").html(expense);
             $("#operation_edit_type").html(response.operation.operation_type.name);
             $("#edit-operation-name").val(response.operation.title);
             $("#edit-operation-subject").val(response.operation.subject);
             $("#edit-operation-sum").val(response.operation.sum);
             let date = response.operation.date.substring(0,10);
+
+            $(".add-operation-name").css("display", "flex")
+            $(".add-operation-subject").css("display", "flex")
+            $(".add-operation-sum").css("display", "flex")
+            $(".add-operation-sum").css("display", "flex")
+            $(".operation-file").css("display", "flex")
             $("#edit-operation-to").val(date);
+            $(".add-operation-expected-date").css("display", "none");
+
             if (response.operation.operation_type.lending == 1) {
-                $("#edit-operation-attachment").css("display", "none");
+                $(".operation-file").css("display", "none");
+                let expected_date = response.operation.lending.expected_date_of_return.substring(0,10);
+                $("#edit-operation-expected-date").val(expected_date);
+                $(".add-operation-expected-date").css("display", "flex");
             } 
 
         })
 
     })
+
+    $("#lending-choice").change(function(){
+        let lending_id = $(this).val()
+        let csrf = $("#create-operation-button").data("csrf");
+
+        $.ajax({
+            url: root + "/operations/" + lending_id,
+            type: "GET",
+            dataType: "json",
+            data: {
+                "_token": csrf
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+            }
+        }).done(function(response) {
+            $("#lending_operation_name").html(response.operation.title);
+            $("#lending_operation_subject").html(response.operation.subject);
+            $("#lending_operation_sum").html(response.operation.sum + " €");
+            date = response.operation.date.substring(0,10);
+            dd = date.substring(8,10);
+            mm = date.substring(5,7);
+            yyyy = date.substring(0,4);
+            $("#lending_operation_date").html(dd+"."+mm+"."+yyyy);
+            date = response.operation.lending.expected_date_of_return.substring(0,10);
+            ldd = date.substring(8,10);
+            lmm = date.substring(5,7);
+            lyyyy = date.substring(0,4);
+
+            $("#lending_operation_date_until").html(ldd+"."+lmm+"."+lyyyy);
+
+            $(".lending_detail_div").css("display", "flex")
+            $("#lending_detail").css("display", "flex")
+        })
+
+    })
+
 
     $("#edit-operation-form").on("submit", function(e) {
         e.preventDefault();
