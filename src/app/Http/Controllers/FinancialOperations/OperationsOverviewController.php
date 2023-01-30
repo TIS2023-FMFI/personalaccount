@@ -166,12 +166,13 @@ class OperationsOverviewController extends Controller
     private function generateCsvFile(Collection $operations)
     {
         $columns = [
-            'ID', 'Account ID', 'Title', 'Date', 'Operation type', 'Subject', 'Sum', 'Checked', 'SAP ID'
+            'SAP ID účtu', 'Názov', 'Dátum', 'Typ', 'Subjekt', 'Suma', 'Skontrolované', 'SAP ID operácie'
         ];
         $stream = fopen('php://output', 'w');
         fputcsv($stream,$columns,';');
 
-        foreach ($operations as $op) fputcsv($stream,$op->getExportData(),';');
+        foreach ($operations as $operation)
+            fputcsv($stream,$operation->getExportData(),';');
 
         fclose($stream);
         return $stream;
