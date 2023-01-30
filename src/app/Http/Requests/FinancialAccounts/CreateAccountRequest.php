@@ -7,10 +7,10 @@ use Illuminate\Validation\Rule;
 
 /**
  * A request to create new or update an existing financial account.
- * 
+ *
  * Fields: title, sap_id.
  */
-class CreateOrUpdateAccountRequest extends FormRequest
+class CreateAccountRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
