@@ -1228,6 +1228,9 @@ $(document).ready(function(){
             $("#lending-choice").val("default_opt");
             $("#create-operation-button").attr("disabled", false)
 
+            $("#add-operation-to").css("border-color", "var(--primary)");
+            $("#add-operation-date-errors").empty();
+
         } else {
             $(".choose-lending").hide();
             $(".add-operation-expected-date").hide();
@@ -1244,6 +1247,37 @@ $(document).ready(function(){
             $("#lending_detail").css("display", "none")
             $("#lending-choice").val("default_opt");
             $("#create-operation-button").attr("disabled", false)
+            $("#create-operation-button").attr("disabled", false);
+
+            $("#operation-file").css("border-color", "var(--primary)");
+            $("#add-operation-to").css("border-color", "var(--primary)");
+            $("#add-operation-type").css("border-color", "var(--primary)");
+            $("#add-operation-subject").css("border-color", "var(--primary)");
+            $("#add-operation-sum").css("border-color", "var(--primary)");
+            $("#add-operation-name").css("border-color", "var(--primary)");
+            $("#add-operation-attachment-errors").css("border-color", "var(--primary)");
+            $("#add-operation-date-errors").css("border-color", "var(--primary)");
+            $("#add-operation-type-errors").css("border-color", "var(--primary)");
+            $("#add-operation-subject-errors").css("border-color", "var(--primary)");
+            $("#add-operation-sum-errors").css("border-color", "var(--primary)");
+            $("#add-operation-title-errors").css("border-color", "var(--primary)");
+            $("#add-operation-expected-date").css("border-color", "var(--primary)");
+            $("#operation_choice").css("border-color", "var(--primary)");
+    
+    
+            $("#operation-file").empty();
+            $("#add-operation-to").empty();
+            $("#add-operation-type").empty();
+            $("#add-operation-subject").empty();
+            $("#add-operation-sum").empty();
+            $("#add-operation-name").empty();
+            $("#add-operation-attachment-errors").empty();
+            $("#add-operation-date-errors").empty();
+            $("#add-operation-type-errors").empty();
+            $("#add-operation-subject-errors").empty();
+            $("#add-operation-sum-errors").empty();
+            $("#add-operation-title-errors").empty();
+            $("#add-operation-expected-date").empty();
 
         }
     });
@@ -1400,7 +1434,7 @@ $(document).ready(function(){
                             });
                         }
                         if (typeof errors.operation_type_id != 'undefined') {
-                            $("#add-operation-type").css("border-color", "red");
+                            $("#operation_choice").css("border-color", "red");
                             $("#add-operation-type-errors").append("<p>Neplatný typ operácie.</p>");
                         }
                         if (typeof errors.subject != 'undefined') {
@@ -1517,6 +1551,8 @@ $(document).ready(function(){
         $("#add-operation-sum-errors").css("border-color", "var(--primary)");
         $("#add-operation-title-errors").css("border-color", "var(--primary)");
         $("#add-operation-expected-date").css("border-color", "var(--primary)");
+        $("#operation_choice").css("border-color", "var(--primary)");
+
 
         $("#operation-file").empty();
         $("#add-operation-to").empty();

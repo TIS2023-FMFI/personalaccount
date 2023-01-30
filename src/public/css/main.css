@@ -456,6 +456,7 @@ footer {
 }
 .radio-buttons-box input {
     width: auto;
+    margin-left: 10px;
 }
 .radio-buttons-box label {
     font-size: 20px;

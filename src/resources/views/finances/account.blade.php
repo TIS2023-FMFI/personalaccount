@@ -63,7 +63,11 @@
             @if( $operation->checked )
                 <td>Áno</td>
             @else
-                <td>Nie</td>
+                @if( $operation->isLending() ) 
+                    <td>-</td>
+                @else
+                    <td>Nie</td>
+                @endif
             @endif
             @if( $operation->isExpense())
                 <td class="align-right" style="color: red;">-{{ $operation->sum }}€</td>
