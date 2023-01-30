@@ -449,6 +449,7 @@ footer {
     display: flex;
     justify-content: space-evenly;
     margin-bottom: 30px;
+    align-items: center;
 }
 .radio-buttons-box div {
     display: flex;
