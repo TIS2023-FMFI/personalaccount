@@ -695,5 +695,5 @@ a:visited {
 }
 #login-pass {
     padding-right: 40px;
-    width: 85%;
+    width: calc(100% - 40px);
 }
