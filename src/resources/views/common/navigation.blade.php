@@ -33,7 +33,11 @@
         <div class="content">
 
             @include('auth.modals.create_user')
+            @if(isset($open_change_password))
+            @include('auth.modals.change_password', ['open' => $open_change_password])
+            @else
             @include('auth.modals.change_password')
+            @endif
 
             @include('finances.modals.operation')
             @include('finances.modals.create_operation')

@@ -1,4 +1,4 @@
-@include('common.navigation')
+@include('common.navigation', ['open_change_password' => Auth::user()->password_change_required])
 
 <h1>Moje účty</h1>
 <div class="accounts_box">
