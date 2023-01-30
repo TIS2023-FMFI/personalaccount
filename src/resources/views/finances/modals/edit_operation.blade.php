@@ -9,11 +9,11 @@
 
       <div class="edit_type_category">
         <div>
-          <label for="operation_edit_main_type">Typ:</label>
+          <label for="operation_edit_main_type">Kategória:</label>
           <p id="operation_edit_main_type"></p>  
         </div>
         <div>
-          <label for="operation_edit_type">Kategória:</label>
+          <label for="operation_edit_type">Typ:</label>
           <p id="operation_edit_type"></p>
         </div>
       </div>

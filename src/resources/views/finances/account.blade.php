@@ -60,7 +60,9 @@
             <td>{{ $operation->title }}</td>
             <td>{{ $operation->date->format('d.m.Y') }}</td>
             <td>{{ $operation->operationType->name }}</td>
-            @if( $operation->checked )
+            @if( $operation->isLending() ) 
+                <td>-</td>
+            @elseif( $operation->checked )
                 <td>Áno</td>
             @else
                 <td>Nie</td>

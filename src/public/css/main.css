@@ -449,6 +449,7 @@ footer {
     display: flex;
     justify-content: space-evenly;
     margin-bottom: 30px;
+    align-items: center;
 }
 .radio-buttons-box div {
     display: flex;
@@ -456,6 +457,7 @@ footer {
 }
 .radio-buttons-box input {
     width: auto;
+    margin-left: 10px;
 }
 .radio-buttons-box label {
     font-size: 20px;
@@ -669,6 +671,24 @@ a:visited {
 .detail_div div{
     margin-right: 50px;
     white-space: nowrap; 
+}
+.lending_detail_div{
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    padding: 5px 0;
+    font-size: 20px;
+    border: none;
+    flex-wrap: nowrap;
+}
+.lending_detail_div div{
+    margin-right: 50px;
+    white-space: nowrap; 
+}
+#lending_detail{
+    color: var(--primary);
+    font-size: 22px;
+    margin: 0;
 }
 .loader {
     border: 8px solid #f3f3f3;
