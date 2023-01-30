@@ -1556,8 +1556,9 @@ $(document).ready(function(){
                 if (response.operation.lending.expected_date_of_return != null){
                     let expected_date = response.operation.lending.expected_date_of_return.substring(0,10);
                     $("#edit-operation-expected-date").val(expected_date);
-                    $(".add-operation-expected-date").css("display", "flex");
                 }
+                $(".add-operation-expected-date").css("display", "flex");
+
             } 
 
         })
