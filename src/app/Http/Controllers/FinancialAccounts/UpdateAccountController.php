@@ -4,12 +4,12 @@ namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinancialAccounts\CreateOrUpdateAccountRequest;
+use App\Http\Requests\FinancialAccounts\UpdateAccountRequest;
 use App\Models\Account;
 
 /**
  * A controller responsible for updating financial accounts.
- * 
+ *
  * This controller provides methods to:
  *      - update a financial account
  */
@@ -17,8 +17,8 @@ class UpdateAccountController extends Controller
 {
     /**
      * Handle a request to update a financial account.
-     * 
-     * @param \App\Http\Requests\FinancialAccounts\CreateOrUpdateAccountRequest $request
+     *
+     * @param \App\Http\Requests\FinancialAccounts\UpdateAccountRequest $request
      * the request containing the updated version of account data
      * @param \App\Models\Account $account
      * the account update
@@ -26,7 +26,7 @@ class UpdateAccountController extends Controller
      * a response containing the information about the result of this operation
      * presented as a plain-text message
      */
-    public function update(CreateOrUpdateAccountRequest $request, Account $account)
+    public function update(UpdateAccountRequest $request, Account $account)
     {
         $data = $this->extractAccountData($request);
 
@@ -41,23 +41,23 @@ class UpdateAccountController extends Controller
 
     /**
      * Extract account data from a request.
-     * 
-     * @param \App\Http\Requests\FinancialAccounts\CreateOrUpdateAccountRequest $request
+     *
+     * @param \App\Http\Requests\FinancialAccounts\UpdateAccountRequest $request
      * the request from which to extract data
      * @return array
      * the extracted data
      */
-    private function extractAccountData(CreateOrUpdateAccountRequest $request)
+    private function extractAccountData(UpdateAccountRequest $request)
     {
         return [
             'title' => $request->validated('title'),
             'sap_id' => $request->validated('sap_id')
         ];
     }
-    
+
     /**
      * Update a financial account record.
-     * 
+     *
      * @param \App\Models\Account $account
      * the record to update
      * @param array $data

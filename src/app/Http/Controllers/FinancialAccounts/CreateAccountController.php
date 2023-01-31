@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\FinancialAccounts;
 
-use App\Http\Requests\FinancialAccounts\CreateOrUpdateAccountRequest;
+use App\Http\Requests\FinancialAccounts\CreateAccountRequest;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
@@ -17,12 +17,12 @@ class CreateAccountController
     /**
      * Handles the request to add a new financial account for the current user
      *
-     * @param CreateOrUpdateAccountRequest $request
+     * @param CreateAccountRequest $request
      * the HTTP request to create an operation
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    public function create(CreateOrUpdateAccountRequest $request)
+    public function create(CreateAccountRequest $request)
     {
         $user = Auth::user();
 

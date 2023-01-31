@@ -4,8 +4,6 @@ namespace Tests\Feature\FinancialAccount;
 
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UpdateAccountTest extends TestCase
@@ -47,7 +45,7 @@ class UpdateAccountTest extends TestCase
     {
         $response = $this->actingAs($this->user)
                             ->put('/accounts/' . $this->account->id);
-        
+
         $response
             ->assertStatus(500);
     }
@@ -57,25 +55,46 @@ class UpdateAccountTest extends TestCase
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->put('/accounts/99999');
-        
+
         $response
             ->assertStatus(404);
     }
-    
+
     public function test_that_user_can_update_existing_account()
     {
         $updated =$this->account->getAttributes();
         $updated['title'] .= ' new';
         $updated['sap_id'] .= '-00';
         unset($updated['user_id']);
-        
+
         $response = $this->actingAs($this->user)
                             ->withHeaders($this->ajaxHeaders)
                             ->put(
                                 '/accounts/' . $this->account->id,
                                 $updated
                             );
-        
+
+        $response
+            ->assertStatus(200);
+
+        $this->account->refresh();
+        $this->assertEquals($updated['title'], $this->account->title);
+        $this->assertEquals($updated['sap_id'], $this->account->sap_id);
+    }
+
+    public function test_that_user_can_update_account_title_only()
+    {
+        $updated =$this->account->getAttributes();
+        $updated['title'] .= ' new';
+        unset($updated['user_id']);
+
+        $response = $this->actingAs($this->user)
+            ->withHeaders($this->ajaxHeaders)
+            ->put(
+                '/accounts/' . $this->account->id,
+                $updated
+            );
+
         $response
             ->assertStatus(200);
 
