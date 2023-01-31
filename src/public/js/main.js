@@ -1734,7 +1734,6 @@ $(document).ready(function(){
             $.fn.editOperationClearForm(true);
         }).fail(function(response) {
             $.fn.editOperationClearForm();
-            console.log(response)
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
