@@ -1551,6 +1551,7 @@ $(document).ready(function(){
         $("#add-operation-sum-errors").css("border-color", "var(--primary)");
         $("#add-operation-title-errors").css("border-color", "var(--primary)");
         $("#add-operation-expected-date").css("border-color", "var(--primary)");
+        $("#add-operation-expected-date-errors").css("border-color", "var(--primary)");
         $("#operation_choice").css("border-color", "var(--primary)");
 
 
@@ -1567,6 +1568,7 @@ $(document).ready(function(){
         $("#add-operation-sum-errors").empty();
         $("#add-operation-title-errors").empty();
         $("#add-operation-expected-date").empty();
+        $("#add-operation-expected-date-errors").empty();
     }
 
     // <-- Create operation form
@@ -1749,6 +1751,12 @@ $(document).ready(function(){
                             $("#edit-operation-date-errors").append("<p>" + e + "</p>");
                         });
                     }
+                    if (typeof errors.expected_date_of_return != 'undefined') {
+                        $("#edit-operation-expected-date").css("border-color", "red");
+                        errors.expected_date_of_return.forEach(e => {
+                            $("#edit-operation-expected-date-errors").append("<p>" + e + "</p>");
+                        });
+                    }
                     if (typeof errors.operation_type_id != 'undefined') {
                         $("#edit-operation-type").css("border-color", "red");
                         $("#edit-operation-type-errors").append("<p>Neplatný typ operácie.</p>");;
@@ -1812,6 +1820,8 @@ $(document).ready(function(){
         $("#edit-operation-name").css("border-color", "var(--primary)");
         $("#edit-operation-attachment-errors").css("border-color", "var(--primary)");
         $("#edit-operation-date-errors").css("border-color", "var(--primary)");
+        $("#edit-operation-expected-date").css("border-color", "var(--primary)");
+        $("#edit-operation-expected-date-errors").css("border-color", "var(--primary)");
         $("#edit-operation-type-errors").css("border-color", "var(--primary)");
         $("#edit-operation-subject-errors").css("border-color", "var(--primary)");
         $("#edit-operation-sum-errors").css("border-color", "var(--primary)");
@@ -1829,6 +1839,8 @@ $(document).ready(function(){
         $("#edit-operation-subject-errors").empty();
         $("#edit-operation-sum-errors").empty();
         $("#edit-operation-title-errors").empty();
+        $("#edit-operation-expected-date").empty();
+        $("#edit-operation-expected-date-errors").empty();
     }
 
     // <-- Edit operaton form
