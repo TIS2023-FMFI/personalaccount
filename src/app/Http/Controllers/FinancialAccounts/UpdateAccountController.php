@@ -18,7 +18,7 @@ class UpdateAccountController extends Controller
     /**
      * Handle a request to update a financial account.
      *
-     * @param UpdateAccountRequest $request
+     * @param \App\Http\Requests\FinancialAccounts\UpdateAccountRequest $request
      * the request containing the updated version of account data
      * @param \App\Models\Account $account
      * the account update
@@ -42,7 +42,7 @@ class UpdateAccountController extends Controller
     /**
      * Extract account data from a request.
      *
-     * @param UpdateAccountRequest $request
+     * @param \App\Http\Requests\FinancialAccounts\UpdateAccountRequest $request
      * the request from which to extract data
      * @return array
      * the extracted data
