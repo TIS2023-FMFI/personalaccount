@@ -26,7 +26,7 @@ class CreateOperationRequest extends FormRequest
             'operation_type_id' => ['required', 'numeric', 'exists:operation_types,id'],
             'subject' => ['required', 'max:255'],
             'sum' => ['required', 'numeric', 'min:0'],
-            'attachment' => ['nullable', File::types(['txt','pdf'])],
+            'attachment' => ['nullable', File::types(['txt','pdf', 'doc', 'docx', 'zip'])],
             'expected_date_of_return' => ['nullable', 'date', 'after_or_equal:date'],
         ];
     }

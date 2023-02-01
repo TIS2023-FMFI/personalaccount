@@ -8,6 +8,7 @@ use App\Http\Helpers\DBTransaction;
 use App\Http\Helpers\FileHelper;
 use App\Http\Requests\FinancialOperations\UpdateOperationRequest;
 use App\Models\FinancialOperation;
+use App\Models\Lending;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -116,15 +117,17 @@ class UpdateOperationController extends GeneralOperationController
 
         $operation->refresh();
 
-        if ($operation->isLending())
+        if ($operation->isLending()) {
             $this->upsertLending($operation, $data);
+            $this->updateRepaymentRecord($operation->lending, $data);
+        }
 
         if ($newAttachment)
             FileHelper::deleteFileIfExists($oldAttachment);
     }
 
     /**
-     * Updates the financial operation's record in the database
+     * Updates the financial operation's record in the database.
      *
      * @param FinancialOperation $operation
      * the operation to be updated
@@ -146,6 +149,30 @@ class UpdateOperationController extends GeneralOperationController
 
         if (!$operation->update($recordData))
             throw new DatabaseException('The operation wasn\'t updated.');
+    }
+
+    /**
+     * Updates the record of the repayment associated with the given lending if
+     * such a repayment exists.
+     *
+     * @param Lending $lending
+     * the lending whose repayment to update
+     * @param array $data
+     * the updated operation data of lending
+     * @throws DatabaseException
+     */
+    private function updateRepaymentRecord(Lending $lending, array $data)
+    {
+        $repayment = $lending->repayment;
+
+        if (!$repayment)
+            return;
+
+        $recordData = $data;
+        unset($recordData['date'], $recordData['attachment']);
+
+        if (!$repayment->operation->update($recordData))
+            throw new DatabaseException('The repayment wasn\'t updated.');
     }
 
     /**
