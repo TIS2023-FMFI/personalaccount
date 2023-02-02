@@ -238,7 +238,7 @@ class UpdateOperationTest extends TestCase
                 'account_id' => $this->account,
                 'operation_type_id' => $this->lendingType
             ]);
-        $loanLending = Lending::factory()->create(['id' => $loan]);
+        Lending::factory()->create(['id' => $loan]);
 
         $repayment = FinancialOperation::factory()->create(
             [
@@ -246,7 +246,7 @@ class UpdateOperationTest extends TestCase
                 'operation_type_id' => $this->repaymentType,
                 'date' => $loan->date->addDay()
             ]);
-        $repaymentLending = Lending::factory()->create(
+        Lending::factory()->create(
             [
                 'id' => $repayment,
                 'previous_lending_id' => $loan
@@ -260,6 +260,49 @@ class UpdateOperationTest extends TestCase
             ->patch("/operations/$loan->id", $patchData);
 
         $response->assertStatus(422);
+    }
+
+    public function test_loan_update_updates_repayment()
+    {
+        $loan = FinancialOperation::factory()->create(
+            [
+                'account_id' => $this->account,
+                'operation_type_id' => $this->lendingType,
+                'attachment' => null
+            ]);
+        Lending::factory()->create(['id' => $loan]);
+
+        $repaymetData = $loan->getAttributes();
+        $repaymetData['date'] = $loan->date->addDays(2);
+        unset($repaymetData['id']);
+
+        $repayment = FinancialOperation::factory()->create($repaymetData);
+        Lending::factory()->create(
+            [
+                'id' => $repayment,
+                'previous_lending_id' => $loan
+            ]);
+
+        $patchData = [
+            'title' => 'novy nazov',
+            'subject' => 'novy subjekt',
+            'sum' => $repaymetData['sum'] + 100,
+            'date' => $loan->date->addDay(),
+            'expected_date_of_return' => now()
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders($this->headers)
+            ->patch("/operations/$loan->id", $patchData);
+
+        $response->assertStatus(200);
+
+        $oldDate = $repayment->date;
+        $repayment->refresh();
+
+        $this->assertEquals($patchData['title'], $repayment->title);
+        $this->assertEquals($patchData['subject'], $repayment->subject);
+        $this->assertEquals($patchData['sum'], $repayment->sum);
+        $this->assertEquals($oldDate, $repayment->date);
     }
 
     public function test_cannot_update_repayment()
