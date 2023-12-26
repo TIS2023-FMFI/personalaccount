@@ -16,7 +16,10 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 /**
  * Manages creation of financial operations.
  */
@@ -32,9 +35,10 @@ class CreateOperationController extends GeneralOperationController
      */
     public function getFormData(Account $account)
     {
+        $user = $account->user->first();
         return [
             'operation_types' => OperationType::userAssignable()->get(),
-            'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->where('account_id', '=', $account->id)->get()
+            'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->where('account_user_id', '=', $user->pivot->id)->get()
         ];
     }
 
@@ -50,6 +54,8 @@ class CreateOperationController extends GeneralOperationController
      */
     public function create(Account $account, CreateOperationRequest $request)
     {
+
+        DB::enableQueryLog();
         $type = OperationType::findOrFail($request->validated('operation_type_id'));
 
         if ($type->repayment)
@@ -75,7 +81,7 @@ class CreateOperationController extends GeneralOperationController
         if ($lendingOperation->isRepayment())
             return response(trans('financial_operations.create.failure'), 500);
 
-        $account = $lendingOperation->account;
+        $account = $lendingOperation->account();
         $data = $request->prepareValidatedOperationData($lendingOperation);
 
         return $this->createOperationFromData($account, $data);
@@ -99,9 +105,9 @@ class CreateOperationController extends GeneralOperationController
             $attachment = $this->saveAttachment($account, $data);
             $this->createOperationWithinTransaction($account, $data, $attachment);
         } catch (Exception $e) {
+            Log::debug('Creating financial operation failed, error: {e}', ['e' => $e]);
             if ($e instanceof ValidationException)
                 throw $e;
-
             return response(trans('financial_operations.create.failure'), 500);
         }
 
@@ -169,8 +175,14 @@ class CreateOperationController extends GeneralOperationController
     private function createOperationRecord(
         Account $account, array $data, string|null $attachment
     ) {
-        $recordData = array_merge($data, ['attachment' => $attachment]);
-        $operation = $account->operations()->create($recordData);
+        unset($data['expected_date_of_return']);
+        $user = $account->user->first();
+        Log::debug('User: {data}', ['data' => $user]);
+        $accountUserId = $user->pivot->id;
+        Log::debug('Pivot ID: {data}', ['data' => $accountUserId]);
+        $recordData = array_merge($data, ['attachment' => $attachment, 'account_user_id' => $accountUserId]);
+        Log::debug('Creating financial operation data: {data}', ['data' => $recordData]);
+        $operation = $account->operations()->updateOrCreate($recordData);
 
         if (!$operation->exists)
             throw new DatabaseException('The operation wasn\'t created.');

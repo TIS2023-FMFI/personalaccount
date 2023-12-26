@@ -14,6 +14,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Manages updates of financial operations, including checking and unchecking.
@@ -48,19 +49,22 @@ class UpdateOperationController extends GeneralOperationController
         $requestData = $request->validated();
 
         if (!$this->validateUpdate($operation, $requestData))
+        {
+            Log::debug('Update not validated.');
             return response(trans('financial_operations.update.failure'), 500);
-
+        }
+            
         try {
-            $newAttachment = $this->saveAttachment($operation->account, $requestData);
+            $newAttachment = $this->saveAttachment($operation->account(), $requestData);
             $oldAttachment = $operation->attachment;
 
             $this->updateOperationWithinTransaction(
                 $operation, $requestData, $oldAttachment, $newAttachment
             );
         } catch (Exception $e) {
+            Log::debug('Updating financial operation failed, error: {e}', ['e' => $e]);
             if ($e instanceof ValidationException)
                 throw $e;
-
             return response(trans('financial_operations.update.failure'), 500);
         }
 

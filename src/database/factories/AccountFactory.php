@@ -18,11 +18,8 @@ class AccountFactory extends Factory
      */
     public function definition()
     {
-        $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
 
         return [
-            'user_id' => $user->id,
-            'title' => fake()->text(20),
             'sap_id' => Str::upper(fake()->uuid())
         ];
     }

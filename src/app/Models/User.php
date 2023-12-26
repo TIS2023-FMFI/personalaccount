@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+
 
 /**
  * A representation of an instance in the "users" table.
@@ -61,10 +64,21 @@ class User extends Authenticatable
     /**
      * Gets all the accounts which belong to this user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return BelongsToMany
      */
     public function accounts()
     {
-        return $this->hasMany(Account::class);
+        return $this->belongsToMany(Account::class, 'account_user')->withPivot('id', 'account_title');
+    }
+
+
+    /**
+     * Gets all the financial operations which belong to this user.
+     *
+     * @return HasManyThrough
+     */
+    public function financialOperations()
+    {
+        return $this->hasManyThrough(financialOperations::class, AccountUser::class);
     }
 }

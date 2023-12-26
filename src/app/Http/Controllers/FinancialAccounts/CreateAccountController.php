@@ -7,6 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Account;
 
 /**
  * Manages creation of new financial accounts.
@@ -26,13 +27,16 @@ class CreateAccountController
     {
         $user = Auth::user();
 
-        $account = $user->accounts()->create([
-            'title' => $request->validated('title'),
-            'sap_id' => $request->validated('sap_id')
+        $account = Account::firstOrCreate([
+            'sap_id' => $request->validated('sap_id'),
         ]);
 
         if (! $account->exists)
             return response(trans('financial_accounts.create.failed'), 500);
+
+        if (! $user->accounts->contains($account))
+            $user->accounts()->attach($account, ['account_title' => $request->validated('title')]);
+
         return response(trans('financial_accounts.create.success'), 201);
     }
 

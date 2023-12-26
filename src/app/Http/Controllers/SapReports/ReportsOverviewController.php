@@ -38,9 +38,10 @@ class ReportsOverviewController extends Controller
         $from = $request->getValidatedFromDateOrMin();
         $to = $request->getValidatedToDateOrMax();
         $reports = $this->retrieveSapReports($account, $from, $to);
-
+        $accountTitle = $account->user->first()->pivot->account_title;
         return view('finances.sap_reports', [
             'account' => $account,
+            'account_title' => $accountTitle,
             'reports' => $reports
         ]);
     }

@@ -34,7 +34,7 @@ class GeneralOperationController extends Controller
         if (array_key_exists('attachment', $requestData)) {
             $file = $requestData['attachment'];
             if ($file)
-                return $this->saveAttachmentToUserStorage($account->user, $file);
+                return $this->saveAttachmentToUserStorage($account->user->first(), $file);
         }
         return null;
     }

@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\DB;
+use App\Models\AccountUser;
+use App\Models\Account;
+use App\Models\User;
 
 class FinancialOperation extends Model
 {
@@ -36,6 +40,7 @@ class FinancialOperation extends Model
     protected $with = [
         'operationType',
         'lending',
+        'accountUser',
     ];
 
     /**
@@ -120,7 +125,40 @@ class FinancialOperation extends Model
      */
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        DB::enableQueryLog();
+        return $this->accountUser->account;
+    }
+
+    /**
+     * Returns the user to which this operation belongs.
+     *
+     * @return BelongsTo
+     */
+    public function user()
+    {
+        DB::enableQueryLog();
+        return $this->accountUser->user;
+    }
+
+    /**
+     * Returns the AccountUser to which this operation belongs.
+     *
+     * @return BelongsTo
+     */
+    public function accountUser()
+    {
+        DB::enableQueryLog();
+        return $this->belongsTo(AccountUser::class, 'account_user_id');
+    }
+
+    /**
+     * Returns the associated SAP operation, if it exists.
+     *
+     * @return BelongsTo
+     */
+    public function sapOperation()
+    {
+        return $this->belongsTo(SapOperation::class);
     }
 
     /**
@@ -184,7 +222,7 @@ class FinancialOperation extends Model
     public function getExportData()
     {
         return [
-            $this->account->sap_id,
+            $this->account()->sap_id,
             $this->title,
             $this->date->format('d.m.Y'),
             $this->operationType->name,

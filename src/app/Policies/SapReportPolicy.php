@@ -23,7 +23,7 @@ class SapReportPolicy
      */
     public function view(User $user, SapReport $report)
     {
-        return $user->id === $report->account->user_id;
+        return $report->account->users->contains($user);
     }
 
     /**
@@ -38,7 +38,7 @@ class SapReportPolicy
      */
     public function create(User $user, Account $account)
     {
-        return $user->id === $account->user_id;
+        return $user->accounts->contains($account);
     }
 
     /**
@@ -53,6 +53,6 @@ class SapReportPolicy
      */
     public function delete(User $user, SapReport $report)
     {
-        return $user->id === $report->account->user_id;
+        return $report->account->users->contains($user);
     }
 }
