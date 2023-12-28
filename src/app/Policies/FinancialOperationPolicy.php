@@ -27,7 +27,7 @@ class FinancialOperationPolicy
      */
     public function view(User $user, FinancialOperation $financialOperation)
     {
-        return $user->id === $financialOperation->user->id;
+        return $user->id === $financialOperation->user()->id;
     }
 
     /**
@@ -57,7 +57,7 @@ class FinancialOperationPolicy
      */
     public function createRepayment(User $user, Lending $lending)
     {
-        return $user->id === $lending->operation->user->id;
+        return $user->id === $lending->operation->user()->id;
     }
 
     /**
@@ -72,7 +72,7 @@ class FinancialOperationPolicy
      */
     public function update(User $user, FinancialOperation $financialOperation)
     {
-        return $user->id === $financialOperation->user->id;
+        return $user->id === $financialOperation->user()->id;
     }
 
     /**
@@ -90,8 +90,8 @@ class FinancialOperationPolicy
         //DB::enableQueryLog();
         Log::debug('Policy for deleting financial operation data,
         Financial Op.: {data}
-        finOp user: {data2}', ['data' => $financialOperation, 'data2' => $financialOperation->user]);
+        finOp user: {data2}', ['data' => $financialOperation, 'data2' => $financialOperation->user()]);
         Log::debug(DB::getQueryLog());
-        return $user->id === $financialOperation->user->id;
+        return $user->id === $financialOperation->user()->id;
     }
 }
