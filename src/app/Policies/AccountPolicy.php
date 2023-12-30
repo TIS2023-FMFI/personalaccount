@@ -22,7 +22,7 @@ class AccountPolicy
      */
     public function view(User $user, Account $account)
     {
-        return $user->id === $account->user_id;
+        return $user->accounts->contains($account);
     }
 
     /**
@@ -37,7 +37,7 @@ class AccountPolicy
      */
     public function update(User $user, Account $account)
     {
-        return $user->id === $account->user_id;
+        return $user->accounts->contains($account);
     }
 
     /**
@@ -52,6 +52,6 @@ class AccountPolicy
      */
     public function delete(User $user, Account $account)
     {
-        return $user->id === $account->user_id;
+        return $user->accounts->contains($account);
     }
 }

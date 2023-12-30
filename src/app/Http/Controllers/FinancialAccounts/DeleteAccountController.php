@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * A controller responsible for deleting financial accounts.
@@ -14,7 +15,7 @@ use App\Models\Account;
 class DeleteAccountController extends Controller
 {
     /**
-     * Handle a request to delete a financial account.
+     * Handle a request to detach a financial account.
      * 
      * @param \App\Models\Account $account
      * the account to delete
@@ -24,7 +25,8 @@ class DeleteAccountController extends Controller
      */
     public function delete(Account $account)
     {
-        if ($account->delete()) {
+        $user = Auth::user();
+        if ($user->accounts()->detach($account)) {
             return response(trans('financial_accounts.delete.success'));
         }
 

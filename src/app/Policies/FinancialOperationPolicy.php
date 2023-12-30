@@ -8,6 +8,9 @@ use App\Models\Lending;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 class FinancialOperationPolicy
 {
     use HandlesAuthorization;
@@ -24,7 +27,7 @@ class FinancialOperationPolicy
      */
     public function view(User $user, FinancialOperation $financialOperation)
     {
-        return $user->id === $financialOperation->account->user_id;
+        return $user->id === $financialOperation->user()->id;
     }
 
     /**
@@ -39,7 +42,7 @@ class FinancialOperationPolicy
      */
     public function create(User $user, Account $account)
     {
-        return $user->id === $account->user_id;
+        return $user->accounts->contains($account);
     }
 
     /**
@@ -54,7 +57,7 @@ class FinancialOperationPolicy
      */
     public function createRepayment(User $user, Lending $lending)
     {
-        return $user->id === $lending->operation->account->user_id;
+        return $user->id === $lending->operation->user()->id;
     }
 
     /**
@@ -69,7 +72,7 @@ class FinancialOperationPolicy
      */
     public function update(User $user, FinancialOperation $financialOperation)
     {
-        return $user->id === $financialOperation->account->user_id;
+        return $user->id === $financialOperation->user()->id;
     }
 
     /**
@@ -84,6 +87,11 @@ class FinancialOperationPolicy
      */
     public function delete(User $user, FinancialOperation $financialOperation)
     {
-        return $user->id === $financialOperation->account->user_id;
+        //DB::enableQueryLog();
+        Log::debug('Policy for deleting financial operation data,
+        Financial Op.: {data}
+        finOp user: {data2}', ['data' => $financialOperation, 'data2' => $financialOperation->user()]);
+        Log::debug(DB::getQueryLog());
+        return $user->id === $financialOperation->user()->id;
     }
 }

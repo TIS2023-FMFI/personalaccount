@@ -25,8 +25,8 @@ class CreateAccountRequest extends FormRequest
                 'required',
                 'max:255',
                 'regex:/^[A-Z0-9]+([\-\/][A-Z0-9]+)*$/',
-                Rule::unique('accounts')
-                    ->where('user_id', $this->user()->id)
+                //Rule::unique('accounts')
+                //    ->where('user_id', $this->user()->id)
             ]
         ];
     }

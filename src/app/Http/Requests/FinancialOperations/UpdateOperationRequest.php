@@ -26,6 +26,7 @@ class UpdateOperationRequest extends FormRequest
             'sum' => ['filled', 'numeric', 'min:0'],
             'attachment' => ['nullable', File::types(['txt','pdf', 'doc', 'docx', 'zip'])],
             'checked' => ['nullable', 'boolean'],
+            'sap_operation_id' => ['nullable', 'numeric', 'exists:sap_operations,id'],
             'expected_date_of_return' => ['nullable', 'date', 'after_or_equal:date']
         ];
     }

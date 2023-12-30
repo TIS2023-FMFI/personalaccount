@@ -4,8 +4,10 @@ namespace App\Http\Controllers\FinancialAccounts;
 
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\FinancialAccounts\CreateAccountController;
 use App\Http\Requests\FinancialAccounts\UpdateAccountRequest;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * A controller responsible for updating financial accounts.
@@ -31,7 +33,7 @@ class UpdateAccountController extends Controller
         $data = $this->extractAccountData($request);
 
         try {
-            $this->updateAccountRecord($account, $data);
+            $this->upsertAccountRecord($account, $data);
         } catch (DatabaseException $e) {
             return response(trans('financial_accounts.update.failed'), 500);
         }
@@ -57,19 +59,44 @@ class UpdateAccountController extends Controller
 
     /**
      * Update a financial account record.
+     * If SAP ID is changed either existing account 
+     * is attached to the user or a new account is made.
      *
      * @param \App\Models\Account $account
      * the record to update
      * @param array $data
      * the updated version of account data (except for user_id)
-     * @throws \App\Exceptions\DatabaseException
-     * thrown if the record could not be updated
      * @return void
      */
-    private function updateAccountRecord(Account $account, array $data)
+    private function upsertAccountRecord(Account $account, array $data)
     {
-        if (!$account->update($data)) {
-            throw new DatabaseException('Record not updated.');
+        if ($account->sap_id === $data['sap_id'])
+        {
+            $account->users()->updateExistingPivot(Auth::user()->id, ['account_title' => $data['title']]);
         }
+        else
+        {
+            $account->users()->detach(Auth::user());
+            $this->createOrUpdateAccountUserRecord($data);
+        }
+    }
+
+    /**
+     * Finds or creates a new Account and attaches
+     * the authentificated User to it
+     *
+     * @param array $data
+     * the updated version of account data (except for user_id)
+     * @return void
+     */
+
+    private function createOrUpdateAccountUserRecord($data){
+        $user = Auth::user();
+
+        $newAccount = Account::firstOrCreate([
+            'sap_id' => $data['sap_id'],
+        ]);
+        if (! $user->accounts->contains($newAccount))
+            $user->accounts()->attach($newAccount, ['account_title' => $data['title']]);
     }
 }

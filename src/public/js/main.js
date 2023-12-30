@@ -67,7 +67,7 @@ $(document).ready(function(){
             window.location.href = root + '/login';
         }).fail(function(response) {
             $.fn.createFirstUserClearForm();
-
+            console.log(response);
             if (typeof response.responseJSON != 'undefined') {
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
@@ -133,6 +133,7 @@ $(document).ready(function(){
 
             $.fn.createUserClearForm(true);
         }).fail(function(response) {
+            console.log(response);
             $.fn.createUserClearForm();
 
             if (typeof response.responseJSON != 'undefined') {
@@ -365,7 +366,6 @@ $(document).ready(function(){
     // Create financial account form -->
     $("#create-account-form").on("submit", function(e) {
         e.preventDefault();
-
         $("#create-account-button").attr("disabled", true);
 
         let title = $("#add-account-name").val();
@@ -391,6 +391,7 @@ $(document).ready(function(){
 
             $.fn.createAccountClearForm(true);
         }).fail(function(response) {
+            console.log(response);
             $.fn.createAccountClearForm();
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
@@ -477,6 +478,7 @@ $(document).ready(function(){
 
             $.fn.editAccountClearForm(true);
         }).fail(function(response) {
+            console.log(response);
             $.fn.editAccountClearForm();
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
@@ -557,6 +559,7 @@ $(document).ready(function(){
 
             $.fn.createAccountClearForm(true);
         }).fail(function(response) {
+            console.log(response);
             $.fn.createAccountClearForm();
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
@@ -1144,6 +1147,7 @@ $(document).ready(function(){
             $(".modal-box").css("display", "none");
 
         }).fail(function(response) {
+            console.log(response);
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {
                     Toast.fire({
@@ -1327,6 +1331,7 @@ $(document).ready(function(){
                 $("#create-operation-modal").css("display", "flex");  
             }
         }).done(function(response) {
+            //console.log(response);
             $("#operation_choice").append($('<option>', {
                 value: "default_opt",
                 text: 'Vyberte typ operácie'
@@ -1356,6 +1361,8 @@ $(document).ready(function(){
                     }))
                 })
             }
+        }).fail(function(response){
+            console.log(response);
         })
 
     })
@@ -1410,6 +1417,7 @@ $(document).ready(function(){
 
                 $.fn.createOperationClearForm(true);
             }).fail(function(response) {
+                console.log(response);
                 $.fn.createOperationClearForm();
                 if (typeof response.responseJSON != 'undefined'){
                     if (response.status === 422) {
@@ -1629,7 +1637,10 @@ $(document).ready(function(){
 
             } 
 
-        })
+        }).fail(
+            function (response){
+                console.log(response);
+            })
 
     })
 
@@ -1733,6 +1744,7 @@ $(document).ready(function(){
 
             $.fn.editOperationClearForm(true);
         }).fail(function(response) {
+            console.log(response);
             $.fn.editOperationClearForm();
             if (typeof response.responseJSON != 'undefined'){
                 if (response.status === 422) {

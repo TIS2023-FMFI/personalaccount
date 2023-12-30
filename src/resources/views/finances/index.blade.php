@@ -8,7 +8,7 @@
             $account_balance = $account->getBalance();
             $account_id = $account->id;
             $account_sap_id = $account->sap_id;
-            $account_title = $account->title;
+            $account_title = $account->user->first()->pivot->account_title;
             $color_of_balance = 'red';
             if($account_balance >= 0){
                 $color_of_balance = 'green';
