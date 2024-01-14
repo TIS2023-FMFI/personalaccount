@@ -28,8 +28,14 @@
         <button data-account-id="{{ $account->id }}" type="button" id="reports-filter">Filtrovať</button>
     </div>
     <div>
-        <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button" title="Nový výkaz">+</i></button>
+        <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button" title="Nový výkaz">+</button>
+
     </div>
+    <div>
+        <button data-account-id="{{ $account->id }}" id="add-excel-report" type="button" title="Nový Excel">+</button>
+
+    </div>
+
 </div>
 <table>
     <tr>
@@ -39,7 +45,7 @@
     </tr>
 
      @foreach ($reports as $key=>$report)
-        
+
         <tr class="sap-row">
             <td>{{ $key+1 }}.</td>
             <td>{{ $report->exported_or_uploaded_on->format('d.m.Y') }}</td>
