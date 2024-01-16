@@ -18,6 +18,7 @@ use App\Http\Controllers\SapReports\ReportDetailController;
 use App\Http\Controllers\SapReports\ReportsOverviewController;
 use App\Http\Controllers\SapReports\UploadReportController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExcelImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -136,5 +137,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
         Route::delete('/sap-reports/{report}', [DeleteReportController::class, 'delete'])
             ->middleware('can:delete,report');
+
+        Route::post('/accounts/{account}/excel-upload', [ExcelImportController::class, 'upload']);
+
     });
 });

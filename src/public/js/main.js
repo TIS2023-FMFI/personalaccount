@@ -610,26 +610,82 @@ $(document).ready(function(){
     // --> SAP reports forms
 
     // --> add SAP report form
+    $("#add-excel-report").click(function(){
+        console.log("Button clicked"); // For debugging
+        let account_id = $(this).data("account-id");
+        $("#add-excel-modal").css("display","flex");
+        $("#add-excel-modal > .modal > #create-excel-form").data("account-id", account_id);
+    })
+
+    $("#create-excel-form").on("submit", function(e) {
+        e.preventDefault();
+
+        $("#create-excel-button").attr("disabled", true);
+
+        let account_id =  $(this).data("account-id")
+        console.log("Submitting for Account ID:", account_id); // Add this line to debug
+
+
+        let csrf = $("#create-excel-button").data("csrf");
+        var fileUpload = $("#excel-file").get(0);
+        var files = fileUpload.files;
+        var fileData = new FormData();
+        fileData.append('excel_file', files[0] ?? '');
+        fileData.append('_token', csrf);
+        console.log(fileData);
+        $.ajax({
+            url: root + "/accounts/" + account_id + '/excel-upload',
+            type: "POST",
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            data: fileData
+        }).done(function(response) {
+            Toast.fire({
+                icon: 'success',
+                title: response.message
+            });
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+            $.fn.createReportClearForm(true);
+        }).fail(function(response) {
+            $("#upload-button").attr("disabled", false);
+            if (response.responseJSON && response.responseJSON.errors) {
+                let errors = response.responseJSON.errors;
+                for (let key in errors) {
+                    if (errors.hasOwnProperty(key)) {
+                        errors[key].forEach(e => {
+                            $("#upload-errors").append("<p>" + e + "</p>");
+                        });
+                    }
+                }
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'An error occurred. Please try again later.'
+                });
+            }
+        });
+    });
+
+
     $("#add-sap-report").click(function(){
         let account_id = $(this).data("account-id");
         $("#add-report-modal").css("display","flex");
         $("#add-report-modal > .modal > #create-report-form").data("account-id", account_id);
     })
 
-    $("#add-excel-report").click(function(){
-        console.log("Button clicked"); // For debugging
-        let account_id = $(this).data("account-id");
-        $("#add-excel-modal").css("display","flex");
-        $("#add-excel-modal > .modal > #create-excel-form").data("account-id", account_id);
-    });
 
-/*
+
+
     $("#create-report-form").on("submit", function(e){
         e.preventDefault();
 
         $("#create-report-button").attr("disabled", true);
 
-        let account_id =  $(this).data("account-id");
+        let account_id =  $(this).data("account-id")
+        console.log("Sdsdsubmitting for Account ID:", account_id); // Add this line to debug
         let csrf = $("#create-report-button").data("csrf");
 
         var fileUpload = $("#report-file").get(0);
@@ -646,11 +702,14 @@ $(document).ready(function(){
             processData: false, // Not to process data
             dataType: "json",
             data: fileData
+
         }).done(function(response) {
             Toast.fire({
                 icon: 'success',
                 title: response.displayMessage
             })
+
+
             location.reload();
 
             $(".modal-box").css("display", "none");
@@ -685,7 +744,7 @@ $(document).ready(function(){
 
         })
     });
-*/
+
 
 
 

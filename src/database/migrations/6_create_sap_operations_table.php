@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('title');
             $table->date('date');
             $table->string('subject');
-            $table->unsignedDecimal('sum',10,2);
-            $table->integer('sap_id')->nullable();
+            $table->Decimal('sum',10,2);
+            $table->unsignedBigInteger('sap_id')->nullable();
         });
     }
 

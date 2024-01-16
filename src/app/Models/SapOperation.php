@@ -13,13 +13,24 @@ class SapOperation extends Model
 {
     use HasFactory;
 
+
+
+
+    // Assuming your Excel file has columns like date, sum, title, etc.
+    // Add these as fillable attributes in your model
+
+    protected $fillable = ['date', 'sum', 'title', 'operation_type_id', 'subject', 'sap_id'];
+
+    // Rest of your model's code...
+
+
     /**
      * Name of the OperationType for SAP operations
      *
      * @var string
      */
 
-    private static string $sap_operation_type_name = 'SAP výkaz';
+    public static string $sap_operation_type_name = 'SAP výkaz';
 
     /**
      * Indicates if the model should be timestamped.
