@@ -22,7 +22,8 @@ class SapOperationFactory extends Factory
      */
     public function definition()
     {
-        $operationTypes = OperationType::where('name', '=', SapOperation::sap_operation_type_name)->get('id');
+        $operationTypes = OperationType::where('name', '=', SapOperation::$sap_operation_type_name)->get('id');
+
         $checked = fake()->boolean(30);
 
         return [
