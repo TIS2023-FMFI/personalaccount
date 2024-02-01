@@ -32,7 +32,8 @@ class SapOperationFactory extends Factory
             'date' => fake()->date,
             'subject' => fake()->name,
             'sum' => fake()->randomFloat(2,1,1000),
-            'sap_id' => $checked? fake()->randomNumber(5) : null
+            'sap_id' => $checked? fake()->randomNumber(5) : null,
+            'account_sap_id' => $checked? fake()->randomNumber(5) : null
             /*
             HINT:
             $table->unsignedBigInteger('operation_type_id');
