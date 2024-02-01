@@ -178,6 +178,18 @@ nav div:first-child a {
     transition: .4s;
     border-radius: 34px;
 }
+.disclaimer {
+    font-family: 'Arial', sans-serif; /* Použití bezpečného fontu */
+    font-size: 0.9em; /* Menší velikost fontu než je standardní text */
+    color: #555; /* Tmavě šedá barva textu */
+    background-color: #f8f8f8; /* Světle šedé pozadí */
+    border-left: 3px solid #f00; /* Červený vertikální pruh na levé straně */
+    padding: 10px; /* Odsazení textu od okrajů */
+    margin: 10px 0; /* Vnější odsazení nad a pod upozorněním */
+    border-radius: 4px; /* Zkulacené rohy */
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Lehký stín */
+}
+
 .slider:before {
     position: absolute;
     content: "";

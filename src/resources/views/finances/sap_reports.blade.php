@@ -60,8 +60,11 @@
 </table>
 
 <div class="filter-box1">
-    <div></div>
+    <div> </div>
 <div>
+
+
+
     <button data-account-id="{{ $account->id }}" id="add-excel-report" type="button" title="Nový Excel">Nový Excel</button>
 
 </div>
