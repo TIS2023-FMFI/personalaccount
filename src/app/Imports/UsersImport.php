@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Account;
 use App\Models\OperationType;
 use App\Models\SapOperation;
 use DateTime;
@@ -35,7 +36,7 @@ class UsersImport implements ToModel, WithMultipleSheets
     public function model(array $row): ?SapOperation
     {
 
-        $requiredColumns = [17, 3, 12, 10];
+        $requiredColumns = [17, 3, 12, 10, 8];
 
         if ($row[17] === null || $row[17] === "") {
             return null;
@@ -66,6 +67,10 @@ class UsersImport implements ToModel, WithMultipleSheets
             return null; // Skip this row
         }
 
+        $acc = Account::firstOrCreate(['sap_id' => $row[8]]);
+
+
+
         $sapOperation = new SapOperation([
             'date' => $formattedDate,
             'sum' => $row[3],
@@ -73,6 +78,7 @@ class UsersImport implements ToModel, WithMultipleSheets
             'operation_type_id' => $operationTypeId,
             'subject' => $row[10],
             'sap_id' => $row[0],
+            'account_sap_id' => $row[8],
         ]);
 
         try {

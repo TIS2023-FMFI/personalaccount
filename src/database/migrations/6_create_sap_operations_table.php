@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('subject');
             $table->Decimal('sum',10,2);
             $table->unsignedBigInteger('sap_id');
-            $table->unsignedBigInteger('account_sap_id');
+            $table->string('account_sap_id');
             $table->foreign('account_sap_id')->references('sap_id')->on('accounts')->cascadeOnDelete();
         });
     }
