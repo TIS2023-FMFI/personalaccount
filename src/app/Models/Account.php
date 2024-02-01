@@ -76,6 +76,16 @@ class Account extends Model
     }
 
     /**
+     * Gets all SAP operations belonging to this account.
+     *
+     * @return HasManyThrough
+     */
+    public function sapOperations()
+    {
+        return $this->hasMany(SapOperation::class, 'account_sap_id', 'sap_id');
+    }
+
+    /**
      * Get all SAP reports associated with this account.
      *
      * @return HasMany

@@ -106,6 +106,15 @@ class SapOperation extends Model
         return $this->hasOne(FinancialOperation::class);
     }
 
+    /**
+     * Returns the associated financial operation, if it exists.
+     *
+     * @return HasOne
+     */
+    public function account()
+    {
+        return $this->hasOne(Account::class, 'sap_id', 'account_sap_id');
+    }
 
     /**
      * Returns the type of this operation.
