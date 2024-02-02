@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * A controller responsible for uploading new SAP reports.
- * 
+ *
  * This controller provides methods to:
  *      - upload a SAP report
  */
@@ -27,7 +27,7 @@ class UploadReportController extends Controller
 {
     /**
      * Handle a request to upload a SAP report.
-     * 
+     *
      * @param \App\Http\Requests\SapReports\UploadReportRequest $request
      * the request containing the SAP report file and the id of an account with
      * which to associate the report
@@ -52,7 +52,7 @@ class UploadReportController extends Controller
 
     /**
      * Upload a SAP report.
-     * 
+     *
      * @param \App\Models\Account $account
      * the account with which to associate the report
      * @param \Illuminate\Http\UploadedFile $report
@@ -63,7 +63,7 @@ class UploadReportController extends Controller
      */
     private function uploadReportWithinTransaction(Account $account, UploadedFile $report)
     {
-        $accountOwner = User::findOrFail($account->user_id);
+        $accountOwner = $account->user->first();
         $reportPath = $this->saveReportFileToUserStorage($accountOwner, $report);
 
         $createRecordTransaction = new DBTransaction(
@@ -76,7 +76,7 @@ class UploadReportController extends Controller
 
     /**
      * Save a SAP report to the storage reserved for a user.
-     * 
+     *
      * @param \App\Models\Account $account
      * the user under which to save the report
      * @param \Illuminate\Http\UploadedFile $report
@@ -88,7 +88,7 @@ class UploadReportController extends Controller
     {
         $reportsDirectoryPath = SapReport::getReportsDirectoryPath($user);
         $reportPath = Storage::putFile($reportsDirectoryPath, $report);
-    
+
         if (!$reportPath) {
             throw new StorageException('File not saved.');
         }
@@ -99,7 +99,7 @@ class UploadReportController extends Controller
     /**
      * Create and persist a SAP Report model representing the saved SAP report
      * file.
-     * 
+     *
      * @param \App\Models\Account $account
      * the account with which to associate the report
      * @param string $reportPath
@@ -112,7 +112,7 @@ class UploadReportController extends Controller
     {
         $absoluteReportPath = Storage::path($reportPath);
         $exportedOrUploadedOn = $this->getDateExportedOrToday($absoluteReportPath);
-        
+
         $report = $account->sapReports()->create([
             'path' => $reportPath,
             'exported_or_uploaded_on' => $exportedOrUploadedOn,
@@ -126,7 +126,7 @@ class UploadReportController extends Controller
     /**
      * Get the date the SAP report was exported or today if no information about
      * the export date can be found.
-     * 
+     *
      * @param string $reportPath
      * the path to the SAP report file
      * @return \Carbon\Traits\Creator|\Illuminate\Support\Carbon

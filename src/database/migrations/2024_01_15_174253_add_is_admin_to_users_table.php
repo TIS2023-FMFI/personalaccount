@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('email')->unique();
-            $table->string('password')->default(Hash::make('password'));
-            $table->boolean('password_change_required')->default(true);
-            $table->boolean('is_admin')->default(false);
+        Schema::table('users', function (Blueprint $table) {
+                $table->boolean('is_admin')->default(false)->after('password_change_required');
+
         });
     }
 
@@ -29,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };
