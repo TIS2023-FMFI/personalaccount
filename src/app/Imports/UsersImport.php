@@ -15,6 +15,20 @@ use Maatwebsite\Excel\Concerns\Importable;
 class UsersImport implements ToModel, WithMultipleSheets
 {
     use Importable;
+
+
+    private $previousSapId = null;
+    private $previousPrice = null;
+    private $consecutiveCount = 0;
+    private $firstNewRowAfterConsecutive = null;
+    private $firstNewRowAfterConsecutivex = null;
+
+    private const OPERATION_TYPE_ID = 1;
+    private const EXCEL_DATE_OFFSET = 25569;
+    private const SECONDS_IN_A_DAY = 86400;
+
+    private const REQUIRED_COLUMNS = [17, 3, 12, 10, 8, 0];
+
     /**
      * Process a row from the Excel file and convert it into a SapOperation model.
      *
@@ -36,46 +50,124 @@ class UsersImport implements ToModel, WithMultipleSheets
     public function model(array $row): ?SapOperation
     {
 
-        $requiredColumns = [17, 3, 12, 10, 8];
+        Log::warning($row[0]);
+        // If SAP ID is the same as the previous one, increment counter, else reset counter and remember the first new row
+        if ($this->previousSapId === $row[0] && $this->previousPrice === $row[3]*-1) {
 
-        if ($row[17] === null || $row[17] === "") {
+            $this->consecutiveCount++;
+
+        } else {
+
+            // When SAP ID changes, remember the first row of the new SAP ID if consecutive count > 0
+            $this->previousSapId = $row[0];
+            $this->previousPrice = $row[3];
+            $this->firstNewRowAfterConsecutivex = $this->firstNewRowAfterConsecutive;
+            $this->firstNewRowAfterConsecutive = $row;
+            if (!is_array($this->firstNewRowAfterConsecutivex)) return null;
+            if ($this->consecutiveCount === 1){
+
+
+
+
+                if ($this->firstNewRowAfterConsecutivex[17] === null || $this->firstNewRowAfterConsecutivex[17] === "") {
+                    return null;
+                }
+
+                $formattedDate = $this->formatDate($this->firstNewRowAfterConsecutivex[17]);
+
+                if (!$formattedDate || !$this->validateRequiredColumns($this->firstNewRowAfterConsecutivex)) {
+                    return null;
+                }
+
+                if (!$this->operationTypeExists()) {
+                    Log::warning("Operation type ID " . self::OPERATION_TYPE_ID . " does not exist. Skipping row.");
+                    return null;
+                }
+
+                return $this->createSapOperation($this->firstNewRowAfterConsecutivex, $formattedDate);
+
+            }
+            $this->firstNewRowAfterConsecutive = $row;
+            $this->consecutiveCount = 1; // Reset counter for new SAP ID
             return null;
         }
 
-        $unixDate = ($row[17] - 25569) * 86400;
-        $formattedDate = gmdate("Y-m-d", $unixDate);
-        Log::warning($formattedDate);
-        if (!$formattedDate) {
-            Log::warning("Invalid date format in row. Skipping row.");
-            return null; // Skip this row if date format is invalid
-        }
+        if ($this->consecutiveCount === 3){
 
-        foreach ($requiredColumns as $index) {
+
+            if ($row[17] === null || $row[17] === "") {
+                return null;
+            }
+
+            $formattedDate = $this->formatDate($row[17]);
+
+
+            if (!$formattedDate || !$this->validateRequiredColumns($row)) {
+                return null;
+            }
+
+            if (!$this->operationTypeExists()) {
+                Log::warning("Operation type ID " . self::OPERATION_TYPE_ID . " does not exist. Skipping row.");
+                return null;
+            }
+
+
+            return $this->createSapOperation($row, $formattedDate);
+
+
+        }
+        return null;
+    }
+    private function operationTypeExists(): bool
+    {
+        return OperationType::find(self::OPERATION_TYPE_ID) !== null;
+    }
+
+    private function validateRequiredColumns($row): bool
+    {
+        foreach (self::REQUIRED_COLUMNS as $index) {
             if (!isset($row[$index]) || $row[$index] === null) {
                 Log::warning("Required column at index $index is null. Skipping row.");
-                return null; // Skip this row
+                return false;
             }
         }
+        return true;
+    }
 
-        $operationTypeId = 1; // The ID you're trying to use
 
-
-        $operationTypeExists = OperationType::find($operationTypeId) !== null;
-
-        if (!$operationTypeExists) {
-            Log::warning("Operation type ID $operationTypeId does not exist. Skipping row.");
-            return null; // Skip this row
+    private function formatDate($excelDate): ?string
+    {
+        if ($excelDate === null || $excelDate === "") {
+            return null;
         }
 
-        $acc = Account::firstOrCreate(['sap_id' => $row[8]]);
+        $unixDate = ($excelDate - self::EXCEL_DATE_OFFSET) * self::SECONDS_IN_A_DAY;
+        return gmdate("Y-m-d", $unixDate);
+    }
 
 
+    private function createSapOperation($row, $formattedDate): ?SapOperation
+    {
+
+        if ($row[0] === null || $row[0] === "") return null;
+
+        // Check if an SapOperation with the same sap_id already exists in the database
+        $exists = SapOperation::where('sap_id', $row[0])->where('sum', $row[3])->exists();
+
+
+        if ($exists) {
+            Log::info("An operation with sap_id {$row[0]} already exists. Skipping row.");
+            return null; // Skip this row as an operation with the same sap_id already exists
+        }
+
+        // Ensure an account is found or created based on the SAP ID before creating the SapOperation.
+        $account = Account::firstOrCreate(['sap_id' => $row[8]]);
 
         $sapOperation = new SapOperation([
             'date' => $formattedDate,
             'sum' => $row[3],
             'title' => $row[12],
-            'operation_type_id' => $operationTypeId,
+            'operation_type_id' => self::OPERATION_TYPE_ID,
             'subject' => $row[10],
             'sap_id' => $row[0],
             'account_sap_id' => $row[8],
@@ -83,13 +175,16 @@ class UsersImport implements ToModel, WithMultipleSheets
 
         try {
             $sapOperation->save();
+            return $sapOperation;
         } catch (Exception $e) {
             Log::error("Error saving SapOperation: " . $e->getMessage());
-            return null; // Skip this row on error
+            return null;
         }
-
-        return $sapOperation;
     }
+
+
+
+
 
     /**
      * @return array
@@ -101,4 +196,6 @@ class UsersImport implements ToModel, WithMultipleSheets
             0 => new self(),
         ];
     }
+
+
 }
