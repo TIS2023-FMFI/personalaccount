@@ -56,8 +56,11 @@ class SapReport extends Model
     public function generateReportFileName()
     {
         $sanitizedSapId = $this->account->getSanitizedSapId();
-        $contentClause = trans('files.sap_report');
         $exportedOrUploadedOn = $this->exported_or_uploaded_on->format('d-m-Y');
+
+
+        $isTxtFormat = \Illuminate\Support\Str::endsWith($this->path, '.txt');
+        $contentClause = $isTxtFormat ? trans('files.sap_report') : "excel";
 
         $fileName = "${sanitizedSapId}_${contentClause}_${exportedOrUploadedOn}";
 

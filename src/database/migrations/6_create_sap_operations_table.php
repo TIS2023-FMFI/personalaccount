@@ -16,12 +16,14 @@ return new class extends Migration
         Schema::create('sap_operations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('operation_type_id');
-            $table->foreign('operation_type_id')->references("id")->on("operation_types")->cascadeOnDelete();
+            $table->foreign('operation_type_id')->references('id')->on('operation_types')->cascadeOnDelete();
             $table->string('title');
             $table->date('date');
             $table->string('subject');
-            $table->unsignedDecimal('sum',10,2);
-            $table->integer('sap_id')->nullable();
+            $table->Decimal('sum',10,2);
+            $table->unsignedBigInteger('sap_id');
+            $table->string('account_sap_id');
+            $table->foreign('account_sap_id')->references('sap_id')->on('accounts')->cascadeOnDelete();
         });
     }
 
