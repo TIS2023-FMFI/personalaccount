@@ -45,7 +45,7 @@ class Account extends Model
 
     /**
      * Returns the authentificated user of this account
-     * 
+     *
      * @return BelongsToMany
      */
     public function user()
@@ -55,9 +55,9 @@ class Account extends Model
 
     /**
      * Returns the authentificated user if the user is using this account
-     * 
+     *
      * @return BelongsToMany
-     * The retured user, 
+     * The retured user,
      * returns null if the user is not using this account
      */
     // public function accountUser()
@@ -138,12 +138,12 @@ class Account extends Model
     }
 
     /**
-     * Builds a query requesting financial operations 
+     * Builds a query requesting financial operations
      * which belong to this account and to the specified user
      * and whose date is in the specified interval.
      *
      * @param User $user
-     * specified user 
+     * specified user
      * @param Carbon $from
      * earliest date in the interval
      * @param Carbon $to
