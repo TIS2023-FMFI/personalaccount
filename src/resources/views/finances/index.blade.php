@@ -9,7 +9,7 @@
             $account_id = $account->id;
             $account_sap_id = $account->sap_id;
            // $account_title = $account->user->first()->pivot->account_title;
-            $account_title = $account->user->first()?->pivot?->account_title ?? 'vynimka';
+            $account_title = $account->user->first()?->pivot?->account_title ?? 'pomenuj_ma';
 
             $color_of_balance = 'red';
             if($account_balance >= 0){
