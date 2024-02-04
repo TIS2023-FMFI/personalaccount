@@ -49,7 +49,8 @@ class OperationsOverviewController extends Controller
         $operations = $account->userOperationsBetween($user, $dateFrom, $dateTo)->orderBy('date', 'desc')
                               ->paginate($this::$resultsPerPage)->withQueryString();
         $accountBalance = $account->getBalance();
-        $accountTitle = $account->user->first()->pivot->account_title;
+        // Upravený kód na získanie account_title
+        $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Predvolený názov účtu';
         return view('finances.account', [
             'account' => $account,
             'account_title' => $accountTitle,

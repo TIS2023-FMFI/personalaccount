@@ -26,25 +26,41 @@ class ReportsOverviewController extends Controller
      * Show the SAP Reports view for an account with reports filtered based on
      * the date they were exported or uploaded. The filtered reports are paginated.
      *
-     * @param \App\Http\Requests\Base\DateRequest $request
-     * the request containing the date interval used for filtering
-     * @param \App\Models\Account $account
-     * the account for which to show the SAP reports
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     * the view that will be shown
+     * This method displays a view containing a list of SAP reports associated with a specific account.
+     * Reports are filtered by the date range specified in the request. Admin users can view all reports
+     * within the date range, while non-admin users can only view reports associated with their accounts.
+     *
+     * @param \App\Http\Requests\Base\DateRequest $request The request containing the date interval used for filtering.
+     * @param \App\Models\Account $account The account for which to show the SAP reports.
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View The view that will be shown.
      */
     public function show(DateRequest $request, Account $account)
     {
         $from = $request->getValidatedFromDateOrMin();
         $to = $request->getValidatedToDateOrMax();
-        $reports = $this->retrieveSapReports($account, $from, $to);
-        $accountTitle = $account->user->first()->pivot->account_title;
+
+        // Admin users can view all reports within the specified date range.
+        if (auth()->user()->is_admin) {
+            $reports = SapReport::whereBetween('exported_or_uploaded_on', [$from, $to])
+                ->orderBy('exported_or_uploaded_on', 'desc')
+                ->paginate(self::$resultsPerPage)
+                ->withQueryString();
+        } else {
+            // Non-admin users can view only their reports for the specified account.
+            $reports = $this->retrieveSapReports($account, $from, $to);
+        }
+
+        // Safely access the account title using the null-safe operator and provide a default value if not found.
+        $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Default Account Title';
+
         return view('finances.sap_reports', [
             'account' => $account,
             'account_title' => $accountTitle,
             'reports' => $reports
         ]);
     }
+
+
 
     /**
      * Retrieve the paginated SAP Reports for an account which were exported or
