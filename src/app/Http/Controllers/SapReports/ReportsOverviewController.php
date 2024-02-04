@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SapReports;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Base\DateRequest;
 use App\Models\Account;
+use App\Models\SapReport;
 use Illuminate\Support\Carbon;
 
 /**
@@ -21,6 +22,8 @@ class ReportsOverviewController extends Controller
      * @var int
      */
     private static int $resultsPerPage = 15;
+
+
 
     /**
      * Show the SAP Reports view for an account with reports filtered based on
@@ -41,7 +44,8 @@ class ReportsOverviewController extends Controller
 
         // Admin users can view all reports within the specified date range.
         if (auth()->user()->is_admin) {
-            $reports = SapReport::whereBetween('exported_or_uploaded_on', [$from, $to])
+            $reports = SapReport::where('account_id', $account->id)
+                ->whereBetween('exported_or_uploaded_on', [$from, $to])
                 ->orderBy('exported_or_uploaded_on', 'desc')
                 ->paginate(self::$resultsPerPage)
                 ->withQueryString();
@@ -59,7 +63,6 @@ class ReportsOverviewController extends Controller
             'reports' => $reports
         ]);
     }
-
 
 
     /**
