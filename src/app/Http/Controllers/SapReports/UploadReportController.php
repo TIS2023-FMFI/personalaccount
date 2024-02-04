@@ -16,6 +16,8 @@ use App\Models\User;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use PhpParser\Node\Expr\Print_;
+use Psy\Readline\Hoa\Console;
 
 /**
  * A controller responsible for uploading new SAP reports.
@@ -44,6 +46,7 @@ class UploadReportController extends Controller
         try {
             $this->uploadReportWithinTransaction($account, $report);
         } catch (Exception $e) {
+
             return response(trans('sap_reports.upload.failed'), 500);
         }
 
@@ -134,6 +137,7 @@ class UploadReportController extends Controller
     private function getDateExportedOrToday(string $reportPath)
     {
         try {
+
             $reportParser = new SapReportParser($reportPath);
 
             return $reportParser->getDateExported();
