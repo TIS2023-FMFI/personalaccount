@@ -13,13 +13,24 @@ class SapOperation extends Model
 {
     use HasFactory;
 
+
+
+
+    // Assuming your Excel file has columns like date, sum, title, etc.
+    // Add these as fillable attributes in your model
+
+    protected $fillable = ['date', 'sum', 'title', 'operation_type_id', 'subject', 'sap_id', 'account_sap_id'];
+
+    // Rest of your model's code...
+
+
     /**
      * Name of the OperationType for SAP operations
      *
      * @var string
      */
 
-    private static string $sap_operation_type_name = 'SAP výkaz';
+    public static string $sap_operation_type_name = 'SAP výkaz';
 
     /**
      * Indicates if the model should be timestamped.
@@ -95,6 +106,15 @@ class SapOperation extends Model
         return $this->hasOne(FinancialOperation::class);
     }
 
+    /**
+     * Returns the associated financial operation, if it exists.
+     *
+     * @return HasOne
+     */
+    public function account()
+    {
+        return $this->hasOne(Account::class, 'sap_id', 'account_sap_id');
+    }
 
     /**
      * Returns the type of this operation.
