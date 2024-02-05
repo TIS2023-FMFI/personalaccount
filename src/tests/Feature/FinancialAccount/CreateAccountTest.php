@@ -47,7 +47,7 @@ class CreateAccountTest extends TestCase
             );
 
         $response->assertStatus(422);
-        $this->assertDatabaseMissing('accounts', [
+        $this->assertDatabaseMissing('account_user', [
             'user_id' => $user->id,
         ]);
         $user->refresh();
@@ -72,9 +72,12 @@ class CreateAccountTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('accounts', [
-            'user_id' => $user->id,
-            'title' => 'title',
             'sap_id' => 'ID-123'
+        ]);
+
+        $this->assertDatabaseHas('account_user', [
+            'user_id' => $user->id,
+            'account_title' => 'title',
         ]);
 
         $user->refresh();
@@ -165,9 +168,12 @@ class CreateAccountTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('accounts', [
-            'user_id' => $user->id,
-            'title' => 'title',
             'sap_id' => 'ID-123'
+        ]);
+
+        $this->assertDatabaseHas('account_user', [
+            'user_id' => $user->id,
+            'account_title' => 'title',
         ]);
 
         $response = $this->actingAs($user)
