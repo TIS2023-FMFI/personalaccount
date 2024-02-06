@@ -10,6 +10,7 @@ class AccountPolicy
 {
     use HandlesAuthorization;
 
+
     /**
      * Determine whether a user can access an account.
      *
@@ -25,6 +26,7 @@ class AccountPolicy
         return $user->accounts->contains($account);
     }
 
+
     /**
      * Determine whether a user can update an account.
      *
@@ -39,6 +41,7 @@ class AccountPolicy
     {
         return $user->accounts->contains($account);
     }
+
 
     /**
      * Determine whether a user can delete an account.
