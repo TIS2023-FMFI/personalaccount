@@ -36,7 +36,6 @@ class AccountPolicy
     }
 
 
-
     /**
      * Determine whether a user can update an account.
      *
@@ -61,18 +60,7 @@ class AccountPolicy
 
 
 
-    /**
-     * Determine whether a user can delete an account.
-     *
-     * This method evaluates if the given user has the authorization to delete a specific account.
-     * Admin users are granted universal access to delete any accounts, reflecting their elevated privileges within the system.
-     * Non-admin users must have a direct association with the account to be granted deletion rights,
-     * ensuring that users can only delete accounts they are explicitly permitted to manage.
-     *
-     * @param \App\Models\User $user The user whose authorization request is being evaluated.
-     * @param \App\Models\Account $account The account the user is attempting to delete.
-     * @return bool Returns true if the user is authorized to delete the account, false otherwise.
-     */
+
     public function delete(User $user, Account $account)
     {
         // Grant permission to delete any account for admin users.

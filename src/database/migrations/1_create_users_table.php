@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password')->default(Hash::make('password'));
             $table->boolean('password_change_required')->default(true);
             //pridanie stlpca admin do databazy
+
             $table->boolean('is_admin')->default(false);
         });
     }
