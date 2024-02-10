@@ -19,7 +19,7 @@ class OperationsOverviewTest extends TestCase
     use DatabaseTransactions;
 
     private int $operationsPerPage;
-    private Model $user, $account, $type, $lendingType;
+    private Model $user, $userWithPivot, $account, $type, $lendingType;
     private array $headers;
 
     public function setUp(): void
@@ -32,7 +32,9 @@ class OperationsOverviewTest extends TestCase
         );
 
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
+        $this->account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'account' ])->create();
+        $this->userWithPivot = $this->account->users->where('id', $this->user->id)->first();
+
         $this->type = OperationType::firstOrCreate(['name' => 'type']);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
 
@@ -44,7 +46,7 @@ class OperationsOverviewTest extends TestCase
 
     public function test_correct_view()
     {
-        $account = Account::factory()->create(['user_id' => $this->user]);
+        $account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'account1' ])->create();
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
         $response
             ->assertStatus(200)
@@ -53,9 +55,15 @@ class OperationsOverviewTest extends TestCase
 
     public function test_correct_view_data()
     {
-
-        $account = Account::factory()->has(FinancialOperation::factory()->count(5), 'operations')
-            ->create(['user_id' => $this->user]);
+        $account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'account2' ])->create();
+        $userWithPivot = $account->users->where('id', $this->user->id)->first();
+        for ($i=0; $i<5; $i++)
+        {
+            $operation = FinancialOperation::factory()->create([
+                'account_user_id' => $userWithPivot->pivot->id,
+                'operation_type_id' => $this->type
+            ]);
+        }
 
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
         $response
@@ -71,8 +79,15 @@ class OperationsOverviewTest extends TestCase
     {
 
         $count = $this->operationsPerPage;
-        $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1), 'operations')
-            ->create(['user_id' => $this->user]);
+        $account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'account3' ])->create();
+        $userWithPivot = $account->users->where('id', $this->user->id)->first();
+        for ($i=0; $i<$count+1; $i++)
+        {
+            $operation = FinancialOperation::factory()->create([
+                'account_user_id' => $userWithPivot->pivot->id,
+                'operation_type_id' => $this->type
+            ]);
+        }
 
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations");
         $response
@@ -93,8 +108,15 @@ class OperationsOverviewTest extends TestCase
     {
 
         $count = $this->operationsPerPage;
-        $account = Account::factory()->has(FinancialOperation::factory()->count($count + 1), 'operations')
-            ->create(['user_id' => $this->user]);
+        $account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'account3' ])->create();
+        $userWithPivot = $account->users->where('id', $this->user->id)->first();
+        for ($i=0; $i<$count+1; $i++)
+        {
+            $operation = FinancialOperation::factory()->create([
+                'account_user_id' => $userWithPivot->pivot->id,
+                'operation_type_id' => $this->type
+            ]);
+        }
 
         $response = $this->actingAs($this->user)->get("/accounts/$account->id/operations?page=2");
         $response

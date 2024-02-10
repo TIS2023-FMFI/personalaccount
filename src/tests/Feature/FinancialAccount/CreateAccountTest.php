@@ -34,7 +34,7 @@ class CreateAccountTest extends TestCase
 
     public function test_request_failure_without_required_fields()
     {
-        $user = User::create([ 'email' => 'new@b.c' ]);
+        $user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
 
         $response = $this->actingAs($user)
             ->withHeaders($this->ajaxHeaders)
@@ -49,6 +49,7 @@ class CreateAccountTest extends TestCase
         $response->assertStatus(422);
         $this->assertDatabaseMissing('account_user', [
             'user_id' => $user->id,
+            'account_title' => '',
         ]);
         $user->refresh();
         $this->assertCount(0, $user->accounts);
