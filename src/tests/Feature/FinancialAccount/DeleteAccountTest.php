@@ -25,7 +25,7 @@ class DeleteAccountTest extends TestCase
         }
 
         $this->user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
-        $this->account = Account::factory()->for($this->user)->create();
+        $this->account = Account::factory()->create();
 
         $this->ajaxHeaders = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',

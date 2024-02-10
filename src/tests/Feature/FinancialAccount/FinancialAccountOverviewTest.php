@@ -15,9 +15,13 @@ class FinancialAccountOverviewTest extends TestCase
 
     public function test_all_accounts_for_user_are_retrieved()
     {
-        $user = User::create([ 'email' => 'new@b.c' ]);
-        Account::factory()->count(3)->create(['user_id' => $user->id]);
-
+        $user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
+        
+        for ($i=0; $i < 3; $i++)
+        {
+            $account = Account::factory()->create();
+            $user->accounts()->attach($account, [ 'account_title' => $i ]);
+        }
         $this->assertCount(3, $user->accounts);
     }
 
@@ -32,20 +36,24 @@ class FinancialAccountOverviewTest extends TestCase
 
     public function test_correct_view_data(){
 
-        $user = User::create([ 'email' => 'new@b.c' ]);
+        $user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
 
-        $account1 = Account::factory()->create(['user_id' => $user]);
-        $account2 = Account::factory()->create(['user_id' => $user]);
+        $account1 = Account::factory()->create();
+        $account1->users()->attach($user, [ 'account_title' => 'title1' ]);
+        $userWithPivot1 = $account1->users->where('id', $user->id)->first();
+        $account2 = Account::factory()->create();
+        $account2->users()->attach($user, [ 'account_title' => 'title2' ]);
+        $userWithPivot2 = $account2->users->where('id', $user->id)->first();
 
         $incomeType = OperationType::factory()->create(['name' => 'income', 'expense' => false, 'lending' => false]);
         $expenseType = OperationType::factory()->create(['name' => 'expense', 'expense' => true, 'lending' => false]);
 
         FinancialOperation::factory()->create([
-            'account_id' => $account1,
+            'account_user_id' => $userWithPivot1->pivot->id,
             'operation_type_id' => $incomeType,
             'sum' => 10]);
         FinancialOperation::factory()->create([
-            'account_id' => $account2,
+            'account_user_id' => $userWithPivot2->pivot->id,
             'operation_type_id' => $expenseType,
             'sum' => 10]);
 

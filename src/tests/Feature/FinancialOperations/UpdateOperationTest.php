@@ -18,7 +18,7 @@ class UpdateOperationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private Model $user, $account, $type, $lendingType, $repaymentType;
+    private Model $user, $userWithPivot, $account, $type, $lendingType, $repaymentType;
     private array $headers;
     private GeneralOperationController $controller;
 
@@ -27,7 +27,9 @@ class UpdateOperationTest extends TestCase
         parent::setUp();
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
+        $this->account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'account' ])->create();
+        $this->userWithPivot = $this->account->users->where('id', $this->user->id)->first();
+
         $this->type = OperationType::firstOrCreate(['name' => 'type', 'lending' => false]);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
         $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'repayment' => true]);
@@ -44,7 +46,7 @@ class UpdateOperationTest extends TestCase
     public function test_update_operation_form_data(){
         $op = FinancialOperation::factory()
                     ->create([
-                        'account_id' => $this->account,
+                        'account_user_id' => $this->userWithPivot->pivot->id,
                         'operation_type_id' => $this->lendingType
                     ]);
         Lending::factory()->create(['id' => $op]);
@@ -65,7 +67,7 @@ class UpdateOperationTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'title' => 'original',
                 'sum' => 100,
                 'operation_type_id' => $this->type
@@ -91,7 +93,7 @@ class UpdateOperationTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'title' => 'original',
                 'sum' => 100,
                 'operation_type_id' => $this->type
@@ -111,7 +113,7 @@ class UpdateOperationTest extends TestCase
 
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
         $lending = Lending::factory()->create(['id' => $loan]);
@@ -147,7 +149,7 @@ class UpdateOperationTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->type,
                 'attachment' => null
             ]);
@@ -179,7 +181,7 @@ class UpdateOperationTest extends TestCase
 
         $operation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->type,
                 'attachment' => $oldPath
             ]);
@@ -205,7 +207,7 @@ class UpdateOperationTest extends TestCase
     {
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
 
@@ -235,14 +237,14 @@ class UpdateOperationTest extends TestCase
     {
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
         Lending::factory()->create(['id' => $loan]);
 
         $repayment = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->repaymentType,
                 'date' => $loan->date->addDay()
             ]);
@@ -266,7 +268,7 @@ class UpdateOperationTest extends TestCase
     {
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType,
                 'attachment' => null
             ]);
@@ -309,7 +311,7 @@ class UpdateOperationTest extends TestCase
     {
         $repayment = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->repaymentType
             ]);
 
@@ -327,7 +329,7 @@ class UpdateOperationTest extends TestCase
     {
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->type]);
+            ['account_user_id' => $this->userWithPivot->pivot->id, 'checked' => false, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
             ->patch("/operations/$operation->id", ['checked' => true]);
@@ -343,7 +345,7 @@ class UpdateOperationTest extends TestCase
     {
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'checked' => true, 'operation_type_id' => $this->type]);
+            ['account_user_id' => $this->userWithPivot->pivot->id, 'checked' => true, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
             ->patch("/operations/$operation->id", ['checked' => false]);
@@ -359,7 +361,7 @@ class UpdateOperationTest extends TestCase
     {
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->lendingType]);
+            ['account_user_id' => $this->userWithPivot->pivot->id, 'checked' => false, 'operation_type_id' => $this->lendingType]);
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
@@ -373,7 +375,7 @@ class UpdateOperationTest extends TestCase
     {
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'checked' => false, 'operation_type_id' => $this->repaymentType]);
+            ['account_user_id' => $this->userWithPivot->pivot->id, 'checked' => false, 'operation_type_id' => $this->repaymentType]);
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
