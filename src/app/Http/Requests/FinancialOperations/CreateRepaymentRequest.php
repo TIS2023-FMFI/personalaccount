@@ -8,6 +8,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Facades\Log;
+
 /**
  * A request to create a new repayment operation.
  *
@@ -39,6 +41,7 @@ class CreateRepaymentRequest extends FormRequest
     public function prepareValidatedOperationData(FinancialOperation $loan)
     {
         $repaymentType = ($loan->isExpense())
+
             ? OperationType::getRepaymentIncome()
             : OperationType::getRepaymentExpense();
         Log::debug("repayment type {e}", [ 'e' => $repaymentType]);

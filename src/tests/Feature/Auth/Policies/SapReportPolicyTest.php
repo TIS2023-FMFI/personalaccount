@@ -34,7 +34,7 @@ class SapReportPolicyTest extends TestCase
         Storage::fake();
 
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
-        $this->account = Account::factory()->create([ 'user_id' => $user ]);
+        $this->account = Account::factory()->hasAttached($user, [ 'account_title' => 'account' ])->create();
         $this->report = SapReport::factory()->for($this->account)->create();
         
         $this->otherUser = User::firstOrCreate([ 'email' => 'new@b.c' ]);

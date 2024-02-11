@@ -172,12 +172,16 @@ class CreateOperationController extends GeneralOperationController
      */
     private function createOperationAndLendingRecord(
         Account $account, array $data, string|null $attachment
-    ) {
+    ) 
+    {
         $operation = $this->createOperationRecord($account, $data, $attachment);
         Log::debug("Created an operation {e}", [ 'e' => $operation]);
         Log::debug("Is the operation a lending? {e}", [ 'e' => $operation->isLending()]);
         if ($operation->isLending())
+        {
             $this->upsertLending($operation, $data);
+        }
+
     }
 
     /**
@@ -201,6 +205,7 @@ class CreateOperationController extends GeneralOperationController
     {
         unset($data['expected_date_of_return']);
         unset($data['previous_lending_id']);
+      
         DB::enableQueryLog();
         $currentUser = Auth::user();
 
@@ -224,6 +229,7 @@ class CreateOperationController extends GeneralOperationController
 
         $recordData = array_merge($data, ['attachment' => $attachment, 'account_user_id' => $accountUserId]);
         Log::debug('Creating financial operation data', ['data' => $recordData]);
+
         $operation = $account->operations()->updateOrCreate($recordData);
 
         if (!$operation->exists) {

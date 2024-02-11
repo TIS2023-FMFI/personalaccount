@@ -21,7 +21,7 @@ class DeleteOperationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private Model $user, $account, $type, $lendingType, $repaymentType;
+    private Model $user, $account, $userWithPivot, $type, $lendingType, $repaymentType;
     private array $headers;
 
     public function setUp(): void
@@ -29,10 +29,12 @@ class DeleteOperationTest extends TestCase
         parent::setUp();
 
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
+        $this->account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'title' ])->create();
+        $this->userWithPivot = $this->account->users->where('id', $this->user->id)->first();
+
         $this->type = OperationType::firstOrCreate(['name' => 'type']);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
-        $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'repayment' => true]);
+        $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'lending' => true, 'repayment' => true]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -44,7 +46,7 @@ class DeleteOperationTest extends TestCase
     {
 
         $operation = FinancialOperation::factory()
-            ->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
+            ->create(['account_user_id' => $this->userWithPivot->pivot->id, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
             ->delete("/operations/$operation->id");
@@ -59,7 +61,7 @@ class DeleteOperationTest extends TestCase
     {
 
         $operation = FinancialOperation::factory()
-            ->create(['account_id' => $this->account, 'operation_type_id' => $this->lendingType]);
+            ->create(['account_user_id' => $this->userWithPivot->pivot->id, 'operation_type_id' => $this->lendingType]);
         Lending::factory()->create(['id' => $operation]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
@@ -80,7 +82,7 @@ class DeleteOperationTest extends TestCase
         $loan = FinancialOperation::factory()
             ->create(
                 [
-                    'account_id' => $this->account,
+                    'account_user_id' => $this->userWithPivot->pivot->id,
                     'operation_type_id' => $this->lendingType,
                     'date' => now()->format('d-m-Y')
                 ]);
@@ -89,7 +91,7 @@ class DeleteOperationTest extends TestCase
         $repayment = FinancialOperation::factory()
             ->create(
                 [
-                    'account_id' => $this->account,
+                    'account_user_id' => $this->userWithPivot->pivot->id,
                     'operation_type_id' => $this->repaymentType,
                     'date' => $loan->date->addDay()
                 ]);
@@ -116,7 +118,7 @@ class DeleteOperationTest extends TestCase
         Storage::disk('local')->assertExists($file);
 
         $operation = FinancialOperation::factory()->create(
-            ['account_id' => $this->account, 'attachment' => $file, 'operation_type_id' => $this->type]);
+            ['account_user_id' => $this->userWithPivot->pivot->id, 'attachment' => $file, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
             ->delete("/operations/$operation->id");
