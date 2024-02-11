@@ -39,8 +39,8 @@ class CreateRepaymentRequest extends FormRequest
     public function prepareValidatedOperationData(FinancialOperation $loan)
     {
         $repaymentType = ($loan->isExpense())
-            ? OperationType::getRepaymentExpense()
-            : OperationType::getRepaymentIncome();
+            ? OperationType::getRepaymentIncome()
+            : OperationType::getRepaymentExpense();
         Log::debug("repayment type {e}", [ 'e' => $repaymentType]);
 
         return [
