@@ -2,7 +2,7 @@
 
 <?php
     $from = filter_input(INPUT_GET, 'from', FILTER_SANITIZE_URL);
-    $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);      
+    $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 ?>
 
 <div class="flex-between">
@@ -23,7 +23,7 @@
 </div>
 
 <div class="filter-box">
-    
+
     <div>
 
         <label>Od:</label><input type="date" id="filter-operations-from" value="<?php echo $from ?>"></input>
@@ -55,13 +55,13 @@
     </tr>
 
     @foreach ($operations as $key=>$operation)
-        
+
         <tr>
             <td>{{ ($operations->currentPage() - 1) * $operations->perPage() + $key + 1}}.</td>
             <td>{{ $operation->title }}</td>
             <td>{{ $operation->date->format('d.m.Y') }}</td>
             <td>{{ $operation->operationType->name }}</td>
-            @if( $operation->isLending() ) 
+            @if( $operation->isLending() )
                 <td>-</td>
             @elseif( $operation->checked )
                 <td>Áno</td>

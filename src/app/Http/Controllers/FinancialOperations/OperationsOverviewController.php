@@ -101,11 +101,11 @@ class OperationsOverviewController extends Controller
      */
     private function generateExportName(Account $account, Carbon $dateFrom, Carbon $dateTo)
     {
-        $title = $account->getSanitizedTitle();
+        $sap_id  = $account->getSanitizedSapId();
         $from = $this->generateFromString($dateFrom);
         $to = $this->generateToString($dateTo);
 
-        return "{$title}_export{$from}{$to}.csv";
+        return "{$sap_id}_export{$from}{$to}.csv";
     }
 
     /**

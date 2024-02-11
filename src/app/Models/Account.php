@@ -60,10 +60,10 @@ class Account extends Model
      * The retured user,
      * returns null if the user is not using this account
      */
-    // public function accountUser()
-    // {
-    //     return $this->users()->wherePivot('user_id', Auth::user()->id);
-    // }
+     public function accountUser()
+     {
+         return $this->users()->wherePivot('user_id', Auth::user()->id);
+     }
 
     /**
      * Gets all financial operations belonging to this account.

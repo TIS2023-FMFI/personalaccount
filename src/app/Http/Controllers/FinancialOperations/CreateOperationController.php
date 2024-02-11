@@ -17,7 +17,6 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 /**
@@ -26,21 +25,40 @@ use Illuminate\Support\Facades\DB;
 class CreateOperationController extends GeneralOperationController
 {
     /**
-     * Prepares the data necessary to populate the form handling operation creation.
+     * Retrieves form data necessary for creating a financial operation.
      *
-     * @param Account $account
-     * the account with which the new operation will be associated
-     * @return array
-     * an array containing the supported operation types
+     * This method determines the form data required when a user is attempting to create a new financial operation.
+     * It differentiates between admin and non-admin users, providing each with the appropriate set of data based on their roles.
+     * Admin users are granted access to all user-assignable operation types and all unrepaid lendings across the platform,
+     * while non-admin users receive data specifically related to their association with the account in question.
+     *
+     * @param Account $account The account for which the form data is being prepared. This account context is used to tailor the returned data for non-admin users, ensuring they only see options relevant to their permissions and associations.
+     * @return array An array containing two key pieces of information: 'operation_types' and 'unrepaid_lendings'.
+     *      - 'operation_types': A collection of all operation types that a user can assign when creating a new financial operation. This ensures users are presented with valid options that reflect the types of operations supported by the system.
+     *      - 'unrepaid_lendings': A collection of all unrepaid lending operations associated with the account. For admin users, this includes all unrepaid lendings across the platform, while for non-admin users, it is limited to those associated with their account through the 'account_user_id'.
+     *
+     * The differentiation in data provided to admin versus non-admin users allows for a flexible and secure approach to operation creation, ensuring users can only interact with data and operations relevant to their role and permissions.
      */
+
     public function getFormData(Account $account)
     {
-        $user = $account->user->first();
-        return [
-            'operation_types' => OperationType::userAssignable()->get(),
-            'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->where('account_user_id', '=', $user->pivot->id)->get()
-        ];
+        // Check if the authenticated user is an admin
+        if (Auth::user()->is_admin) {
+            // Admin users get all user-assignable operation types and all unrepaid lendings associated with the account
+            return [
+                'operation_types' => OperationType::userAssignable()->get(),
+                'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->get() //môžme upraviť eštex
+            ];
+        } else {
+            // Non-admin users get data based on their specific association with the account
+            $user = $account->user->first();
+            return [
+                'operation_types' => OperationType::userAssignable()->get(),
+                'unrepaid_lendings' => FinancialOperation::unrepaidLendings()->where('account_user_id', '=', $user->pivot->id)->get()
+            ];
+        }
     }
+
 
     /**
      * Handles the request to create a new financial operation.
@@ -58,8 +76,8 @@ class CreateOperationController extends GeneralOperationController
         DB::enableQueryLog();
         $type = OperationType::findOrFail($request->validated('operation_type_id'));
 
-        if ($type->repayment)
-            return response(trans('financial_operations.create.failure'), 500);
+       // if ($type->repayment)
+       //     return response(trans('financial_operations.create.failure'), 500);
 
         return $this->createOperationFromData($account, $request->validated());
     }
@@ -74,6 +92,7 @@ class CreateOperationController extends GeneralOperationController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
+
     public function createRepayment(Lending $lending, CreateRepaymentRequest $request)
     {
         $lendingOperation = $lending->operation;
@@ -86,6 +105,7 @@ class CreateOperationController extends GeneralOperationController
 
         return $this->createOperationFromData($account, $data);
     }
+
 
     /**
      * Creates a new financial operation from raw data.
@@ -154,7 +174,8 @@ class CreateOperationController extends GeneralOperationController
         Account $account, array $data, string|null $attachment
     ) {
         $operation = $this->createOperationRecord($account, $data, $attachment);
-
+        Log::debug("Created an operation {e}", [ 'e' => $operation]);
+        Log::debug("Is the operation a lending? {e}", [ 'e' => $operation->isLending()]);
         if ($operation->isLending())
             $this->upsertLending($operation, $data);
     }
@@ -162,31 +183,56 @@ class CreateOperationController extends GeneralOperationController
     /**
      * Creates a new financial operation record in the database.
      *
-     * @param Account $account
-     * the account with which to associate the operation
-     * @param array $data
-     * the data based on which to create the operation
-     * @param string|null $attachment
-     * the path to the operation's attachment file (if any)
-     * @return FinancialOperation
-     * the model representing the created operation
-     * @throws DatabaseException
+     * This method is responsible for creating a record of a financial operation and associating it with a specific account.
+     * It supports the addition of operations by administrators on accounts they do not own, ensuring that these operations
+     * are correctly assigned to the account in question. For regular users, the operation is associated with their user account
+     * as expected. For administrators performing operations on behalf of other accounts, the function ensures that the operation
+     * is associated with the target account, not the administrator's personal account.
+     *
+     * @param Account $account The account with which to associate the operation. This account is the target of the financial operation.
+     * @param array $data The data based on which to create the operation. This array should contain all necessary information required to create the operation record, excluding the expected date of return, which is removed at the beginning of the function.
+     * @param string|null $attachment The path to the operation's attachment file, if any. This parameter allows for the association of an attachment with the financial operation, enhancing the operation's details and record-keeping capabilities.
+     * @return FinancialOperation The model representing the created operation. This return value provides a direct reference to the newly created financial operation, allowing for further manipulation or inspection as required.
+     * @throws DatabaseException Throws an exception if the operation cannot be created or if the user (in the case of regular users) does not have permission to create an operation on the account. For administrators, the function ensures that a valid user is associated with the account before proceeding.
+     *
      */
-    private function createOperationRecord(
-        Account $account, array $data, string|null $attachment
-    ) {
+
+    private function createOperationRecord(Account $account, array $data, string|null $attachment)
+    {
         unset($data['expected_date_of_return']);
-        $user = $account->user->first();
-        Log::debug('User: {data}', ['data' => $user]);
-        $accountUserId = $user->pivot->id;
-        Log::debug('Pivot ID: {data}', ['data' => $accountUserId]);
+        unset($data['previous_lending_id']);
+        DB::enableQueryLog();
+        $currentUser = Auth::user();
+
+        // Identifikujte, či operáciu vykonáva admin alebo bežný užívateľ
+        if ($currentUser->is_admin) {
+            $accountUser = $account->users()->first();
+            if (!$accountUser) {
+                Log::error('No user associated with the account.', ['account_id' => $account->id]);
+                throw new DatabaseException('No user associated with the account.');
+            }
+            $accountUserId = $accountUser->pivot->id;
+        } else {
+            // Pre bežného užívateľa - account_user_id
+            $accountUser = $account->users()->where('users.id', $currentUser->id)->first();
+            if (!$accountUser) {
+                Log::error('User does not have permission to create an operation on this account.', ['user_id' => $currentUser->id]);
+                throw new DatabaseException('User does not have permission to create an operation on this account.');
+            }
+            $accountUserId = $accountUser->pivot->id;
+        }
+
         $recordData = array_merge($data, ['attachment' => $attachment, 'account_user_id' => $accountUserId]);
-        Log::debug('Creating financial operation data: {data}', ['data' => $recordData]);
+        Log::debug('Creating financial operation data', ['data' => $recordData]);
         $operation = $account->operations()->updateOrCreate($recordData);
 
-        if (!$operation->exists)
+        if (!$operation->exists) {
+            Log::error('The operation wasn\'t created.', ['data' => $recordData]);
             throw new DatabaseException('The operation wasn\'t created.');
+        }
 
         return $operation;
     }
+
+
 }

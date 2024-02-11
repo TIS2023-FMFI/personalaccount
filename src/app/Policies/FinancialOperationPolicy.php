@@ -1,4 +1,4 @@
-    <?php
+<?php
 
     namespace App\Policies;
 
@@ -52,6 +52,10 @@
          */
         public function create(User $user, Account $account)
         {
+            // Grant access to admin users for any financial operation.
+            if ($user->is_admin) {
+                return true;
+            }
             return $user->accounts->contains($account);
         }
 
@@ -66,7 +70,11 @@
          * true if the user is allowed to perform this operation, false otherwise
          */
         public function createRepayment(User $user, Lending $lending)
-        {
+        {// Grant access to admin users for any financial operation.
+            if ($user->is_admin) {
+                return true;
+            }
+
             return $user->id === $lending->operation->user()->id;
         }
 
@@ -82,6 +90,10 @@
          */
         public function update(User $user, FinancialOperation $financialOperation)
         {
+            // Grant access to admin users for any financial operation.
+            if ($user->is_admin) {
+                return true;
+            }
             return $user->id === $financialOperation->user()->id;
         }
 
@@ -97,6 +109,10 @@
          */
         public function delete(User $user, FinancialOperation $financialOperation)
         {
+            // Grant access to admin users for any financial operation.
+            if ($user->is_admin) {
+                return true;
+            }
             //DB::enableQueryLog();
             Log::debug('Policy for deleting financial operation data,
             Financial Op.: {data}
