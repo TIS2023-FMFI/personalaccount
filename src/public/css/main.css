@@ -189,6 +189,8 @@ nav div:first-child a {
     transition: .4s;
     border-radius: 34px;
 }
+
+
 .slider:before {
     position: absolute;
     content: "";
@@ -284,6 +286,23 @@ table td a:hover {
 .sap-icons{
     text-align: end;
 }
+
+.filter-box1 {
+    display: flex;
+    margin: 50px 50px 20px 50px;
+    justify-content: space-between;
+}
+.filter-box1 button {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 1px solid var(--primary);
+    background-color: white;
+    color: var(--primary);
+    font-size: 16px;
+
+}
+
+
 .filter-box {
     display: flex;
     margin: 50px 50px 20px 50px;
@@ -297,7 +316,7 @@ table td a:hover {
     color: var(--primary);
     font-size: 16px;
 }
-.filter-box button:hover {
+.filter-box button:hover, .filter-box1 button:hover {
     cursor: pointer;
     opacity: 0.7;
 }

@@ -172,12 +172,17 @@ class CreateOperationController extends GeneralOperationController
      * @return void
      * @throws DatabaseException
      */
+
     private function createOperationAndLendingRecord(User $user=null,Account $account, array $data, string|null $attachment) {
         $operation = $this->createOperationRecord($user,$account, $data, $attachment);
+
         Log::debug("Created an operation {e}", [ 'e' => $operation]);
         Log::debug("Is the operation a lending? {e}", [ 'e' => $operation->isLending()]);
         if ($operation->isLending())
+        {
             $this->upsertLending($operation, $data);
+        }
+
     }
 
     /**
@@ -203,11 +208,11 @@ class CreateOperationController extends GeneralOperationController
         unset($data['previous_lending_id']);
         DB::enableQueryLog();
         $currentUser = $user === null ? Auth::user(): $user;
-        // Identifikujte, či operáciu vykonáva admin alebo bežný užívateľ
             $accountUser = $account->users()->where('users.id', $currentUser->id)->first();
             $accountUserId = $accountUser->pivot->id;
         $recordData = array_merge($data, ['attachment' => $attachment, 'account_user_id' => $accountUserId]);
         Log::debug('Creating financial operation data', ['data' => $recordData]);
+
         $operation = $account->operations()->updateOrCreate($recordData);
 
         if (!$operation->exists) {

@@ -21,6 +21,7 @@ class OperationsOverviewFilteringTest extends TestCase
     private int $operationsPerPage;
     private array $dates;
     private $user;
+    private $userWithPivot;
     private $account;
 
     public function setUp(): void
@@ -35,16 +36,17 @@ class OperationsOverviewFilteringTest extends TestCase
             $this->dates[$i] = Date::create(2000+$i);
         }
         $this->user = User::firstOrCreate([ 'email' => 'new@b.c' ]);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
+        $this->account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'title' ])->create();
+        $this->userWithPivot = $this->account->users->where('id', $this->user->id)->first();
 
     }
 
     public function test_operations_between()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[2]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[3]]);
 
         $this->assertCount(4, $this->account->operations);
         $this->assertCount(4, $this->account->operationsBetween($this->dates[0], $this->dates[3])->get());
@@ -55,8 +57,8 @@ class OperationsOverviewFilteringTest extends TestCase
 
     public function test_invalid_operations_between()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
 
         $this->assertCount(2, $this->account->operations);
         $this->assertCount(0, $this->account->operationsBetween($this->dates[1], $this->dates[0])->get());
@@ -65,8 +67,8 @@ class OperationsOverviewFilteringTest extends TestCase
 
     public function test_filtered_view_with_all_data()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?from={$this->dates[0]}&to={$this->dates[1]}");
@@ -79,10 +81,10 @@ class OperationsOverviewFilteringTest extends TestCase
 
     public function test_filtered_view_with_some_data()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[3]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[2]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[3]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?from={$this->dates[1]}&to={$this->dates[2]}");
@@ -95,8 +97,8 @@ class OperationsOverviewFilteringTest extends TestCase
 
     public function test_filtered_view_with_no_data()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?from={$this->dates[2]}&to={$this->dates[3]}");
@@ -109,9 +111,9 @@ class OperationsOverviewFilteringTest extends TestCase
 
     public function test_view_data_unbound_from_right()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?from={$this->dates[1]}");
@@ -124,9 +126,9 @@ class OperationsOverviewFilteringTest extends TestCase
 
     public function test_view_data_unbound_from_left()
     {
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?to={$this->dates[1]}");
@@ -158,9 +160,9 @@ class OperationsOverviewFilteringTest extends TestCase
     {
 
         $count = $this->operationsPerPage;
-        FinancialOperation::factory()->count($count)->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
+        FinancialOperation::factory()->count($count)->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?from={$this->dates[0]}&to={$this->dates[1]}");
@@ -179,9 +181,9 @@ class OperationsOverviewFilteringTest extends TestCase
     {
 
         $count = $this->operationsPerPage;
-        FinancialOperation::factory()->count($count)->create(['account_id' => $this->account, 'date' => $this->dates[0]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[1]]);
-        FinancialOperation::factory()->create(['account_id' => $this->account, 'date' => $this->dates[2]]);
+        FinancialOperation::factory()->count($count)->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[0]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[1]]);
+        FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'date' => $this->dates[2]]);
 
         $response = $this->actingAs($this->user)
             ->get("/accounts/{$this->account->id}/operations?from={$this->dates[0]}&to={$this->dates[1]}");

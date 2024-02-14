@@ -27,31 +27,73 @@
         <label>Do:</label><input type="date" id="filter-reports-to" value="<?php echo $to ?>"></input>
         <button data-account-id="{{ $account->id }}" type="button" id="reports-filter">Filtrovať</button>
     </div>
+
     <div>
-        <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button" title="Nový výkaz">+</i></button>
+
+        <button data-account-id="{{ $account->id }}" id="add-sap-report" type="button" title="Nový výkaz">Nový výkaz</button>
+
     </div>
+
 </div>
 <table>
     <tr>
         <th>Poradie</th>
         <th>Dátum exportu / nahratia</th>
+        <th>Typ súboru</th>
         <th></th>
     </tr>
 
-     @foreach ($reports as $key=>$report)
-        
-        <tr class="sap-row">
-            <td>{{ $key+1 }}.</td>
-            <td>{{ $report->exported_or_uploaded_on->format('d.m.Y') }}</td>
-            <td class="sap-icons">
-                <a href="{{ route('sap-report-raw', [ $report->id ]) }}"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
-                <button type="button" data-report-id="{{ $report->id }}" class="report-delete"><i  class="bi bi-trash3" title="Zmazať výkaz"></i></button>
-            </td>
-        </tr>
-
+    @foreach ($reports as $key => $report)
+        @if(\Illuminate\Support\Str::endsWith($report->path, '.txt'))
+            <tr class="sap-row">
+                <td>{{ $key + 1 }}.</td>
+                <td>{{ $report->exported_or_uploaded_on->format('d.m.Y') }}</td>
+                <td>{{ pathinfo($report->path, PATHINFO_EXTENSION) }}</td>
+                <td class="sap-icons">
+                    <a href="{{ route('sap-report-raw', [ $report->id ]) }}"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
+                    <button type="button" data-report-id="{{ $report->id }}" class="report-delete"><i  class="bi bi-trash3" title="Zmazať výkaz"></i></button>
+                </td>
+            </tr>
+        @endif
     @endforeach
 
 </table>
+
+<div class="filter-box1">
+    <div> </div>
+<div>
+
+
+
+    <button data-account-id="{{ $account->id }}" id="add-excel-report" type="button" title="Nový Excel">Nový Excel</button>
+
+</div>
+</div>
+<table>
+    <tr>
+        <th>Poradie</th>
+        <th>Dátum exportu / nahratia</th>
+        <th>Typ súboru</th>
+        <th></th>
+    </tr>
+
+    @foreach ($reports as $key => $report)
+        @if(\Illuminate\Support\Str::endsWith($report->path, ['.xls', '.xlsx']))
+            <tr class="sap-row">
+                <td>{{ $key + 1 }}.</td>
+                <td>{{ $report->exported_or_uploaded_on->format('d.m.Y') }}</td>
+                <td>{{ pathinfo($report->path, PATHINFO_EXTENSION) }}</td>
+                <td class="sap-icons">
+                    <a href="{{ route('sap-report-raw', [ $report->id ]) }}"><i class="bi bi-download" title="Stiahnuť výkaz"></i></a>
+                    <button type="button" data-report-id="{{ $report->id }}" class="report-delete"><i  class="bi bi-trash3" title="Zmazať výkaz"></i></button>
+                </td>
+            </tr>
+        @endif
+    @endforeach
+
+</table>
+
+
 <div class="pagination"> {{ $reports->links("pagination::semantic-ui") }} </div>
 
 

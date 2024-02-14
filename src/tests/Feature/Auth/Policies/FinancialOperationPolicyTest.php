@@ -32,7 +32,9 @@ class FinancialOperationPolicyTest extends TestCase
         }
 
         $user = User::firstOrCreate([ 'email' => 'a@b.c' ]);
-        $this->account = Account::factory()->for($user)->create();
+        $this->account = Account::factory()->create();
+        $this->account->users()->attach($user, [ 'account_title' => 'title' ]);
+        $userWithPivot = $this->account->users()->where('users.id', '=', $user->id)->first();
 
         $this->otherUser = User::firstOrCreate([ 'email' => 'new@b.c' ]);
 
@@ -51,7 +53,7 @@ class FinancialOperationPolicyTest extends TestCase
         $this->operation = FinancialOperation::factory()
                             ->create([
                                 'title' => 'operation',
-                                'account_id' => $this->account,
+                                'account_user_id' => $userWithPivot->pivot->id,
                                 'operation_type_id' => $type,
                                 'attachment' => $path
                             ]);
