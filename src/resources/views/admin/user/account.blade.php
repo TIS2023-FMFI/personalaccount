@@ -7,7 +7,14 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 
 <div class="flex-between">
     <div class="main_info">
-        <a href={{ route('home') }} class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad</a>
+        <a @if(auth()->user()->is_admin)
+               href={{ route('admin_home') }}
+           @else
+            href={{ route('home') }}
+           @endif
+            class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad
+        </a>
+
         <h1>{{ $account_title }}</h1>
         <label for="sap-id-detail"><b>SAP ID:</b></label>
         <p id="sap-id-detail">{{ $account->sap_id }}</p>
@@ -15,7 +22,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
     <div class="switch-box">
         <p>Výpis účtu</p>
         <label class="switch">
-            <input data-account-id="{{ $account->id }}" class="toggle-button" type="checkbox">
+            <input data-account-id="{{ $account->id }}"  class="toggle-button" type="checkbox">
             <span class="slider round"></span>
         </label>
         <p>SAP</p>
@@ -33,7 +40,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
     </div>
 
     <div>
-        <button data-account-id="{{ $account->id }}" data-csrf="{{ csrf_token() }}" id="create_operation" type="button" title="Nová operácia">+</i></button>
+        <button data-account-id="{{ $account->id }}"  data-csrf="{{ csrf_token() }}" id="create_operation" type="button" title="Nová operácia">+</i></button>
     </div>
 </div>
 

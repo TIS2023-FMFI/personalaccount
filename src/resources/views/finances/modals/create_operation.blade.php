@@ -1,3 +1,4 @@
+
 <div id="create-operation-modal" class="modal-box">
 
   <div class="modal">
@@ -5,7 +6,12 @@
 
     <h2>Pridať operáciu</h2>
 
-    <form id="create-operation-form">
+    <form id="create-operation-form"
+          @if(auth()->user()->is_admin && isset($user))
+            data-user-id="{{$user->id}}"
+        @endif
+
+    >
 
       <div class="radio-buttons-box">
           <div>
@@ -121,7 +127,7 @@
         </div>
       </div>
 
-      <button type="submit" data-csrf="{{ csrf_token() }}"  id="create-operation-button">Uložiť</button>
+      <button type="submit"  data-csrf="{{ csrf_token() }}"  id="create-operation-button">Uložiť</button>
 
     </form>
   </div>

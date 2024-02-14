@@ -4,6 +4,7 @@
 <div class="accounts_box">
 
     <?php
+    $user_id  = $user->id;
     foreach ($accounts as $account) {
         $account_balance = $account->getBalance();
         $account_id = $account->id;
@@ -15,12 +16,11 @@
         }
         echo <<<EOL
                 <div class="account_box">
-                    <div data-id="$account_id" class="account">
-                        <h2>$account_title</h2>
+                    <div data-id="$account_id" data-user_id="$user_id" class="account_admin">
                         <p>$account_sap_id</p>
                         <p>Zostatok na účte: <em style="color: $color_of_balance";>$account_balance €</em></p>
                     </div>
-                    <i data-id="$account_id" data-title="$account_title" data-sap="$account_sap_id" class="bi bi-pencil edit_account" title="Upraviť účet"></i>
+                    <i data-id="$account_id" data-sap="$account_sap_id" class="bi bi-pencil edit_account" title="Upraviť účet"></i>
                     <i data-id="$account_id" class="bi bi-trash3 delete_account" title="Zmazať účet"></i>
                 </div>
                 EOL;

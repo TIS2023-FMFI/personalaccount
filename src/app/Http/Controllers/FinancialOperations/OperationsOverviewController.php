@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -40,14 +40,19 @@ class OperationsOverviewController extends Controller
      */
     public function show(Account $account, DateRequest $request)
     {
+
         $dateFrom = $request->getValidatedFromDateOrMin();
         $dateTo = $request->getValidatedToDateOrMax();
-
         $user = Auth::user();
+        $users = null;
+
+            $operations = $account->userOperationsBetween($user, $dateFrom, $dateTo)->orderBy('date', 'desc')
+                ->paginate($this::$resultsPerPage)->withQueryString();
+
+
         $incomes = $account->userOperationsBetween($user, $dateFrom, $dateTo)->incomes()->sum('sum');
         $expenses = $account->userOperationsBetween($user, $dateFrom, $dateTo)->expenses()->sum('sum');
-        $operations = $account->userOperationsBetween($user, $dateFrom, $dateTo)->orderBy('date', 'desc')
-                              ->paginate($this::$resultsPerPage)->withQueryString();
+
         $accountBalance = $account->getBalance();
         // Upravený kód na získanie account_title
         $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Predvolený názov účtu';
@@ -58,10 +63,71 @@ class OperationsOverviewController extends Controller
             'incomes_total' => $incomes,
             'expenses_total' => $expenses,
             'account_balance' => $accountBalance,
+            'users' => $users,
         ]);
     }
 
-    /**
+    public function admin_show(Account $account, DateRequest $request){
+
+        $dateFrom = $request->getValidatedFromDateOrMin();
+        $dateTo = $request->getValidatedToDateOrMax();
+        $user = Auth::user();
+        $users = null;
+
+
+            $operations = $account->OperationsBetween( $dateFrom, $dateTo)->orderBy('date', 'desc')
+                ->paginate($this::$resultsPerPage)->withQueryString();
+            $users = $account->users;
+
+
+        $incomes = $account->userOperationsBetween($user, $dateFrom, $dateTo)->incomes()->sum('sum');
+        $expenses = $account->userOperationsBetween($user, $dateFrom, $dateTo)->expenses()->sum('sum');
+
+
+
+        $accountBalance = $account->getBalance();
+        // Upravený kód na získanie account_title
+        $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Predvolený názov účtu';
+        return view('admin.account', [
+            'account' => $account,
+            'account_title' => $accountTitle,
+            'operations' => $operations,
+            'incomes_total' => $incomes,
+            'expenses_total' => $expenses,
+            'account_balance' => $accountBalance,
+            'users' => $users,
+        ]);
+
+    }
+
+    public function admin_user_show(User $user,Account $account,DateRequest $request)
+    {
+        $dateFrom = $request->getValidatedFromDateOrMin();
+        $dateTo = $request->getValidatedToDateOrMax();
+
+        $operations = $account->userOperationsBetween($user, $dateFrom, $dateTo)->orderBy('date', 'desc')
+            ->paginate($this::$resultsPerPage)->withQueryString();
+
+
+        $incomes = $account->userOperationsBetween($user, $dateFrom, $dateTo)->incomes()->sum('sum');
+        $expenses = $account->userOperationsBetween($user, $dateFrom, $dateTo)->expenses()->sum('sum');
+
+        $accountBalance = $account->getBalance();
+        // Upravený kód na získanie account_title
+        $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Predvolený názov účtu';
+        return view('admin.user.account', [
+            'account' => $account,
+            'account_title' => $accountTitle,
+            'operations' => $operations,
+            'incomes_total' => $incomes,
+            'expenses_total' => $expenses,
+            'account_balance' => $accountBalance,
+            'user' => $user,
+        ]);
+    }
+
+
+        /**
      * Handles a request to download a CSV export of financial operations.
      *
      * @param Account $account

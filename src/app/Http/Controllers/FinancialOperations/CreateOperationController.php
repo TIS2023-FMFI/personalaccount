@@ -19,6 +19,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 /**
  * Manages creation of financial operations.
  */
@@ -70,7 +71,7 @@ class CreateOperationController extends GeneralOperationController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    public function create(Account $account, CreateOperationRequest $request)
+    public function create(User $user,Account $account, CreateOperationRequest $request)
     {
 
         DB::enableQueryLog();
@@ -78,8 +79,8 @@ class CreateOperationController extends GeneralOperationController
 
        // if ($type->repayment)
        //     return response(trans('financial_operations.create.failure'), 500);
-
-        return $this->createOperationFromData($account, $request->validated());
+        Log::debug($user);
+        return $this->createOperationFromData($user,$account, $request->validated());
     }
 
     /**
@@ -93,8 +94,9 @@ class CreateOperationController extends GeneralOperationController
      * a response containing information about this operation's result
      */
 
-    public function createRepayment(Lending $lending, CreateRepaymentRequest $request)
+    public function createRepayment(User $user = null, Lending $lending , CreateRepaymentRequest $request)
     {
+        $currentUser = $user === null ? Auth::user(): $user;
         $lendingOperation = $lending->operation;
 
         if ($lendingOperation->isRepayment())
@@ -103,7 +105,7 @@ class CreateOperationController extends GeneralOperationController
         $account = $lendingOperation->account();
         $data = $request->prepareValidatedOperationData($lendingOperation);
 
-        return $this->createOperationFromData($account, $data);
+        return $this->createOperationFromData($user,$account, $data);
     }
 
 
@@ -119,11 +121,11 @@ class CreateOperationController extends GeneralOperationController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    private function createOperationFromData(Account $account, array $data)
+    private function createOperationFromData(User $user=null,Account $account, array $data)
     {
         try {
             $attachment = $this->saveAttachment($account, $data);
-            $this->createOperationWithinTransaction($account, $data, $attachment);
+            $this->createOperationWithinTransaction($user,$account, $data, $attachment);
         } catch (Exception $e) {
             Log::debug('Creating financial operation failed, error: {e}', ['e' => $e]);
             if ($e instanceof ValidationException)
@@ -147,10 +149,10 @@ class CreateOperationController extends GeneralOperationController
      * @throws Exception
      */
     private function createOperationWithinTransaction(
-        Account $account, array $data, string|null $attachment
+        User $user=null,Account $account, array $data, string|null $attachment
     ) {
         $createRecordTransaction = new DBTransaction(
-            fn () => $this->createOperationAndLendingRecord($account, $data, $attachment),
+            fn () => $this->createOperationAndLendingRecord($user,$account, $data, $attachment),
             fn () => FileHelper::deleteFileIfExists($attachment)
         );
 
@@ -170,10 +172,8 @@ class CreateOperationController extends GeneralOperationController
      * @return void
      * @throws DatabaseException
      */
-    private function createOperationAndLendingRecord(
-        Account $account, array $data, string|null $attachment
-    ) {
-        $operation = $this->createOperationRecord($account, $data, $attachment);
+    private function createOperationAndLendingRecord(User $user=null,Account $account, array $data, string|null $attachment) {
+        $operation = $this->createOperationRecord($user,$account, $data, $attachment);
         Log::debug("Created an operation {e}", [ 'e' => $operation]);
         Log::debug("Is the operation a lending? {e}", [ 'e' => $operation->isLending()]);
         if ($operation->isLending())
@@ -197,31 +197,15 @@ class CreateOperationController extends GeneralOperationController
      *
      */
 
-    private function createOperationRecord(Account $account, array $data, string|null $attachment)
+    private function createOperationRecord(User $user,Account $account, array $data, string|null $attachment)
     {
         unset($data['expected_date_of_return']);
         unset($data['previous_lending_id']);
         DB::enableQueryLog();
-        $currentUser = Auth::user();
-
+        $currentUser = $user === null ? Auth::user(): $user;
         // Identifikujte, či operáciu vykonáva admin alebo bežný užívateľ
-        if ($currentUser->is_admin) {
-            $accountUser = $account->users()->first();
-            if (!$accountUser) {
-                Log::error('No user associated with the account.', ['account_id' => $account->id]);
-                throw new DatabaseException('No user associated with the account.');
-            }
-            $accountUserId = $accountUser->pivot->id;
-        } else {
-            // Pre bežného užívateľa - account_user_id
             $accountUser = $account->users()->where('users.id', $currentUser->id)->first();
-            if (!$accountUser) {
-                Log::error('User does not have permission to create an operation on this account.', ['user_id' => $currentUser->id]);
-                throw new DatabaseException('User does not have permission to create an operation on this account.');
-            }
             $accountUserId = $accountUser->pivot->id;
-        }
-
         $recordData = array_merge($data, ['attachment' => $attachment, 'account_user_id' => $accountUserId]);
         Log::debug('Creating financial operation data', ['data' => $recordData]);
         $operation = $account->operations()->updateOrCreate($recordData);
