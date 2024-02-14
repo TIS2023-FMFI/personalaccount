@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Parent class containing general functions useful for both 'create operation' and 'update operation' controllers.
@@ -19,25 +20,28 @@ class GeneralOperationController extends Controller
 {
 
     /**
-     * Saves a financial operation's attachment file if it is contained in the
-     * given request data.
+     * Saves an attachment file from request data to user-specific storage.
      *
-     * @param Account $account
-     * the account to which the operation belongs
-     * @param array $requestData
-     * the request data from which to extract the attachment file
-     * @return string
-     * path to the saved file, or null if the request doesn't contain a file
+     * This method checks for an attachment in the request data and saves it to a storage location based on the account's associated user or the currently authenticated user. It's designed to handle file attachments for financial operations, ensuring they are stored securely and associated with the correct user account.
+     *
+     * @param Account $account The account related to the financial operation.
+     * @param array $requestData Data from the request, expected to contain an 'attachment' key with the file.
+     * @return string|null Path to the saved file, or null if no attachment is present.
      */
+
     protected function saveAttachment(Account $account, array $requestData)
     {
         if (array_key_exists('attachment', $requestData)) {
             $file = $requestData['attachment'];
-            if ($file)
-                return $this->saveAttachmentToUserStorage($account->user->first(), $file);
+            if ($file) {
+                // Skontrolujte, či $account->user->first() vráti užívateľa, inak použije aktuálne prihláseného užívateľa
+                $user = $account->user->first() ?? Auth::user();
+                return $this->saveAttachmentToUserStorage($user, $file);
+            }
         }
         return null;
     }
+
 
     /**
      * Saves the given file as an attachment for a financial operation.

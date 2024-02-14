@@ -7,7 +7,13 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 
 <div class="flex-between">
     <div class="main_info">
-        <a href={{ route('home') }} class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad</a>
+        <a @if(auth()->user()->is_admin)
+               href={{ route('admin_home') }}
+           @else
+            href={{ route('home') }}
+           @endif
+            class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad
+        </a>
         <h1>{{ $account_title }}</h1>
         <label for="sap-id-detail"><b>SAP ID:</b></label>
         <p id="sap-id-detail">{{ $account->sap_id }}</p>
@@ -21,6 +27,44 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
         <p>SAP</p>
     </div>
 </div>
+<?php
+
+    echo '<table class = "usersTable" >';
+    echo "<h1>Používatelia účtu</h1>";
+
+            echo "<tr>";
+            echo <<<EOL
+            <td>ID</td>
+            <td>Email</td>
+            <td>Zostatok</td>
+            EOL;
+            echo "</tr>";
+    foreach ($users as $user) {
+        $user_id = $user->id;
+        $user_email = $user->email;
+        $incomes = $account->userOperationsBetween($user, Illuminate\Support\Facades\Date::minValue(), Illuminate\Support\Facades\Date::maxValue())->incomes()->sum('sum');
+        $expenses = $account->userOperationsBetween($user, Illuminate\Support\Facades\Date::minValue(), Illuminate\Support\Facades\Date::maxValue())->expenses()->sum('sum');
+        $user_balance = $incomes - $expenses;
+
+        echo "<tr>";
+        echo "
+            <td>{$user_id}</td>
+            <td>{$user_email}</td>";
+            if( $user_balance >= 0){
+                echo "<td class=\"align-right\" style=\"color: green;\">" . number_format($user_balance, 2, ',', ' ') . "€</td>";
+                }
+            else{
+                echo "<td class=\"align-right\" style=\"color: red;\">-" . number_format($user_balance, 2, ',', ' ') . "€</td>";
+                }
+
+        echo "</tr>";
+    }
+    echo "</table>";
+
+    echo "<h1>Operácie</h1>";
+
+?>
+
 
 <div class="filter-box">
 
@@ -46,6 +90,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 <table>
     <tr>
         <th>Poradie</th>
+        <th>Používatel</th>
         <th>Názov</th>
         <th>Dátum</th>
         <th>Typ</th>
@@ -58,6 +103,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 
         <tr>
             <td>{{ ($operations->currentPage() - 1) * $operations->perPage() + $key + 1}}.</td>
+            <td>{{ $operation->user()->email }}</td>
             <td>{{ $operation->title }}</td>
             <td>{{ $operation->date->format('d.m.Y') }}</td>
             <td>{{ $operation->operationType->name }}</td>

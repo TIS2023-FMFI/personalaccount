@@ -371,9 +371,17 @@ $(document).ready(function(){
         let title = $("#add-account-name").val();
         let sapId = $("#add-account-sap-id").val();
         let csrf = $("#create-account-button").data("csrf");
+        let user_id = $(this).data("user-id");
+        let isAdmin = $('body').data('is-admin');
+        let urlPath = isAdmin ? "/user/"+ user_id+ "/accounts/" : "/accounts/";
+        let url = root + urlPath;
+        console.log(url);
+        console.log(isAdmin);
+        console.log(urlPath);
+        console.log($('body').data('is-admin'));
 
         $.ajax({
-            url: root + "/accounts",
+            url: url,
             type: "POST",
             dataType: "json",
             data: {
@@ -745,11 +753,6 @@ $(document).ready(function(){
         })
     });
 
-
-
-
-
-
     $.fn.createReportClearForm = function(isDone = false){
 
         if (isDone) {
@@ -1003,7 +1006,6 @@ $(document).ready(function(){
 
     $("#show-repayment-button").click(function(){
         let operation_id = $(this).data("repay-id");
-
         $(".modal-box").css("display", "none");
         let csrf = $(this).data("csrf");
 
@@ -1378,7 +1380,16 @@ $(document).ready(function(){
 
     $("#create_operation").click(function(){
         let account_id = $(this).data("account-id");
+     //   let user_id = $(this).data("user-id");
         let csrf = $(this).data("csrf");
+        let isAdmin = false;
+       // let isAdmin = $('body').data('is-admin');
+        let urlPath = isAdmin ? "/user/"+ user_id+ "/accounts/" : "/accounts/";
+        let url = root + urlPath + account_id + "/operations/create";
+     //   console.log(url);
+     //   console.log(isAdmin);
+      //  console.log(urlPath);
+      //  console.log($('body').data('is-admin'));
         $("#create-operation-form").data("account-id", account_id);
         defaultCreateOperationFormFields();
         $(".lending_detail_div").css("display", "none")
@@ -1388,7 +1399,7 @@ $(document).ready(function(){
         $("#lending-choice").empty();
 
         $.ajax({
-            url: root + "/accounts/" + account_id + "/operations/create",
+            url: url,
             type: "GET",
             dataType: "json",
             data: {
@@ -1445,6 +1456,14 @@ $(document).ready(function(){
 
         let csrf = $("#create-operation-button").data("csrf");
         let account_id = $(this).data("account-id");
+        let user_id = $(this).data("user-id");
+        let isAdmin = $('body').data('is-admin');
+        let urlPath = isAdmin ? "/user/"+ user_id+ "/accounts/" : "/accounts/";
+        let url = root + urlPath + account_id + "/operations/create";
+        console.log(url);
+        console.log(isAdmin);
+        console.log(urlPath);
+        console.log($('body').data('is-admin'));
         let expense_income = $("input[name='operation_type']:checked").val();
         let operation_type_id = $("#operation_choice").val();
         let title = $("#add-operation-name").val();
@@ -1454,9 +1473,10 @@ $(document).ready(function(){
         let expected_date = $("#add-operation-expected-date").val();
         let lending_id = $("#lending-choice").val();
 
+
+
         var fileUpload = $("#operation-file").get(0);
         var files = fileUpload.files;
-
         var fileData = new FormData();
 
         fileData.append('_token', csrf);
@@ -1472,7 +1492,7 @@ $(document).ready(function(){
 
         if ($('input[type=radio][name=operation_type]:checked').val() != 'loan') {
             $.ajax({
-                url: root + "/accounts/" + account_id + "/operations",
+                url: url,
                 type: "POST",
                 contentType: false,
                 processData: false,
@@ -1554,11 +1574,15 @@ $(document).ready(function(){
             })
         }else{
             let option = $("#lending-choice").val()
+            let user_id = $(this).data("user-id");
+            let isAdmin = $('body').data('is-admin');
+            let urlPath = isAdmin ? "/user/"+ user_id + "/operations/" + lending_id + "/repayment": "/operations/" + lending_id + "/repayment";
+            let url = root + urlPath;
             if(option != "default_opt"){
                 $("#create-operation-button").attr("disabled", false)
 
                 $.ajax({
-                    url: root + "/operations/" + lending_id + "/repayment",
+                    url: url,
                     type: "POST",
                     dataType: "json",
                     data: {
@@ -1945,10 +1969,13 @@ $(document).ready(function(){
         let date = $("#repay-lending-date").val();
         let csrf = $("#repay-lending-button").data("csrf");
         let operation_id = $(this).data("operation-id");
-
+        let user_id = $(this).data("user-id");
+        let isAdmin = $('body').data('is-admin');
+        let urlPath = isAdmin ? "/user/"+ user_id + "/operations/" + operation_id + "/repayment": "/operations/" + operation_id + "/repayment";
+        let url = root + urlPath;
 
         $.ajax({
-            url: root + "/operations/" + operation_id + "/repayment",
+            url: url,
             type: "POST",
             dataType: "json",
             data: {
@@ -2070,4 +2097,27 @@ $(document).ready(function(){
     // <-- Financial operations forms
 
     // <-- Financial operations
+
+//admin
+$(".user").click(function(){
+    var user_id = $(this).data("id");
+    window.location.href = root + '/user/'+ user_id +'/accounts';
+});
+
+
+
+
+$(".account_admin").click(function(){
+    var user_id = $(this).data("user_id");
+    var account_id = $(this).data("id");
+    console.log(user_id,account_id);
+    window.location.href = root + '/user/'+ user_id + '/accounts/'+account_id+'/operations';
+});
+
+
 })
+
+function admin_user_overview(row) {
+    var user_id = row.getAttribute('data-id');
+    window.location.href = root + '/user/'+ user_id +'/accounts';
+}

@@ -6,12 +6,13 @@ use App\Models\FinancialOperation;
 use App\Models\OperationType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Log;
 
 /**
  * A request to create a new repayment operation.
- * 
+ *
  * Fields: date.
  */
 class CreateRepaymentRequest extends FormRequest
@@ -31,7 +32,7 @@ class CreateRepaymentRequest extends FormRequest
     /**
      * Prepare operation data for this repayment based on the loan with which
      * the repayment will be associated.
-     * 
+     *
      * @param FinancialOperation $loan
      * the loan with which the repayment will be associated
      * @return array
@@ -40,9 +41,9 @@ class CreateRepaymentRequest extends FormRequest
     public function prepareValidatedOperationData(FinancialOperation $loan)
     {
         $repaymentType = ($loan->isExpense())
-                            ? OperationType::getRepaymentExpense()
-                            : OperationType::getRepaymentIncome();
-        Log::debug("repayment type {e}", [ 'e' => $repaymentType]);
+
+            ? OperationType::getRepaymentIncome()
+            : OperationType::getRepaymentExpense();
         return [
             'title' => $loan->title,
             'date' => $this->validated('date'),

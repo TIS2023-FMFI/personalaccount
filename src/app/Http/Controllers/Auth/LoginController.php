@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * A controller responsible for logging users in and out of the application.
- * 
+ *
  * This controller provides methods to:
  *      - show the login form
  *      - log in a user via email an password
@@ -24,7 +24,7 @@ class LoginController extends Controller
     /**
      * Show the Login view if there is already a registered user.
      * Otherwise, show the First User view.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      * the view that will be shown
      */
@@ -49,14 +49,16 @@ class LoginController extends Controller
     public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
- 
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
- 
-            return redirect()
-                    ->intended(route('home'));
+            if (Auth::user()->is_admin) {
+                return redirect(route('admin_home'));
+            } else {
+                return redirect(route('home'));
+            }
         }
- 
+
         return back()
                 ->withErrors([ 'email' => trans('auth.failed') ])
                 ->onlyInput('email');
@@ -64,7 +66,7 @@ class LoginController extends Controller
 
     /**
      * Handle a request to log in via a login token.
-     * 
+     *
      * @param \Illuminate\Http\Request $request
      * the request to handle
      * @param string $token
@@ -76,11 +78,11 @@ class LoginController extends Controller
     public function loginUsingToken(Request $request, string $token)
     {
         $token = LoginToken::where('token', $token)->first();
- 
+
         if ($token && $token->isValid()) {
             Auth::login($token->user);
             $token->invalidate();
- 
+
             return redirect(route('home'));
         }
 
@@ -99,10 +101,10 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-    
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-    
+
         return redirect(route('login', [], false));
     }
 }

@@ -13,8 +13,8 @@
         <script src={{ asset('js/main.js') }} rel="stylesheet"></script>
         <title>BudgetMaster</title>
     </head>
-    <body>
-        <nav>
+    <body data-is-admin="{{ Auth::user()->is_admin ? 'true' : 'false' }}">
+    <nav>
             <div>
                 <a href={{ route('home') }}><i class="bi bi-credit-card-fill"></i> BudgetMaster</a>
             </div>
@@ -33,7 +33,7 @@
         <div class="content">
 
             @include('auth.modals.create_user')
-            
+
             @if(isset($open_change_password))
             @include('user_account_management.modals.change_password', ['open' => $open_change_password])
             @else

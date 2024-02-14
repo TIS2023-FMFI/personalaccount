@@ -1,14 +1,28 @@
 @include('common.navigation', ['open_change_password' => Auth::user()->password_change_required])
 
-<h1>Moje účty</h1>
-<div class="accounts_box">
+<h1>Použivatelia</h1>
 
-    <?php
+<?php
+    echo '<table class="usersTable">';
+    foreach ($users as $user) {
+        $user_id = $user->id;
+        $user_email = $user->email;
+
+        // Pridanie onclick eventu na <tr> element
+        echo "<tr data-id='{$user_id}' onclick='admin_user_overview(this)'>";
+        echo "<td>{$user_id}</td>";
+        echo "<td>{$user_email}</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
+
+
+    echo "<h1>Účty</h1>";
+    echo '<div class="accounts_box">';
     foreach ($accounts as $account) {
         $account_balance = $account->getBalance();
         $account_id = $account->id;
         $account_sap_id = $account->sap_id;
-        $account_title = $account->user->first()?->pivot?->account_title ?? 'Pomenuj ma';
         $color_of_balance = 'red';
         if($account_balance >= 0){
             $color_of_balance = 'green';
@@ -16,20 +30,18 @@
         echo <<<EOL
                 <div class="account_box">
                     <div data-id="$account_id" class="account">
-                        <h2>$account_title</h2>
                         <p>$account_sap_id</p>
                         <p>Zostatok na účte: <em style="color: $color_of_balance";>$account_balance €</em></p>
                     </div>
-                    <i data-id="$account_id" data-title="$account_title" data-sap="$account_sap_id" class="bi bi-pencil edit_account" title="Upraviť účet"></i>
-                    <i data-id="$account_id" class="bi bi-trash3 delete_account" title="Zmazať účet"></i>
+
                 </div>
                 EOL;
     }
-    ?>
+?>
 
-    <div class="add_account_button">
-        <i class="bi bi-plus" title="Pridať účet"></i>
-    </div>
+<div class="add_account_button">
+    <i class="bi bi-plus" title="Pridať účet"></i>
+</div>
 </div>
 
 @include('common.footer')

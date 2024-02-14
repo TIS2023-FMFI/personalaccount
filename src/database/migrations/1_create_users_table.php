@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password')->default(Hash::make('password'));
             $table->boolean('password_change_required')->default(true);
-            //stlpec admin do tabulky
             $table->boolean('is_admin')->default(false);
         });
     }

@@ -14,6 +14,7 @@ use App\Models\AccountUser;
 use App\Models\Account;
 use App\Models\User;
 
+
 class FinancialOperation extends Model
 {
     use HasFactory;
