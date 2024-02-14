@@ -112,8 +112,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
             Route::patch('/operations/{operation}', [UpdateOperationController::class, 'update']);
         });
 
-        Route::post('/operations/{lending}/repayment', [CreateOperationController::class, 'createRepayment']);
-           // ->middleware('can:createRepayment,App\Models\FinancialOperation,lending');
+        Route::post('/operations/{lending}/repayment', [CreateOperationController::class, 'createRepayment'])
+            ->middleware('can:createRepayment,App\Models\FinancialOperation,lending');
 
         Route::delete('/operations/{operation}', [DeleteOperationController::class, 'delete'])
             ->middleware('can:delete,operation');
