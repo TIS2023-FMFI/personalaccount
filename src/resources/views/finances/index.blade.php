@@ -4,16 +4,21 @@
 <div class="accounts_box">
 
     <?php
-    foreach ($accounts as $account) {
-        $account_balance = $account->getBalance();
-        $account_id = $account->id;
-        $account_sap_id = $account->sap_id;
-        $account_title = $account->user->first()?->pivot?->account_title ?? 'Pomenuj ma';
-        $color_of_balance = 'red';
-        if($account_balance >= 0){
-            $color_of_balance = 'green';
-        }
-        echo <<<EOL
+        foreach ($accounts as $account) {
+            $account_balance = $account->getBalance();
+            $account_id = $account->id;
+            $account_sap_id = $account->sap_id;
+           // $account_title = $account->user->first()->pivot->account_title;
+            $account_title = $account->user->first()?->pivot?->account_title ?? 'Pomenuj ma';
+
+
+
+
+            $color_of_balance = 'red';
+            if($account_balance >= 0){
+                $color_of_balance = 'green';
+            }
+            echo <<<EOL
                 <div class="account_box">
                     <div data-id="$account_id" class="account">
                         <h2>$account_title</h2>
@@ -24,7 +29,7 @@
                     <i data-id="$account_id" class="bi bi-trash3 delete_account" title="Zmazať účet"></i>
                 </div>
                 EOL;
-    }
+        }
     ?>
 
     <div class="add_account_button">

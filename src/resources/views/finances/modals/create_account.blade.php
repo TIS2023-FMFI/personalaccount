@@ -5,11 +5,7 @@
 
     <h2>Pridať účet</h2>
 
-    <form id="create-account-form"
-          @if(auth()->user()->is_admin && isset($user))
-              data-user-id="{{$user->id}}"
-        @endif
-    >
+    <form id="create-account-form">
       <div class="input-box">
         <div class="field">
           <input type="text" id="add-account-name">

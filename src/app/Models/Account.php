@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Helpers\FileHelper;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Log;
@@ -60,10 +60,10 @@ class Account extends Model
      * The retured user,
      * returns null if the user is not using this account
      */
-     public function accountUser()
-     {
-         return $this->users()->wherePivot('user_id', Auth::user()->id);
-     }
+    // public function accountUser()
+    // {
+    //     return $this->users()->wherePivot('user_id', Auth::user()->id);
+    // }
 
     /**
      * Gets all financial operations belonging to this account.
@@ -78,11 +78,11 @@ class Account extends Model
     /**
      * Gets all SAP operations belonging to this account.
      *
-     * @return HasManyThrough
+     * @return HasMany
      */
     public function sapOperations()
     {
-        return $this->hasMany(SapOperation::class, 'account_sap_id', 'sap_id');
+        return $this->hasMany(SapOperation::class,'operation_type_id');
     }
 
     /**
@@ -126,10 +126,10 @@ class Account extends Model
      */
     public function getBalance()
     {
-        $incomes = $this->operations()->incomes()->sum('sum');
-        $expenses = $this->operations()->expenses()->sum('sum');
+        $incomes = -$this->sapOperations()->where('sum','<',0)->sum('sum');
+        $expenses = -$this->sapOperations()->where('sum','>',0)->sum('sum');
 
-        return round($incomes - $expenses, 3);
+        return round($incomes + $expenses, 3);
     }
 
     /**
@@ -152,38 +152,24 @@ class Account extends Model
      * which belong to this account and to the specified user
      * and whose date is in the specified interval.
      *
-     * This method is designed to filter financial operations for a given account based on the user's role and the specified date range.
-     * Admin users are granted access to all operations within the account for the specified date range,
-     * while non-admin users can only access operations that are directly associated with them within the same date range.
-     *
-     * @param User $user The user for whom the operations are being queried. This parameter determines the scope of the operations returned based on the user's role.
-     * @param Carbon $from The start date of the interval for which operations are being requested. Only operations on or after this date are included.
-     * @param Carbon $to The end date of the interval for which operations are being requested. Only operations on or before this date are included.
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough The query builder instance that can be used to further query the model or get the results.
+     * @param User $user
+     * specified user
+     * @param Carbon $from
+     * earliest date in the interval
+     * @param Carbon $to
+     * latest date in the interval
+     * @return HasManyThrough the result query
      */
-    public function userOperationsBetween(User $user, Carbon $from, Carbon $to)
-    {
-        // Grant access to all operations within the account for admin users.
-        if ($user->is_admin) {
-            return $this->operations()->whereBetween('date', [$from, $to]);
-        }
-
-        // For non-admin users, attempt to find the user within the account's users.
-        // Use the null-safe operator to avoid errors if the user is not found.
-        $accountUserId = $this->users()->where('users.id', '=', $user->id)->first()?->pivot?->id;
-
-        // If the user is not associated with the account, return an empty collection to signify no operations are accessible.
-        if ($accountUserId === null) {
-            return collect(); // Alternatively, you could return an empty query or throw an exception.
-        }
-
-        // For non-admin users associated with the account, return their operations within the specified date range.
-        return $this->operations()->where('account_user_id', $accountUserId)->whereBetween('date', [$from, $to]);
+    public function sapOperationsBetween(Carbon $from, Carbon $to){
+        return $this->sapOperations()->where('account_sap_id', $this->sap_id)->whereBetween('date', [$from, $to]);
     }
 
-
-
-
+    public function userOperationsBetween(User $user, Carbon $from, Carbon $to){
+        $userId = $user->id;
+        $userWithPivot = $this->users()->where('users.id', '=', $userId)->first();
+        $accountUserId = $userWithPivot->pivot->id;
+        return $this->operations()->where('account_user_id', $accountUserId)->whereBetween('date', [$from, $to]);
+    }
 
     /**
      * Get all SAP reports which are associated with this account and which were

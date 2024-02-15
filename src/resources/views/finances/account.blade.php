@@ -1,3 +1,4 @@
+@php use App\Http\Controllers\SapOperationModel; @endphp
 @include('common.navigation')
 
 <?php
@@ -28,12 +29,15 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 
         <label>Od:</label><input type="date" id="filter-operations-from" value="<?php echo $from ?>"></input>
         <label>Do:</label><input type="date" id="filter-operations-to" value="<?php echo $to ?>"></input>
-        <button type="button" data-account-id="{{ $account->id }}" data-date-errors="{{$errors->first('to')}}" id="filter-operations">Filtrovať</button>
+        <button type="button" data-account-id="{{ $account->id }}" data-date-errors="{{$errors->first('to')}}"
+                id="filter-operations">Filtrovať
+        </button>
         <button data-account-id="{{ $account->id }}" type="button" id="operations-export">Exportovať</button>
     </div>
 
     <div>
-        <button data-account-id="{{ $account->id }}" data-csrf="{{ csrf_token() }}" id="create_operation" type="button" title="Nová operácia">+</i></button>
+        <button data-account-id="{{ $account->id }}" data-csrf="{{ csrf_token() }}" id="create_operation" type="button"
+                title="Nová operácia"><i>+</i></button>
     </div>
 </div>
 
@@ -49,7 +53,6 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
         <th>Názov</th>
         <th>Dátum</th>
         <th>Typ</th>
-        <th class="w-100">Skontrolované</th>
         <th class="align-right">Suma</th>
         <th></th>
     </tr>
@@ -60,33 +63,27 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
             <td>{{ ($operations->currentPage() - 1) * $operations->perPage() + $key + 1}}.</td>
             <td>{{ $operation->title }}</td>
             <td>{{ $operation->date->format('d.m.Y') }}</td>
-            <td>{{ $operation->operationType->name }}</td>
-            @if( $operation->isLending() )
-                <td>-</td>
-            @elseif( $operation->checked )
-                <td>Áno</td>
+            <td>{{ $operation->subject }}</td>
+            @if( $operation->sum >= 0)
+                <td class="align-right" style="color: red;">{{ -$operation->sum }}€</td>
             @else
-                <td>Nie</td>
-            @endif
-            @if( $operation->isExpense())
-                <td class="align-right" style="color: red;">-{{ $operation->sum }}€</td>
-            @else
-                <td class="align-right" style="color: green;">{{ $operation->sum }}€</td>
+                <td class="align-right" style="color: green;">{{ -$operation->sum }}€</td>
             @endif
             <td>
-                <button type="button" data-operation-id="{{ $operation->id }}" class="operation-detail"><i  class="bi bi-info-circle" title="Detail operácie"></i></button>
-                @if( $operation->isRepayment() )
-                    <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
-                        @elseif ( $operation->isLending() )
-                            <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
-                                @if (! $operation->lending->repayment)
-                                    <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-repayment"><i class="bi bi-cash-coin" title="Splatiť pôžičku"></i>
-                                        @endif
-                                        <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
-                                            @else
-                                                <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
-                                                    <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu"></i>
-                                                        <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
+                @if($operation->financial_operation == null))
+                    {{$sam = SapOperationModel::setFinances($account)}}
+                    {{
+                    View::composer('modals/check_operation', function ($view) {
+                    $view->with('all', $sam);
+                    })}}
+                    <button type="button" data-operation-id="{{ $operation->id }}"
+                            data-operation-checked="{{ $operation->checked }}" class="operation-check"><i
+                            class="bi bi-check2-all" title="Odznačiť operáciu"></i>
+                @else
+                    <button type="button" data-operation-id="{{ $operation->id }}"
+                            data-operation-checked="{{ $operation->checked }}" class="operation-check"><i
+                            class="bi bi-check2-all" title="Odznačiť operáciu"></i>
+                    {{$operation->financial_operation = null}}
                 @endif
             </td>
         </tr>
@@ -99,10 +96,10 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 
     <p id="income">Príjmy: <em>{{ $incomes_total }}€</em></p>
     <p id="outcome">Výdavky: <em>{{ $expenses_total }}€</em></p>
-    @if( ($incomes_total - $expenses_total) >= 0)
-        <p id="total">Rozdiel: <em style="color: green;">{{ $incomes_total - $expenses_total }}€</em></p>
+    @if( ($incomes_total + $expenses_total) >= 0)
+        <p id="total">Rozdiel: <em style="color: green;">{{ $incomes_total + $expenses_total }}€</em></p>
     @else
-        <p id="total">Rozdiel: <em style="color: red;">{{ $incomes_total - $expenses_total }}€</em></p>
+        <p id="total">Rozdiel: <em style="color: red;">{{ $incomes_total + $expenses_total }}€</em></p>
     @endif
     <p id="account-balance">Celkový zostatok na účte: <em>{{ $account_balance }}€</em></p>
 </div>
