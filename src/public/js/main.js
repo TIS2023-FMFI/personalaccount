@@ -426,6 +426,7 @@ $(document).ready(function(){
                     })
                 }
             }else{
+                console.log("Tu som Tu som1")
                 Toast.fire({
                     icon: 'error',
                     title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
@@ -513,8 +514,10 @@ $(document).ready(function(){
                     })
                 }
             }else{
+
                 Toast.fire({
                     icon: 'error',
+
                     title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
                 })
             }
@@ -1459,7 +1462,8 @@ $(document).ready(function(){
         let user_id = $(this).data("user-id");
         let isAdmin = $('body').data('is-admin');
         let urlPath = isAdmin ? "/user/"+ user_id+ "/accounts/" : "/accounts/";
-        let url = root + urlPath + account_id + "/operations/create";
+        let url = root + urlPath + account_id + "/operations/";
+
         console.log(url);
         console.log(isAdmin);
         console.log(urlPath);
@@ -2105,7 +2109,12 @@ $(".user").click(function(){
 });
 
 
-
+$(".overview_account").click(function(){
+    var user_id = $(this).data("user_id");
+    var account_id = $(this).data("id");
+    console.log(user_id,account_id);
+    window.location.href = root + '/overview/accounts/' +account_id+'/operations';
+});
 
 $(".account_admin").click(function(){
     var user_id = $(this).data("user_id");
@@ -2121,3 +2130,5 @@ function admin_user_overview(row) {
     var user_id = row.getAttribute('data-id');
     window.location.href = root + '/user/'+ user_id +'/accounts';
 }
+
+
