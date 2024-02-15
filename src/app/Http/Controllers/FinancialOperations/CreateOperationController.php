@@ -228,6 +228,7 @@ class CreateOperationController extends GeneralOperationController
      * @return void
      * @throws DatabaseException
      */
+
     private function createOperationAndLendingRecord(Account $account, array $data, string|null $attachment)
     {
         $operation = $this->createOperationRecord($account, $data, $attachment);

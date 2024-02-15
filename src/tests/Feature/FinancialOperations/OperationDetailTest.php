@@ -17,7 +17,7 @@ class OperationDetailTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private Model $user, $account, $type, $lendingType;
+    private Model $user, $userWithPivot, $account, $type, $lendingType;
     private array $headers;
     private GeneralOperationController $controller;
 
@@ -26,7 +26,9 @@ class OperationDetailTest extends TestCase
         parent::setUp();
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
+        $this->account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'title' ])->create();
+        $this->userWithPivot = $this->account->users->where('id', $this->user->id)->first();
+
         $this->type = OperationType::firstOrCreate(['name' => 'type', 'lending' => false]);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
 
@@ -41,12 +43,12 @@ class OperationDetailTest extends TestCase
 
     public function test_operation_data(){
 
-        $operation = FinancialOperation::factory()->create(['account_id' => $this->account, 'operation_type_id' => $this->type]);
+        $operation = FinancialOperation::factory()->create(['account_user_id' => $this->userWithPivot->pivot->id, 'operation_type_id' => $this->type]);
 
         $response = $this->actingAs($this->user)->get("/operations/$operation->id");
         $content = $response->json();
 
-        $this->assertEquals($this->account->id, $content['operation']['account_id']);
+        $this->assertEquals($this->userWithPivot->pivot->id, $content['operation']['account_user_id']);
         $this->assertEquals($this->type->id, $content['operation']['operation_type_id']);
     }
 
@@ -67,7 +69,7 @@ class OperationDetailTest extends TestCase
         $operation = FinancialOperation::factory()
             ->create([
                 'title' => 'operation',
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->type,
                 'attachment' => $path
                 ]);
@@ -91,7 +93,7 @@ class OperationDetailTest extends TestCase
 
         $operation = FinancialOperation::factory()
             ->create([
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->type,
                 'attachment' => ''
             ]);

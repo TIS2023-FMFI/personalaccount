@@ -13,11 +13,13 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
+use Illuminate\Support\Facades\Log;
+
 class CreateOperationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private Model $user, $account, $type, $lendingType, $repaymentType;
+    private Model $user, $userWithPivot, $account, $type, $lendingType, $repaymentType;
     private array $headers;
 
     public function setUp(): void
@@ -25,10 +27,15 @@ class CreateOperationTest extends TestCase
         parent::setUp();
 
         $this->user = User::firstOrCreate(['email' => 'a@b.c']);
-        $this->account = Account::factory()->create(['user_id' => $this->user]);
+        $this->account = Account::factory()->hasAttached($this->user, [ 'account_title' => 'title' ])->create();
+        $this->userWithPivot = $this->account->users->where('id', $this->user->id)->first();
+        
         $this->type = OperationType::firstOrCreate(['name' => 'type', 'lending' => false]);
         $this->lendingType = OperationType::firstOrCreate(['name' => 'lending', 'lending' => true]);
-        $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'repayment' => true]);
+        $this->repaymentType = OperationType::firstOrCreate(['name' => 'repayment', 'lending' => true, 'repayment' => true]);
+
+        Log::debug("LENDING TYPE {e}", [ 'e' => $this->lendingType ]);
+        Log::debug("REPAYMENT TYPE {e}", [ 'e' => $this->repaymentType ]);
 
         $this->headers = [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
@@ -40,7 +47,7 @@ class CreateOperationTest extends TestCase
     public function test_create_operation_form_data(){
         $lending = FinancialOperation::factory()
                     ->create([
-                        'account_id' => $this->account,
+                        'account_user_id' => $this->userWithPivot->pivot->id,
                         'operation_type_id' => $this->lendingType
                     ]);
         Lending::factory()->create(['id' => $lending]);
@@ -64,7 +71,7 @@ class CreateOperationTest extends TestCase
         {
             $lending = FinancialOperation::factory()
                 ->create([
-                    'account_id' => $this->account,
+                    'account_user_id' => $this->userWithPivot->pivot->id,
                     'operation_type_id' => $this->lendingType
                 ]);
             Lending::factory()->create(['id' => $lending]);
@@ -85,14 +92,14 @@ class CreateOperationTest extends TestCase
 
         $loan = FinancialOperation::factory()
             ->create([
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
         Lending::factory()->create(['id' => $loan]);
 
         $repayment = FinancialOperation::factory()
             ->create([
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->repaymentType
             ]);
         Lending::factory()->create(['id' => $repayment, 'previous_lending_id' => $loan]);
@@ -171,12 +178,13 @@ class CreateOperationTest extends TestCase
     }
 
     public function test_create_repayment(){
-
+        Log::debug("CREATE_REPAYMENT START");
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
+
         $lending = Lending::factory()->create(['id' => $loan]);
 
         $operationData = [
@@ -186,17 +194,19 @@ class CreateOperationTest extends TestCase
         $response = $this->actingAs($this->user)->withHeaders($this->headers)
             ->post('/operations/' . $lending->id . '/repayment', $operationData);
         //dd($response->content());
+        //Log::debug("test_create_repayment response {e}", [ 'e' => $response->content() ]);
         $response->assertStatus(201);
-
+        
         $this->assertDatabaseHas('lendings', ['previous_lending_id' => $lending->id]);
 
+        Log::debug("CREATE_REPAYMENT END");
     }
 
     public function test_cannot_repay_nonlending_operation(){
 
         $operation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
 
@@ -214,7 +224,7 @@ class CreateOperationTest extends TestCase
 
         $repaymentOperation = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->repaymentType
             ]);
         $repayment = Lending::factory()->create(['id' => $repaymentOperation]);
@@ -233,7 +243,7 @@ class CreateOperationTest extends TestCase
     {
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
         $lending = Lending::factory()->create(['id' => $loan]);
@@ -265,7 +275,7 @@ class CreateOperationTest extends TestCase
 
         $loan = FinancialOperation::factory()->create(
             [
-                'account_id' => $this->account,
+                'account_user_id' => $this->userWithPivot->pivot->id,
                 'operation_type_id' => $this->lendingType
             ]);
         $lending = Lending::factory()->create(['id' => $loan]);
