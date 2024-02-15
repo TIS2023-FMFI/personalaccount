@@ -73,18 +73,11 @@ class OperationsOverviewController extends Controller
         $dateTo = $request->getValidatedToDateOrMax();
         $user = Auth::user();
         $users = null;
-
-
             $operations = $account->OperationsBetween( $dateFrom, $dateTo)->orderBy('date', 'desc')
                 ->paginate($this::$resultsPerPage)->withQueryString();
             $users = $account->users;
-
-
         $incomes = $account->userOperationsBetween($user, $dateFrom, $dateTo)->incomes()->sum('sum');
         $expenses = $account->userOperationsBetween($user, $dateFrom, $dateTo)->expenses()->sum('sum');
-
-
-
         $accountBalance = $account->getBalance();
         // Upravený kód na získanie account_title
         $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Predvolený názov účtu';

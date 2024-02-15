@@ -29,7 +29,7 @@
         }
         echo <<<EOL
                 <div class="account_box">
-                    <div data-id="$account_id" class="account">
+                    <div data-id="$account_id" class="overview_account">
                         <p>$account_sap_id</p>
                         <p>Zostatok na účte: <em style="color: $color_of_balance";>$account_balance €</em></p>
                     </div>
@@ -39,9 +39,6 @@
     }
 ?>
 
-<div class="add_account_button">
-    <i class="bi bi-plus" title="Pridať účet"></i>
-</div>
-</div>
+
 
 @include('common.footer')

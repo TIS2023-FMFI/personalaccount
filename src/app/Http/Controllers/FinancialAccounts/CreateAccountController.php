@@ -25,10 +25,33 @@ class CreateAccountController
      * @return Application|ResponseFactory|Response
      * a response containing information about this operation's result
      */
-    public function create(User $user,CreateAccountRequest $request)
+    public function create(CreateAccountRequest $request)
+    {
+        $user = Auth::user();
+        Log::debug($user);
+        $account = Account::firstOrCreate([
+            'sap_id' => $request->validated('sap_id'),
+        ]);
+
+        if (! $account->exists)
+            return response(trans('financial_accounts.create.failed'), 500);
+
+        if (! $user->accounts->contains($account))
+            $user->accounts()->attach($account, ['account_title' => $request->validated('title')]);
+        $admins = User::where('is_admin',1);
+        foreach ($admins as $admin){
+            if (! $admin->accounts->contains($account))
+                $admin->accounts()->attach($account, ['account_title' => $request->validated('title')]);
+
+        }
+        return response(trans('financial_accounts.create.success'), 201);
+    }
+
+    public function createAdmin(User $user, CreateAccountRequest $request)
     {
         Log::debug($user);
-        $user = $user === null ? Auth::user(): $user;
+        if (is_null($user))
+            $user = Auth::user();
         Log::debug($user);
         $account = Account::firstOrCreate([
             'sap_id' => $request->validated('sap_id'),
