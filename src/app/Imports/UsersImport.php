@@ -148,12 +148,10 @@ class UsersImport implements ToModel, WithMultipleSheets
 
     private function createSapOperation($row, $formattedDate): ?SapOperation
     {
-
         if ($row[0] === null || $row[0] === "") return null;
 
         // Check if an SapOperation with the same sap_id already exists in the database
         $exists = SapOperation::where('sap_id', $row[0])->where('sum', $row[3])->exists();
-
 
         if ($exists) {
             Log::info("An operation with sap_id {$row[0]} already exists. Skipping row.");
@@ -163,11 +161,14 @@ class UsersImport implements ToModel, WithMultipleSheets
         // Ensure an account is found or created based on the SAP ID before creating the SapOperation.
         $account = Account::firstOrCreate(['sap_id' => $row[8]]);
 
+        // Determine operation_type_id based on whether $row[3] is negative
+        $operationTypeId = $row[3] < 0 ? self::OPERATION_TYPE_ID : 6;
+
         $sapOperation = new SapOperation([
             'date' => $formattedDate,
             'sum' => $row[3],
             'title' => $row[12],
-            'operation_type_id' => self::OPERATION_TYPE_ID,
+            'operation_type_id' => $operationTypeId, // Use determined operation type ID here
             'subject' => $row[10],
             'sap_id' => $row[0],
             'account_sap_id' => $row[8],
@@ -181,6 +182,7 @@ class UsersImport implements ToModel, WithMultipleSheets
             return null;
         }
     }
+
 
 
 
