@@ -69,7 +69,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
             <td>{{ $operation->operationType->name }}</td>
             @if( $operation->isLending() )
                 <td>-</td>
-            @elseif( $operation->checked )
+            @elseif( $operation->isChecked() )
                 <td>Áno</td>
             @else
                 <td>Nie</td>
@@ -83,16 +83,20 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
                 <button type="button" data-operation-id="{{ $operation->id }}" class="operation-detail"><i  class="bi bi-info-circle" title="Detail operácie"></i></button>
                 @if( $operation->isRepayment() )
                     <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
-                        @elseif ( $operation->isLending() )
-                            <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
-                                @if (! $operation->lending->repayment)
-                                    <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-repayment"><i class="bi bi-cash-coin" title="Splatiť pôžičku"></i>
-                                        @endif
-                                        <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
-                                            @else
-                                                <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
-                                                    <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu"></i>
-                                                        <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
+                @elseif ( $operation->isLending() )
+                    <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
+                    @if (! $operation->lending->repayment)
+                        <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-repayment"><i class="bi bi-cash-coin" title="Splatiť pôžičku"></i>
+                    @endif
+                    <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
+                @else
+                    <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
+                    @if(! $operation->isChecked())
+                        <button type="button" data-operation-id="{{ $operation->id }}" class="financial-operation-check"><i  class="bi bi-check2-all" title="Označiť operáciu"></i>
+                    @else
+                        <button type="button" data-operation-id="{{ $operation->id }}" class="financial-operation-uncheck"><i  class="bi bi-check2-all" title="Odznačiť operáciu"></i>
+                    @endif
+                    <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
                 @endif
             </td>
         </tr>
@@ -112,6 +116,50 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
     @endif
     <p id="account-balance">Celkový zostatok na účte: <em>{{ $account_balance }}€</em></p>
 </div>
+
+<table>
+    <tr>
+        <th>Poradie</th>
+        <th>Názov</th>
+        <th>Dátum</th>
+        <th>Typ</th>
+        <th class="w-100">Skontrolované</th>
+        <th class="align-right">Suma</th>
+        <th></th>
+    </tr>
+
+    @foreach ($sapOperations as $key=>$operation)
+
+        <tr 
+        @if($operation->isChecked())
+            style="background-color: lightgreen;"
+        @endif
+        >
+            <td>{{ ($operations->currentPage() - 1) * $operations->perPage() + $key + 1}}.</td>
+            <td>{{ $operation->title }}</td>
+            <td>{{ $operation->date->format('d.m.Y') }}</td>
+            <td>{{ $operation->operationType->name }}</td>
+            @if(! is_null($operation->financialOperation) )
+                <td>Áno</td>
+            @else
+                <td>Nie</td>
+            @endif
+            @if( $operation->isExpense())
+                <td class="align-right" style="color: red;">-{{ $operation->sum }}€</td>
+            @else
+                <td class="align-right" style="color: green;">{{ $operation->sum }}€</td>
+            @endif
+            <td>
+                @if(! $operation->isChecked())
+                    <button type="button" data-sap-operation-id="{{ $operation->id }}" class="sap-operation-check"><i  class="bi bi-check2-all" title="Označiť operáciu"></i>
+                @else
+                    <button type="button" data-sap-operation-id="{{ $operation->id }}" class="sap-operation-uncheck"><i  class="bi bi-check2-all" title="Odznačiť operáciu"></i>
+                @endif
+            </td>
+        </tr>
+
+    @endforeach
+</table>
 
 
 @include('common.footer')

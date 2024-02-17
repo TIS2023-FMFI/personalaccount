@@ -109,7 +109,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
             <td>{{ $operation->operationType->name }}</td>
             @if( $operation->isLending() )
                 <td>-</td>
-            @elseif( $operation->checked )
+            @elseif( $operation->isChecked() )
                 <td>Áno</td>
             @else
                 <td>Nie</td>
@@ -131,7 +131,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
                                         <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
                                             @else
                                                 <button type="button" data-operation-id="{{ $operation->id }}" data-csrf="{{ csrf_token() }}" class="operation-edit"><i class="bi bi-pencil" title="Upraviť operáciu"></i>
-                                                    <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->checked }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu"></i>
+                                                    <button type="button" data-operation-id="{{ $operation->id }}" data-operation-checked="{{ $operation->isChecked() }}" class="operation-check"><i  class="bi bi-check2-all" title="Označiť/Odznačiť operáciu"></i>
                                                         <button type="button" data-operation-id="{{ $operation->id }}" class="operation-delete"><i class="bi bi-trash3" title="Zmazať operáciu"></i>
                 @endif
             </td>

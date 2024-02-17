@@ -163,6 +163,16 @@ class FinancialOperation extends Model
     }
 
     /**
+     * Return true if the operation has an assiocated SAP operation
+     * 
+     * @return bool
+     */
+    public function isChecked()
+    {
+        return ! is_null($this->sapOperation);
+    }
+
+    /**
      * Returns the type of this operation.
      *
      * @return BelongsTo
@@ -257,7 +267,7 @@ class FinancialOperation extends Model
     public function getCheckedString()
     {
         if ($this->isLending()) return '';
-        return $this->checked ? 'Áno' : 'Nie';
+        return $this->isChecked() ? 'Áno' : 'Nie';
     }
 
     /**
