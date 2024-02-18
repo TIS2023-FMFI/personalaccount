@@ -1479,7 +1479,11 @@ $(document).ready(function(){
                     let operation_id = unchecked_operation.id;
                     let operation_title = unchecked_operation.title;
                     let operation_subject = unchecked_operation.subject;
-                    let operation_sap_id = unchecked_operation.sap_id;
+                    let operation_type = unchecked_operation.operation_type.name;
+                    let date = unchecked_operation.date.substring(0,10);
+                    let dd = date.substring(8,10);
+                    let mm = date.substring(5,7);
+                    let yyyy = date.substring(0,4);
                     let operation_sum = unchecked_operation.sum;
                     if (unchecked_operation.operation_type.expense)
                     {
@@ -1487,9 +1491,11 @@ $(document).ready(function(){
                     }
                     $("#check-sap-operation-choice").append($('<option>',{
                         value: operation_id,
-                        text: "TITLE: " + operation_title 
+                        text: 
+                        "TITLE: " + operation_title
                         + (! operation_subject ? "" : ", SUBJECT: " + operation_subject) 
-                        + ", SAP ID: " + operation_sap_id
+                        + ", DATE: " + dd+"."+mm+"."+yyyy
+                        + ", TYPE: " + operation_type
                         + ", SUM: " + operation_sum
                     }))
                 })

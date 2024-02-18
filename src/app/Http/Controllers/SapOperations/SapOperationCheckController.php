@@ -23,7 +23,16 @@ class SapOperationCheckController extends Controller
     public function getFormData(SapOperation $operation)
     {
         Log::debug('Getting form data for checking a SAP operation');
-        $operations = FinancialOperation::whereNull('sap_operation_id')->get();
+        $financialOperations = FinancialOperation::whereNull('sap_operation_id')->get();
+        $operations = collect([]);
+        foreach($financialOperations as $finOp)
+        {
+            if ($finOp->account()->sap_id === $operation->account_sap_id)
+            {
+                Log::debug('This op is all right {e}', ['e' => $finOp]);
+                $operations->push($finOp);
+            }
+        }
         Log::debug('All fin ops that have not been checked {e}', ['e' => $operations]);
         return ['uncheckedOperations' => $operations];
     }
