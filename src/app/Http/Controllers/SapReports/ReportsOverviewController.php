@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Base\DateRequest;
 use App\Models\Account;
 use App\Models\SapReport;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,7 +23,6 @@ class ReportsOverviewController extends Controller
      * @var int
      */
     private static int $resultsPerPage = 15;
-
 
 
     /**
@@ -64,6 +64,62 @@ class ReportsOverviewController extends Controller
         ]);
     }
 
+    public function admin_show(DateRequest $request, Account $account)
+    {
+        $from = $request->getValidatedFromDateOrMin();
+        $to = $request->getValidatedToDateOrMax();
+        $user = null;
+        // Admin users can view all reports within the specified date range.
+        if (auth()->user()->is_admin) {
+            $reports = SapReport::where('account_id', $account->id)
+                ->whereBetween('exported_or_uploaded_on', [$from, $to])
+                ->orderBy('exported_or_uploaded_on', 'desc')
+                ->paginate(self::$resultsPerPage)
+                ->withQueryString();
+        } else {
+            // Non-admin users can view only their reports for the specified account.
+            $reports = $this->retrieveSapReports($account, $from, $to);
+        }
+
+        // Safely access the account title using the null-safe operator and provide a default value if not found.
+        $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Default Account Title';
+
+        return view('admin.sap_reports', [
+            'account' => $account,
+            'account_title' => $accountTitle,
+            'reports' => $reports,
+            'user' => $user
+        ]);
+    }
+
+    public function admin_user_show(User $user, DateRequest $request, Account $account)
+    {
+        $from = $request->getValidatedFromDateOrMin();
+        $to = $request->getValidatedToDateOrMax();
+
+        // Admin users can view all reports within the specified date range.
+        if (auth()->user()->is_admin) {
+            $reports = SapReport::where('account_id', $account->id)
+                ->whereBetween('exported_or_uploaded_on', [$from, $to])
+                ->orderBy('exported_or_uploaded_on', 'desc')
+                ->paginate(self::$resultsPerPage)
+                ->withQueryString();
+        } else {
+            // Non-admin users can view only their reports for the specified account.
+            $reports = $this->retrieveSapReports($account, $from, $to);
+        }
+
+        // Safely access the account title using the null-safe operator and provide a default value if not found.
+        $accountTitle = $account->users()->first()?->pivot?->account_title ?? 'Default Account Title';
+
+        return view('admin.user.sap_reports', [
+            'account' => $account,
+            'account_title' => $accountTitle,
+            'reports' => $reports,
+            'user' => $user
+        ]);
+    }
+
 
     /**
      * Retrieve the paginated SAP Reports for an account which were exported or
@@ -81,9 +137,9 @@ class ReportsOverviewController extends Controller
     private function retrieveSapReports(Account $account, Carbon $from, Carbon $to)
     {
         return $account
-                ->sapReportsBetween($from, $to)
-                ->orderBy('exported_or_uploaded_on', 'desc')
-                ->paginate($this::$resultsPerPage)
-                ->withQueryString();
+            ->sapReportsBetween($from, $to)
+            ->orderBy('exported_or_uploaded_on', 'desc')
+            ->paginate($this::$resultsPerPage)
+            ->withQueryString();
     }
 }

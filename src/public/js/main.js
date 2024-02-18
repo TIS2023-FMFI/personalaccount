@@ -852,10 +852,18 @@ $(document).ready(function(){
     // <-- Financial accounts filter operations
     $(".toggle-button").change(function(){
         let account_id = $(this).data("account-id");
+        let isAdmin = $('body').data('is-admin');
+        let FakeAdmin = $(this).data('fake-admin-id');
+        let urlPath;
+        if (isAdmin) {
+            urlPath = FakeAdmin !== "" ? '/user/' + FakeAdmin + '/accounts/' : "/overview/accounts/";
+        } else {
+            urlPath = "/accounts/";
+        }
         if($(this).attr('checked')){
-            window.location.href = root + '/accounts/'+account_id+'/operations';
+            window.location.href = root + urlPath + account_id+'/operations';
         }else{
-            window.location.href = root + '/accounts/'+account_id+'/sap-reports';
+            window.location.href = root + urlPath +account_id+'/sap-reports';
         }
     })
 
@@ -1296,8 +1304,8 @@ $(document).ready(function(){
                     }
                     $("#check-operation-choice").append($('<option>',{
                         value: operation_id,
-                        text: "TITLE: " + operation_title 
-                        + (! operation_subject ? "" : ", SUBJECT: " + operation_subject) 
+                        text: "TITLE: " + operation_title
+                        + (! operation_subject ? "" : ", SUBJECT: " + operation_subject)
                         + ", SAP ID: " + operation_sap_id
                         + ", SUM: " + operation_sum
                     }))
@@ -1475,7 +1483,11 @@ $(document).ready(function(){
                 text: 'Vyberte operáciu'
             }));
             if (response.uncheckedOperations.length != 0){
-                response.uncheckedOperations.forEach(function(unchecked_operation){
+                console.log(response.uncheckedOperations);
+                response.uncheckedOperations.forEach(function(operation_data){
+                    let unchecked_operation = operation_data[0];
+                    let user = operation_data[1];
+                    let user_email = user.email;
                     let operation_id = unchecked_operation.id;
                     let operation_title = unchecked_operation.title;
                     let operation_subject = unchecked_operation.subject;
@@ -1491,9 +1503,10 @@ $(document).ready(function(){
                     }
                     $("#check-sap-operation-choice").append($('<option>',{
                         value: operation_id,
-                        text: 
-                        "TITLE: " + operation_title
-                        + (! operation_subject ? "" : ", SUBJECT: " + operation_subject) 
+                        text:
+                        "EMAIL: " + user_email
+                        + ", TITLE: " + operation_title
+                        + (! operation_subject ? "" : ", SUBJECT: " + operation_subject)
                         + ", DATE: " + dd+"."+mm+"."+yyyy
                         + ", TYPE: " + operation_type
                         + ", SUM: " + operation_sum

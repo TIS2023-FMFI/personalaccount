@@ -79,4 +79,9 @@ class SapReport extends Model
     {
         return 'reports/user_' . $user->id;
     }
+
+    public static function getExcelReportsDirectoryPath(Account $account)
+    {
+        return 'reports/account_' . $account->id;
+    }
 }

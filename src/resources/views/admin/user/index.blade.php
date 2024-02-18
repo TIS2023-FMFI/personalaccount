@@ -20,8 +20,7 @@
                         <p>$account_sap_id</p>
                         <p>Zostatok na účte: <em style="color: $color_of_balance";>$account_balance €</em></p>
                     </div>
-                    <i data-id="$account_id" data-sap="$account_sap_id" class="bi bi-pencil edit_account" title="Upraviť účet"></i>
-                    <i data-id="$account_id" class="bi bi-trash3 delete_account" title="Zmazať účet"></i>
+
                 </div>
                 EOL;
     }

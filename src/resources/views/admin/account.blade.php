@@ -21,7 +21,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
     <div class="switch-box">
         <p>Výpis účtu</p>
         <label class="switch">
-            <input data-account-id="{{ $account->id }}" class="toggle-button" type="checkbox">
+            <input data-account-id="{{ $account->id }}" data-fake-admin-id="{{ null }}" class="toggle-button" type="checkbox">
             <span class="slider round"></span>
         </label>
         <p>SAP</p>
@@ -29,39 +29,39 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 </div>
 <?php
 
-    echo '<table class = "usersTable" >';
-    echo "<h1>Používatelia účtu</h1>";
+echo '<table class = "usersTable" >';
+echo "<h1>Používatelia účtu</h1>";
 
-            echo "<tr>";
-            echo <<<EOL
+echo "<tr>";
+echo <<<EOL
             <td>ID</td>
             <td>Email</td>
             <td>Zostatok</td>
             EOL;
-            echo "</tr>";
-    foreach ($users as $user) {
-        $user_id = $user->id;
-        $user_email = $user->email;
-        $incomes = $account->userOperationsBetween($user, Illuminate\Support\Facades\Date::minValue(), Illuminate\Support\Facades\Date::maxValue())->incomes()->sum('sum');
-        $expenses = $account->userOperationsBetween($user, Illuminate\Support\Facades\Date::minValue(), Illuminate\Support\Facades\Date::maxValue())->expenses()->sum('sum');
-        $user_balance = $incomes - $expenses;
+echo "</tr>";
+foreach ($users as $user) {
+    $user_id = $user->id;
+    $user_email = $user->email;
+    $incomes = $account->userOperationsBetween($user, Illuminate\Support\Facades\Date::minValue(), Illuminate\Support\Facades\Date::maxValue())->incomes()->sum('sum');
+    $expenses = $account->userOperationsBetween($user, Illuminate\Support\Facades\Date::minValue(), Illuminate\Support\Facades\Date::maxValue())->expenses()->sum('sum');
+    $user_balance = $incomes - $expenses;
 
-        echo "<tr>";
-        echo "
+    echo "<tr>";
+    echo "
             <td>{$user_id}</td>
             <td>{$user_email}</td>";
-            if( $user_balance >= 0){
-                echo "<td class=\"align-right\" style=\"color: green;\">" . number_format($user_balance, 2, ',', ' ') . "€</td>";
-                }
-            else{
-                echo "<td class=\"align-right\" style=\"color: red;\">-" . number_format($user_balance, 2, ',', ' ') . "€</td>";
-                }
-
-        echo "</tr>";
+    if( $user_balance >= 0){
+        echo "<td class=\"align-right\" style=\"color: green;\">" . number_format($user_balance, 2, ',', ' ') . "€</td>";
     }
-    echo "</table>";
+    else{
+        echo "<td class=\"align-right\" style=\"color: red;\">-" . number_format($user_balance, 2, ',', ' ') . "€</td>";
+    }
 
-    echo "<h1>Operácie</h1>";
+    echo "</tr>";
+}
+echo "</table>";
+
+echo "<h1>Operácie</h1>";
 
 ?>
 
