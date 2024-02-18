@@ -52,7 +52,7 @@ class UsersImport implements ToModel, WithMultipleSheets
 
         Log::warning($row[0]);
         // If SAP ID is the same as the previous one, increment counter, else reset counter and remember the first new row
-        if ($this->previousSapId === $row[0] && $this->previousPrice === $row[3]*-1) {
+        if ($this->previousSapId === $row[0] && $this->previousPrice === $row[3] * -1) {
 
             $this->consecutiveCount++;
 
@@ -64,9 +64,7 @@ class UsersImport implements ToModel, WithMultipleSheets
             $this->firstNewRowAfterConsecutivex = $this->firstNewRowAfterConsecutive;
             $this->firstNewRowAfterConsecutive = $row;
             if (!is_array($this->firstNewRowAfterConsecutivex)) return null;
-            if ($this->consecutiveCount === 1){
-
-
+            if ($this->consecutiveCount === 1) {
 
 
                 if ($this->firstNewRowAfterConsecutivex[17] === null || $this->firstNewRowAfterConsecutivex[17] === "") {
@@ -92,7 +90,7 @@ class UsersImport implements ToModel, WithMultipleSheets
             return null;
         }
 
-        if ($this->consecutiveCount === 3){
+        if ($this->consecutiveCount === 3) {
 
 
             if ($row[17] === null || $row[17] === "") {
@@ -118,6 +116,7 @@ class UsersImport implements ToModel, WithMultipleSheets
         }
         return null;
     }
+
     private function operationTypeExists(): bool
     {
         return OperationType::find(self::OPERATION_TYPE_ID) !== null;
@@ -164,6 +163,9 @@ class UsersImport implements ToModel, WithMultipleSheets
         // Determine operation_type_id based on whether $row[3] is negative
         $operationTypeId = $row[3] < 0 ? self::OPERATION_TYPE_ID : 6;
 
+        if ($row[3] < 0){
+            $row[3] *= (-1);
+        }
         $sapOperation = new SapOperation([
             'date' => $formattedDate,
             'sum' => $row[3],
@@ -182,10 +184,6 @@ class UsersImport implements ToModel, WithMultipleSheets
             return null;
         }
     }
-
-
-
-
 
 
     /**
