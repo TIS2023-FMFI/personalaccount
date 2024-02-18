@@ -73,6 +73,8 @@ class OperationsOverviewController extends Controller
         $dateTo = $request->getValidatedToDateOrMax();
         $user = Auth::user();
         $users = null;
+        $sapOperations = $account->sapOperations;
+
         $operations = $account->OperationsBetween( $dateFrom, $dateTo)->orderBy('date', 'desc')
         ->paginate($this::$resultsPerPage)->withQueryString();
         $users = $account->users;
@@ -89,6 +91,7 @@ class OperationsOverviewController extends Controller
             'expenses_total' => $expenses,
             'account_balance' => $accountBalance,
             'users' => $users,
+            'sapOperations' => $sapOperations
         ]);
 
     }
@@ -97,6 +100,7 @@ class OperationsOverviewController extends Controller
     {
         $dateFrom = $request->getValidatedFromDateOrMin();
         $dateTo = $request->getValidatedToDateOrMax();
+        $sapOperations = $account->sapOperations;
 
         $operations = $account->userOperationsBetween($user, $dateFrom, $dateTo)->orderBy('date', 'desc')
             ->paginate($this::$resultsPerPage)->withQueryString();
@@ -116,6 +120,7 @@ class OperationsOverviewController extends Controller
             'expenses_total' => $expenses,
             'account_balance' => $accountBalance,
             'user' => $user,
+            'sapOperations' => $sapOperations
         ]);
     }
 

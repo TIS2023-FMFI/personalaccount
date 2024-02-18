@@ -40,7 +40,7 @@ class ExcelImportController extends Controller
         $report = $request->file('excel_file');
 
         try {
-        Excel::import(new UsersImport, $report);
+            Excel::import(new UsersImport, $report);
 
 
         } catch (Exception $e) {
@@ -67,18 +67,15 @@ class ExcelImportController extends Controller
      */
     private function storeFile(UploadedFile $file, Account $account): void
     {
-        $accountOwner = $account->user->first();
-        $reportPath = $this->saveReportFileToUserStorage($accountOwner, $file);
+        $reportPath = $this->saveReportFileToUserStorage($account, $file);
 
         $absoluteReportPath = Storage::path($reportPath);
         $exportedOrUploadedOn = $this->getDateExportedOrToday($absoluteReportPath);
 
         // Process the Excel file
-
-
         $createRecordTransaction = new DBTransaction(
-            fn () => $this->createReportRecord($account, $reportPath),
-            fn () => Storage::delete($reportPath)
+            fn() => $this->createReportRecord($account, $reportPath),
+            fn() => Storage::delete($reportPath)
         );
 
         $createRecordTransaction->run();
@@ -96,9 +93,9 @@ class ExcelImportController extends Controller
      * @throws StorageException If the file cannot be saved to the storage.
      */
 
-    private function saveReportFileToUserStorage(User $user, UploadedFile $report): string
+    private function saveReportFileToUserStorage(Account $account, UploadedFile $report): string
     {
-        $reportsDirectoryPath = SapReport::getReportsDirectoryPath($user);
+        $reportsDirectoryPath = SapReport::getExcelReportsDirectoryPath($account);
         $reportPath = Storage::putFile($reportsDirectoryPath, $report);
 
         if (!$reportPath) {
@@ -107,6 +104,7 @@ class ExcelImportController extends Controller
 
         return $reportPath;
     }
+
     /**
      * Create a record in the database for the uploaded report.
      *
@@ -129,6 +127,7 @@ class ExcelImportController extends Controller
             throw new DatabaseException('Record not saved.');
         }
     }
+
     /**
      * Get the date when the report was exported or the current date.
      *
@@ -142,7 +141,6 @@ class ExcelImportController extends Controller
         return now();
 
     }
-
 
 
 }

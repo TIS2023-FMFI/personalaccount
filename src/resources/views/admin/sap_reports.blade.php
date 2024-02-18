@@ -7,7 +7,13 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 
 <div class="flex-between">
     <div class="main_info">
-        <a href={{ route('home') }} class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad</a>
+        <a @if(auth()->user()->is_admin)
+               href={{ route('admin_home') }}
+           @else
+            href={{ route('home') }}
+           @endif
+            class="return_home"><i class="bi bi-chevron-left"></i> Späť na prehľad
+        </a>
         <h1>{{ $account_title }}</h1>
         <label for="sap-id-detail-sap"><b>SAP ID:</b></label>
         <p id="sap-id-detail-sap">{{ $account->sap_id }}</p>    </div>
@@ -62,11 +68,7 @@ $to = filter_input(INPUT_GET, 'to', FILTER_SANITIZE_URL);
 <div class="filter-box1">
     <div> </div>
     <div>
-
-
-
         <button data-account-id="{{ $account->id }}" id="add-excel-report" type="button" title="Nový Excel">Nový Excel</button>
-
     </div>
 </div>
 <table>

@@ -66,8 +66,7 @@ class UploadReportController extends Controller
      */
     private function uploadReportWithinTransaction(Account $account, UploadedFile $report)
     {
-        $accountOwner = $account->user->first();
-        $reportPath = $this->saveReportFileToUserStorage($accountOwner, $report);
+        $reportPath = $this->saveReportFileToUserStorage($account, $report);
 
         $createRecordTransaction = new DBTransaction(
             fn () => $this->createReportRecord($account, $reportPath),
@@ -87,9 +86,9 @@ class UploadReportController extends Controller
      * @return string
      * the path to the saved SAP report file
      */
-    private function saveReportFileToUserStorage(User $user, UploadedFile $report)
+    private function saveReportFileToUserStorage(Account $account, UploadedFile $report)
     {
-        $reportsDirectoryPath = SapReport::getReportsDirectoryPath($user);
+        $reportsDirectoryPath = SapReport::getExcelReportsDirectoryPath($account);
         $reportPath = Storage::putFile($reportsDirectoryPath, $report);
 
         if (!$reportPath) {

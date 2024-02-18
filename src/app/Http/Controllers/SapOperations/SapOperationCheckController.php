@@ -30,7 +30,7 @@ class SapOperationCheckController extends Controller
             if ($finOp->account()->sap_id === $operation->account_sap_id)
             {
                 Log::debug('This op is all right {e}', ['e' => $finOp]);
-                $operations->push($finOp);
+                $operations->push([$finOp, $finOp->user()]);
             }
         }
         Log::debug('All fin ops that have not been checked {e}', ['e' => $operations]);
