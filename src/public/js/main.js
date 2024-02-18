@@ -1244,14 +1244,68 @@ $(document).ready(function(){
 
     // <-- Delete operation form
 
-    // Check/Uncheck operation -->
+    // Check/Uncheck financial operation -->
 
-    $(".operation-check").click(function(){
+    $(".financial-operation-check").click(function(){
+
         let operation_id = $(this).data("operation-id");
+        let csrf = $(this).data("csrf");
+        let url = root + "/operations/" + operation_id + "/check";
+
+        console.log("We trying to check...");
+        console.log("URL for check fin. operation ", url);
         $("#check-operation-form").data("operation-id", operation_id);
-        let operation_checked = $(this).data("operation-checked");
-        $("#check-operation-form").data("operation-checked", operation_checked);
         $("#check-operation-modal").css("display", "flex");
+        $(".choose-lending").show();
+        //$("#check-operation-choice").css("display", "flex");
+
+        $("#check-operation-choice").empty();
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            data: {
+                "_token": csrf,
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#check-operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#check-operation-modal").css("display", "flex");
+            }
+        }).done(function(response) {
+            console.log("RESPONSE \n", response);
+            console.log("\n unchecked OPS", response.uncheckedOperations);
+            $("#check-operation-choice").append($('<option>', {
+                value: "default_opt",
+                text: 'Vyberte operáciu'
+            }));
+            if (response.uncheckedOperations.length != 0){
+                response.uncheckedOperations.forEach(function(unchecked_operation){
+                    let operation_id = unchecked_operation.id;
+                    let operation_title = unchecked_operation.title;
+                    let operation_subject = unchecked_operation.subject;
+                    let operation_sap_id = unchecked_operation.sap_id;
+                    let operation_sum = unchecked_operation.sum;
+                    if (unchecked_operation.operation_type.expense)
+                    {
+                        operation_sum *= -1;
+                    }
+                    $("#check-operation-choice").append($('<option>',{
+                        value: operation_id,
+                        text: "TITLE: " + operation_title 
+                        + (! operation_subject ? "" : ", SUBJECT: " + operation_subject) 
+                        + ", SAP ID: " + operation_sap_id
+                        + ", SUM: " + operation_sum
+                    }))
+                })
+            }
+        }).fail(function(response){
+            console.log(response);
+        })
     })
 
 
@@ -1259,19 +1313,19 @@ $(document).ready(function(){
         e.preventDefault();
 
         let operation_id =  $(this).data("operation-id");
-        let operation_checked = ($(this).data("operation-checked") - 1) *(-1);
-
+        let check_sap_operation_id = $("#check-operation-choice").val();
         let csrf = $("#check-operation-button").data("csrf");
 
         $.ajax({
-            url: root + "/operations/" + operation_id,
-            type: "PATCH",
+            url: root + "/operations/" + operation_id + '/check',
+            type: "POST",
             dataType: "json",
             data: {
                 '_token': csrf,
-                'checked': operation_checked
+                'checked_op_id': check_sap_operation_id
             }
         }).done(function(response) {
+            console.log(response);
             Toast.fire({
                 icon: 'success',
                 title: response.displayMessage
@@ -1280,7 +1334,7 @@ $(document).ready(function(){
             $(".modal-box").css("display", "none");
 
         }).fail(function(response) {
-
+            console.log(response);
             Toast.fire({
                 icon: 'error',
                 title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
@@ -1289,7 +1343,296 @@ $(document).ready(function(){
         })
 
     });
-    // <-- Check/Uncheck operation
+
+    $(".financial-operation-uncheck").click(function(){
+
+        //let account_id = $(this).data("account-id");
+        let operation_id = $(this).data("operation-id");
+        let csrf = $(this).data("csrf");
+        let url = root + "/operations/" + operation_id + "/uncheck";
+        //$("#create-operation-form").data("account-id", account_id);
+
+        console.log("We trying to uncheck...");
+        console.log("URL for uncheck fin. operation ", url);
+        $("#uncheck-operation-form").data("operation-id", operation_id);
+        $("#uncheck-operation-modal").css("display", "none");
+        //$("#check-operation-choice").css("display", "flex");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            data: {
+                "_token": csrf,
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#uncheck-operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#uncheck-operation-modal").css("display", "flex");
+            }
+        }).done(function(response) {
+            console.log("RESPONSE \n", response);
+
+            if (response.operation.operation_type.expense == 0) {
+                $("#check_operation_main_type").html("Príjem");
+            } else {
+                $("#check_operation_main_type").html("Výdavok");
+            }
+            $("#check_operation_name").html(response.operation.title);
+            $("#check_operation_subject").html(response.operation.subject);
+            $("#check_operation_sap_id").html(response.operation.sap_id);
+            $("#check_operation_sum").html(response.operation.sum + " €");
+            date = response.operation.date.substring(0,10);
+            dd = date.substring(8,10);
+            mm = date.substring(5,7);
+            yyyy = date.substring(0,4);
+            $("#check_operation_date").html(dd+"."+mm+"."+yyyy);
+
+        }).fail(function(response){
+            console.log(response);
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+    })
+
+    $("#uncheck-operation-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let operation_id =  $(this).data("operation-id");
+        let csrf = $("#uncheck-operation-button").data("csrf");
+
+        $.ajax({
+            url: root + "/operations/" + operation_id + '/uncheck',
+            type: "DELETE",
+            dataType: "json",
+            data: {
+                '_token': csrf,
+            }
+        }).done(function(response) {
+            console.log(response);
+            Toast.fire({
+                icon: 'success',
+                title: response.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+        }).fail(function(response) {
+            console.log(response);
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+
+    });
+    // <-- Check/Uncheck financial operation
+
+    // Check/Uncheck SAP operation -->
+
+    $(".sap-operation-check").click(function(){
+
+        let sap_operation_id = $(this).data("sap-operation-id");
+        console.log(sap_operation_id);
+        let csrf = $(this).data("csrf");
+        let url = root + "/sapOperations/" + sap_operation_id + "/check";
+
+        console.log("We trying to check...");
+        console.log("URL for check SAP operation ", url);
+        $("#check-sap-operation-form").data("sap-operation-id", sap_operation_id);
+        $("#check-sap-operation-modal").css("display", "flex");
+        $(".choose-lending").show();
+        //$("#check-operation-choice").css("display", "flex");
+
+        $("#check-sap-operation-choice").empty();
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            data: {
+                "_token": csrf,
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#check-sap-operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#check-sap-operation-modal").css("display", "flex");
+            }
+        }).done(function(response) {
+            console.log("RESPONSE \n", response);
+            console.log("\n unchecked OPS", response.uncheckedOperations);
+            $("#check-sap-operation-choice").append($('<option>', {
+                value: "default_opt",
+                text: 'Vyberte operáciu'
+            }));
+            if (response.uncheckedOperations.length != 0){
+                response.uncheckedOperations.forEach(function(unchecked_operation){
+                    let operation_id = unchecked_operation.id;
+                    let operation_title = unchecked_operation.title;
+                    let operation_subject = unchecked_operation.subject;
+                    let operation_type = unchecked_operation.operation_type.name;
+                    let date = unchecked_operation.date.substring(0,10);
+                    let dd = date.substring(8,10);
+                    let mm = date.substring(5,7);
+                    let yyyy = date.substring(0,4);
+                    let operation_sum = unchecked_operation.sum;
+                    if (unchecked_operation.operation_type.expense)
+                    {
+                        operation_sum *= -1;
+                    }
+                    $("#check-sap-operation-choice").append($('<option>',{
+                        value: operation_id,
+                        text: 
+                        "TITLE: " + operation_title
+                        + (! operation_subject ? "" : ", SUBJECT: " + operation_subject) 
+                        + ", DATE: " + dd+"."+mm+"."+yyyy
+                        + ", TYPE: " + operation_type
+                        + ", SUM: " + operation_sum
+                    }))
+                })
+            }
+        }).fail(function(response){
+            console.log(response);
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+    })
+
+
+    $("#check-sap-operation-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let sap_operation_id =  $(this).data("sap-operation-id");
+        let check_operation_id = $("#check-sap-operation-choice").val();
+        let csrf = $("#check-sap-operation-button").data("csrf");
+
+        $.ajax({
+            url: root + "/sapOperations/" + sap_operation_id + '/check',
+            type: "POST",
+            dataType: "json",
+            data: {
+                '_token': csrf,
+                'checked_op_id': check_operation_id
+            }
+        }).done(function(response) {
+            console.log(response);
+            Toast.fire({
+                icon: 'success',
+                title: response.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+        }).fail(function(response) {
+            console.log(response);
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+
+    });
+
+    $(".sap-operation-uncheck").click(function(){
+
+        //let account_id = $(this).data("account-id");
+        let sap_operation_id = $(this).data("sap-operation-id");
+        let csrf = $(this).data("csrf");
+        let url = root + "/sapOperations/" + sap_operation_id + "/uncheck";
+        //$("#create-operation-form").data("account-id", account_id);
+
+        console.log("We trying to uncheck...");
+        console.log("URL for uncheck SAP operation ", url);
+        $("#uncheck-sap-operation-form").data("sap-operation-id", sap_operation_id);
+        $("#uncheck-sap-operation-modal").css("display", "none");
+        //$("#check-operation-choice").css("display", "flex");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            data: {
+                "_token": csrf,
+            },
+            beforeSend: function() {
+                $("#loader-modal").css("display", "flex");
+                $("#uncheck-sap-operation-modal").css("display", "none");
+            },
+            complete: function() {
+                $("#loader-modal").css("display", "none");
+                $("#uncheck-sap-operation-modal").css("display", "flex");
+            }
+        }).done(function(response) {
+            console.log("RESPONSE \n", response);
+
+            if (response.operation.operation_type.expense == 0) {
+                $("#check_sap_operation_main_type").html("Príjem");
+            } else {
+                $("#check_sap_operation_main_type").html("Výdavok");
+            }
+            $("#check_sap_operation_name").html(response.operation.title);
+            $("#check_sap_operation_subject").html(response.operation.subject);
+            $("#check_sap_operation_sum").html(response.operation.sum + " €");
+            date = response.operation.date.substring(0,10);
+            dd = date.substring(8,10);
+            mm = date.substring(5,7);
+            yyyy = date.substring(0,4);
+            $("#check_sap_operation_date").html(dd+"."+mm+"."+yyyy);
+
+        }).fail(function(response){
+            console.log(response);
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+        })
+    })
+
+    $("#uncheck-sap-operation-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let sap_operation_id =  $(this).data("sap-operation-id");
+        let csrf = $("#uncheck-sap-operation-button").data("csrf");
+
+        $.ajax({
+            url: root + "/sapOperations/" + sap_operation_id + '/uncheck',
+            type: "DELETE",
+            dataType: "json",
+            data: {
+                '_token': csrf,
+            }
+        }).done(function(response) {
+            console.log(response);
+            Toast.fire({
+                icon: 'success',
+                title: response.displayMessage
+            })
+            location.reload();
+            $(".modal-box").css("display", "none");
+
+        }).fail(function(response) {
+            console.log(response);
+            Toast.fire({
+                icon: 'error',
+                title: 'Niečo sa pokazilo. Prosím, skúste to neskôr.'
+            })
+
+        })
+
+    });
+    // <-- Check/Uncheck SAP operation
 
     $('input[type=radio][name=operation_type]').change(function() {
         if (this.value == 'loan') {
@@ -1383,16 +1726,10 @@ $(document).ready(function(){
 
     $("#create_operation").click(function(){
         let account_id = $(this).data("account-id");
-     //   let user_id = $(this).data("user-id");
         let csrf = $(this).data("csrf");
         let isAdmin = false;
-       // let isAdmin = $('body').data('is-admin');
         let urlPath = isAdmin ? "/user/"+ user_id+ "/accounts/" : "/accounts/";
         let url = root + urlPath + account_id + "/operations/create";
-     //   console.log(url);
-     //   console.log(isAdmin);
-      //  console.log(urlPath);
-      //  console.log($('body').data('is-admin'));
         $("#create-operation-form").data("account-id", account_id);
         defaultCreateOperationFormFields();
         $(".lending_detail_div").css("display", "none")

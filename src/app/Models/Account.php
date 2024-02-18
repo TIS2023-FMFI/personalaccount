@@ -78,7 +78,7 @@ class Account extends Model
     /**
      * Gets all SAP operations belonging to this account.
      *
-     * @return HasManyThrough
+     * @return HasMany
      */
     public function sapOperations()
     {

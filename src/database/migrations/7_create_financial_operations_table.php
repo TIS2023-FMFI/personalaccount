@@ -26,8 +26,6 @@ return new class extends Migration
             $table->string('subject');
             $table->unsignedDecimal('sum',10,2);
             $table->string('attachment')->unique()->nullable();
-            $table->boolean('checked')->default(false);
-            $table->integer('sap_id')->nullable();
         });
     }
 

@@ -57,9 +57,7 @@ class OperationsOverviewExportTest extends TestCase
             'operation_type_id' => $this->incomeType,
             'subject' => 'subject',
             'sum' => 100,
-            'attachment' => 'attachments/test',
-            'checked' => false,
-            'sap_id' => null
+            'attachment' => 'attachments/test'
         ]);
 
         $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
@@ -70,7 +68,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = "{$this->account->sap_id};title;01.01.2000;income;subject;100.00;Nie;";
+        $expected = "{$this->account->sap_id};title;01.01.2000;income;subject;100.00";
 
         $this->assertEquals($expected,$rows[1]);
     }
@@ -84,9 +82,7 @@ class OperationsOverviewExportTest extends TestCase
             'operation_type_id' => $this->expenseType,
             'subject' => 'subject',
             'sum' => 100,
-            'attachment' => 'attachments/test',
-            'checked' => false,
-            'sap_id' => null
+            'attachment' => 'attachments/test'
         ]);
 
         $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
@@ -97,7 +93,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = "{$this->account->sap_id};title;01.01.2000;expense;subject;-100.00;Nie;";
+        $expected = "{$this->account->sap_id};title;01.01.2000;expense;subject;-100.00";
 
         $this->assertEquals($expected,$rows[1]);
     }
@@ -111,9 +107,7 @@ class OperationsOverviewExportTest extends TestCase
             'operation_type_id' => $this->incomeType,
             'subject' => 'subject',
             'sum' => 100,
-            'attachment' => 'attachments/test',
-            'checked' => true,
-            'sap_id' => '99'
+            'attachment' => 'attachments/test'
         ]);
 
         $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
@@ -124,7 +118,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = "{$this->account->sap_id};title;01.01.2000;income;subject;100.00;Áno;99";
+        $expected = "{$this->account->sap_id};title;01.01.2000;income;subject;100.00";
 
         $this->assertEquals($expected,$rows[1]);
     }
@@ -138,9 +132,7 @@ class OperationsOverviewExportTest extends TestCase
             'operation_type_id' => $this->lendingType,
             'subject' => 'subject',
             'sum' => 100,
-            'attachment' => 'attachments/test',
-            'checked' => false,
-            'sap_id' => null
+            'attachment' => 'attachments/test'
         ]);
 
         $response = $this->actingAs($this->user)->get("/accounts/{$this->account->id}/operations/export");
@@ -151,7 +143,7 @@ class OperationsOverviewExportTest extends TestCase
 
         $this->assertCount($this->extraRows+1,$rows);
 
-        $expected = "{$this->account->sap_id};title;01.01.2000;lending;subject;100.00;;";
+        $expected = "{$this->account->sap_id};title;01.01.2000;lending;subject;100.00";
 
         $this->assertEquals($expected,$rows[1]);
     }

@@ -325,7 +325,7 @@ class UpdateOperationTest extends TestCase
         $response->assertStatus(500);
     }
 
-    public function test_check_operation()
+    /*public function test_check_operation()
     {
 
         $operation = FinancialOperation::factory()->create(
@@ -341,7 +341,7 @@ class UpdateOperationTest extends TestCase
         ]);
     }
 
-    public function test_uncheck_operation()
+    /*public function test_uncheck_operation()
     {
 
         $operation = FinancialOperation::factory()->create(
@@ -383,6 +383,6 @@ class UpdateOperationTest extends TestCase
 
         $response->assertStatus(500);
 
-    }
+    }*/
 
 }

@@ -44,6 +44,7 @@
             @include('finances.modals.create_operation')
             @include('finances.modals.edit_operation')
             @include('finances.modals.check_operation')
+            @include('finances.modals.uncheck_operation')
             @include('finances.modals.delete_operation')
             @include('finances.modals.repayment')
 
@@ -55,3 +56,6 @@
             @include('finances.modals.delete_report')
 
             @include('finances.modals.loader')
+
+            @include('finances.modals.check_sap_operation')
+            @include('finances.modals.uncheck_sap_operation')
